@@ -1,0 +1,422 @@
+/* =============================================================================
+   VS Code Web Portfolio Theme Engine & Styles
+   Default: VS Code Light Modern (Google Edition)
+   ============================================================================= */
+
+:root {
+  color-scheme: light;
+  /* Light Theme (Default: VS Code Light Modern) */
+  --bg: #ffffff;
+  --bg2: #f8f9fa;
+  --bg3: #f1f3f5;
+  --bg4: #e9ecef;
+  --title: #f8f9fa;
+  --border: #e2e8f0;
+  --text: #1e293b;
+  --dim: #64748b;
+  --bright: #0f172a;
+  --blue: #0284c7;
+  --blue2: #1a73e8; /* Google Blue / Primary Action */
+  --green: #16a34a;
+  --gcm: #15803d;
+  --yellow: #ca8a04;
+  --yel: #ca8a04;
+  --orange: #ea580c;
+  --purple: #7c3aed;
+  --pink: #db2777;
+  --red: #dc2626;
+
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-display: "Syne", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+/* -----------------------------------------------------------------------------
+   THEMES: LIGHT VARIANTS
+   ----------------------------------------------------------------------------- */
+[data-theme="github-light"] {
+  color-scheme: light;
+  --bg: #ffffff;
+  --bg2: #f6f8fa;
+  --bg3: #eaeef2;
+  --bg4: #d0d7de;
+  --title: #f6f8fa;
+  --border: #d0d7de;
+  --text: #1f2328;
+  --dim: #656d76;
+  --bright: #09090b;
+  --blue: #0969da;
+  --blue2: #218bff;
+  --green: #1a7f37;
+  --gcm: #2da44e;
+  --yellow: #9a6700;
+  --yel: #9a6700;
+  --orange: #bc4c00;
+  --purple: #8250df;
+  --pink: #bf3989;
+  --red: #cf222e;
+}
+
+[data-theme="solarized-light"] {
+  color-scheme: light;
+  --bg: #fdf6e3;
+  --bg2: #eee8d5;
+  --bg3: #e0dacf;
+  --bg4: #d33682;
+  --title: #eee8d5;
+  --border: #d3d0c8;
+  --text: #586e75;
+  --dim: #839496;
+  --bright: #073642;
+  --blue: #268bd2;
+  --blue2: #2aa198;
+  --green: #859900;
+  --gcm: #859900;
+  --yellow: #b58900;
+  --yel: #b58900;
+  --orange: #cb4b16;
+  --purple: #6c71c4;
+  --pink: #d33682;
+  --red: #dc322f;
+}
+
+[data-theme="quiet-light"] {
+  color-scheme: light;
+  --bg: #f5f3f7;
+  --bg2: #ede9f2;
+  --bg3: #e3dde9;
+  --bg4: #d7cfe0;
+  --title: #ede9f2;
+  --border: #d8d2e1;
+  --text: #433654;
+  --dim: #7a6e8a;
+  --bright: #241835;
+  --blue: #4b69c6;
+  --blue2: #705697;
+  --green: #448c59;
+  --gcm: #448c59;
+  --yellow: #a37217;
+  --yel: #a37217;
+  --orange: #b8542b;
+  --purple: #7a3e9d;
+  --pink: #b83280;
+  --red: #b52a42;
+}
+
+[data-theme="nord-light"] {
+  color-scheme: light;
+  --bg: #eceff4;
+  --bg2: #e5e9f0;
+  --bg3: #d8dee9;
+  --bg4: #cbd3e1;
+  --title: #e5e9f0;
+  --border: #c2ccd9;
+  --text: #2e3440;
+  --dim: #4c566a;
+  --bright: #1f232a;
+  --blue: #5e81ac;
+  --blue2: #81a1c1;
+  --green: #a3be8c;
+  --gcm: #8fbcbb;
+  --yellow: #ebcb8b;
+  --yel: #ebcb8b;
+  --orange: #d08770;
+  --purple: #b48ead;
+  --pink: #bf616a;
+  --red: #bf616a;
+}
+
+/* -----------------------------------------------------------------------------
+   THEMES: DARK VARIANTS (Toggleable)
+   ----------------------------------------------------------------------------- */
+[data-theme="vscode-dark"] {
+  color-scheme: dark;
+  --bg: #1e1e1e;
+  --bg2: #252526;
+  --bg3: #2d2d2d;
+  --bg4: #333333;
+  --title: #181818;
+  --border: #3c3c3c;
+  --text: #cccccc;
+  --dim: #858585;
+  --bright: #ffffff;
+  --blue: #4fc1ff;
+  --blue2: #007acc;
+  --green: #4ec9b0;
+  --gcm: #6a9955;
+  --yellow: #dcdcaa;
+  --yel: #dcdcaa;
+  --orange: #ce9178;
+  --purple: #c586c0;
+  --pink: #ff6fd8;
+  --red: #f44747;
+}
+
+[data-theme="tokyo-night"] {
+  color-scheme: dark;
+  --bg: #1a1b26;
+  --bg2: #16161e;
+  --bg3: #1f2335;
+  --bg4: #24283b;
+  --title: #13131c;
+  --border: #292e42;
+  --text: #a9b1d6;
+  --dim: #565f89;
+  --bright: #c0caf5;
+  --blue: #7dcfff;
+  --blue2: #7aa2f7;
+  --green: #9ece6a;
+  --gcm: #73daca;
+  --yellow: #e0af68;
+  --yel: #e0af68;
+  --orange: #ff9e64;
+  --purple: #bb9af7;
+  --pink: #f7768e;
+  --red: #f7768e;
+}
+
+[data-theme="rose-pine"] {
+  color-scheme: dark;
+  --bg: #191724;
+  --bg2: #1f1d2e;
+  --bg3: #26233a;
+  --bg4: #2a273f;
+  --title: #110f1a;
+  --border: #403d52;
+  --text: #e0def4;
+  --dim: #6e6a86;
+  --bright: #e0def4;
+  --blue: #9ccfd8;
+  --blue2: #eb6f92;
+  --green: #31748f;
+  --gcm: #908caa;
+  --yellow: #f6c177;
+  --yel: #f6c177;
+  --orange: #ea9a97;
+  --purple: #c4a7e7;
+  --pink: #eb6f92;
+  --red: #eb6f92;
+}
+
+[data-theme="catppuccin"] {
+  color-scheme: dark;
+  --bg: #1e1e2e;
+  --bg2: #181825;
+  --bg3: #313244;
+  --bg4: #45475a;
+  --title: #11111b;
+  --border: #45475a;
+  --text: #cdd6f4;
+  --dim: #6c7086;
+  --bright: #cdd6f4;
+  --blue: #89dceb;
+  --blue2: #cba6f7;
+  --green: #a6e3a1;
+  --gcm: #94e2d5;
+  --yellow: #f9e2af;
+  --yel: #f9e2af;
+  --orange: #fab387;
+  --purple: #cba6f7;
+  --pink: #f38ba8;
+  --red: #f38ba8;
+}
+
+/* -----------------------------------------------------------------------------
+   CORE LAYOUT & RESET
+   ----------------------------------------------------------------------------- */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-mono { font-family: var(--font-mono) !important; }
+.font-display { font-family: var(--font-display) !important; }
+.font-sans { font-family: var(--font-sans) !important; }
+
+/* -----------------------------------------------------------------------------
+   DESKTOP APP GRID (4 ROWS x 3 COLUMNS)
+   ----------------------------------------------------------------------------- */
+.app-grid {
+  display: grid;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  grid-template-rows: 32px 26px 1fr 24px;
+  grid-template-columns: 50px 240px 1fr;
+  grid-template-areas:
+    "title  title  title"
+    "menu   menu   menu"
+    "act    side   editor"
+    "status status status";
+  transition: grid-template-columns 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: var(--bg);
+}
+
+.app-grid.sidebar-collapsed {
+  grid-template-columns: 50px 0px 1fr;
+}
+
+.app-grid.app-compact {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: var(--bg);
+}
+
+.compact-topbar {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.status-bar-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  min-height: calc(26px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Fast touch response without tap delays */
+button, a, input, select, textarea {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent iOS Safari form input auto-zooming on focus */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   SCROLLBAR & SELECTION
+   ----------------------------------------------------------------------------- */
+.thin-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120, 120, 120, 0.25) transparent;
+}
+.thin-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 3px;
+}
+[data-theme="vscode-dark"] .thin-scroll::-webkit-scrollbar-thumb,
+[data-theme="tokyo-night"] .thin-scroll::-webkit-scrollbar-thumb,
+[data-theme="rose-pine"] .thin-scroll::-webkit-scrollbar-thumb,
+[data-theme="catppuccin"] .thin-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+.thin-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.22);
+}
+
+::selection {
+  background: var(--blue2);
+  color: #ffffff;
+}
+
+/* -----------------------------------------------------------------------------
+   TEXT & BACKGROUND UTILITIES (MAPPED TO CSS VARS)
+   ----------------------------------------------------------------------------- */
+.text-vscode-blue    { color: var(--blue); }
+.text-vscode-blue2   { color: var(--blue2); }
+.text-vscode-green   { color: var(--green); }
+.text-vscode-gcm     { color: var(--gcm); }
+.text-vscode-yellow  { color: var(--yellow); }
+.text-vscode-yel     { color: var(--yel); }
+.text-vscode-orange  { color: var(--orange); }
+.text-vscode-purple  { color: var(--purple); }
+.text-vscode-pink    { color: var(--pink); }
+.text-vscode-red     { color: var(--red); }
+.text-vscode-bright  { color: var(--bright); }
+.text-vscode-dim     { color: var(--dim); }
+.text-vscode-text    { color: var(--text); }
+
+.bg-vscode-bg     { background-color: var(--bg); }
+.bg-vscode-bg2    { background-color: var(--bg2); }
+.bg-vscode-bg3    { background-color: var(--bg3); }
+.bg-vscode-bg4    { background-color: var(--bg4); }
+.bg-vscode-title  { background-color: var(--title); }
+.bg-vscode-blue2  { background-color: var(--blue2); }
+.bg-vscode-green  { background-color: var(--green); }
+
+.border-vscode-border { border-color: var(--border); }
+
+/* -----------------------------------------------------------------------------
+   ANIMATIONS & KEYFRAMES
+   ----------------------------------------------------------------------------- */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes avatarFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+.animate-avatar-float {
+  animation: avatarFloat 4s ease-in-out infinite;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translate(-50%, -10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+.animate-toast-in {
+  animation: toastIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Line numbers column */
+.code-line-number {
+  user-select: none;
+  text-align: right;
+  padding-right: 1.25rem;
+  color: var(--dim);
+  opacity: 0.55;
+  font-size: 0.825rem;
+  font-family: var(--font-mono);
+}

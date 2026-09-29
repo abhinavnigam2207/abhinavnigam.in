@@ -1,0 +1,72 @@
+# Progress Log — Abhinav Nigam Portfolio
+
+## [2026-09-30] Netlify Production Build & Deployment Hardening
+- **Production Build Testing**:
+  - Successfully executed `pnpm build` (`vite build && tsx scripts/prerender.ts && esbuild ...`).
+  - Fixed SSR prerender compatibility by safely guarding `localStorage` with `typeof window !== "undefined"` checks in [IDEApp.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/pages/IDEApp.tsx) and [ThemeContext.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/contexts/ThemeContext.tsx).
+  - Verified prerendering of 8 static HTML routes + `404.html` into `dist/public`.
+- **Netlify Configuration ([netlify.toml](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/netlify.toml))**:
+  - Added SPA catch-all redirect rule `[[redirects]] from = "/*" to = "/index.html" status = 200` to prevent 404s when deep-linking or refreshing routes on Netlify.
+  - Confirmed `/api/*` redirects to `netlify/functions/api`.
+  - Confirmed headers for static asset immutable caching.
+- **Verification**:
+  - `pnpm check`: 0 errors.
+  - `pnpm test`: 13/13 passed.
+  - `pnpm build`: Completed with exit code 0.
+- **Requirement**: Guarantee progressive fidelity across all devices (Mobile, Tablet, Desktop, Laptops) and cross-browser/OS consistency.
+- **Implemented Components & Systems**:
+  - [CompactTopBar.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/CompactTopBar.tsx):
+    - Compact 48px header replacing Desktop TitleBar + MenuBar on `< 1024px` viewports.
+    - Hamburger menu button, active file name, language mode, search palette trigger, theme switcher, terminal toggle, and `✨ AI` button.
+  - [MobileDrawer.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/MobileDrawer.tsx):
+    - Slide-over navigation panel with smooth slide-up animation and backdrop blur.
+    - Profile card with Abhinav's avatar, role, and live availability indicator.
+    - Complete hierarchical explorer tree (`src/` and `root/` files) with custom color-coded file icons.
+    - Direct social links (LinkedIn, GitHub, DEV.to, Email), active theme preview button, and Google Cloud SecOps badge.
+  - [StatusBar.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/StatusBar.tsx):
+    - Upgraded with safe-area support (`env(safe-area-inset-bottom)`) and responsive breakpoints so items never wrap or collide on small mobile screens.
+  - [TerminalPanel.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/TerminalPanel.tsx):
+    - Made quick command pills (`whoami`, `experience`, `skills`, `projects`, `google-refer`, `clear`) horizontally scrollable on mobile for 1-tap CLI interaction.
+  - [IDEApp.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/pages/IDEApp.tsx):
+    - Integrated dynamic `isCompact` state tracking `window.innerWidth < 1024` with automatic window resize listeners.
+    - Seamlessly swaps between Desktop 4-row x 3-column VS Code layout and Mobile Compact flex shell.
+  - [site.css](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/site.css):
+    - Added `height: 100dvh` for viewport height stability across mobile browser address bars.
+    - Added safe-area padding for top notches and bottom home indicators.
+    - Added `touch-action: manipulation` for zero-lag touch responsiveness.
+    - Prevented iOS Safari input auto-zoom on `< 768px` viewports.
+- **Verification & Audit**:
+  - `pnpm check` (tsc --noEmit) passed with 0 errors.
+  - `pnpm test` (vitest run) passed all 13 tests.
+  - Comprehensive browser audit across Mobile (375x812), Tablet (768x1024), and Desktop (1440x900) verified navigation, drawer, tab switching, Copilot drawer, terminal execution, and theme switcher.
+
+## [2026-09-29] VS Code IDE Redesign (Light Theme & Full Feature Parity)
+- **Reference Site Audit**:
+  - Inspected `D:\Development\WEb-download\www.aahanabobade.com\www.aahanabobade.com` via file inspection and local test server on `http://localhost:3001`.
+  - Extracted architecture: VS Code desktop IDE metaphor with Title Bar, Menu Bar, Activity Bar, File Explorer, Tab Bar, Editor Workspace, Docked Terminal, Status Bar, Copilot Drawer, Command Palette (`Ctrl+P`), and multi-theme engine.
+- **Redesign Implementation (1:1 Fidelity in Light Theme)**:
+  - **Themes Engine** in [client/src/site.css](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/site.css):
+    - Configured default **VS Code Light Modern** (clean `#ffffff` canvas, `#f8f9fa` sidebar, `#1a73e8` Google Blue accents).
+    - Added theme variations: GitHub Light, Solarized Light, Quiet Light, Nord Snow, and Dark Modern toggles.
+  - **IDE Core Components** in [client/src/components/ide/](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide):
+    - [TitleBar.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/TitleBar.tsx): Window controls with playful toast messages, search pill (`Ctrl+P`).
+    - [MenuBar.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/MenuBar.tsx): Menus for File, Edit, Selection, View, Go, Run, Terminal, Help.
+    - [ActivityBar.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/ActivityBar.tsx): Left dock for Explorer, Search, Git, Copilot, Themes, Settings.
+    - [SidebarExplorer.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/SidebarExplorer.tsx): Collapsible folder trees with custom file icons.
+    - [TabBar.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/TabBar.tsx): Open tabs with active blue indicator and breadcrumb trail.
+    - [TerminalPanel.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/TerminalPanel.tsx): Docked bottom bash terminal with quick command pills and typing CLI.
+    - [StatusBar.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/StatusBar.tsx): Status items, branch indicator, error count, theme picker trigger, Copilot trigger.
+    - [CommandPalette.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/CommandPalette.tsx): Fuzzy search modal for jumping across files and actions.
+    - [CopilotDrawer.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/CopilotDrawer.tsx): Conversational AI assistant hooked directly into Abhinav's LangChain RAG backend (`trpc.assistant.ask`).
+    - [ThemePickerModal.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/ThemePickerModal.tsx): Visual theme selector modal.
+  - **Editor Views**:
+    - [HomeView.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/views/HomeView.tsx): Hero, cycling tagline, Google Cloud SecOps pill, metric cards.
+    - [AboutView.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/views/AboutView.tsx): HTML-structured bio, degree, and engineering principles.
+    - [ExperienceView.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/views/ExperienceView.tsx): TypeScript-styled career timeline (Google, Observe.ai, Rapido, Jio, IHS Markit, MetaDesign).
+    - [ProjectsView.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/views/ProjectsView.tsx): 2-column project cards with category filters (Cloud, Platform, Architecture).
+    - [SkillsView.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/views/SkillsView.tsx): JSON-styled view + interactive skill badges.
+    - [GoogleReferView.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/views/GoogleReferView.tsx): Google referral form with resume file validation.
+    - [BlogView.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/views/BlogView.tsx): DEV.to technical articles preview.
+    - [ContactView.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/views/ContactView.tsx): CSS-styled contact properties + email message form.
+    - [ReadmeView.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/views/ReadmeView.tsx): Documentation and keyboard shortcuts reference.
+    - [ResumeView.tsx](file:///d:/Development/Github-repo/Abhinav-Portfolio-2026-main/client/src/components/ide/views/ResumeView.tsx): Curriculum vitae preview, print, and download.
