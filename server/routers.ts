@@ -46,7 +46,10 @@ export const appRouter = router({
         history: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().max(4000) })).max(10).default([]),
       }))
       .mutation(async ({ input, ctx }) => {
-        if (!allowAssistantRequest(ctx.req.ip || "unknown")) {
+        // Behind Netlify the socket address is the proxy, so read the visitor address from its header.
+        const forwarded = ctx.req.headers["x-nf-client-connection-ip"] ?? ctx.req.headers["x-forwarded-for"];
+        const clientIp = (Array.isArray(forwarded) ? forwarded[0] : forwarded)?.split(",")[0].trim() || ctx.req.ip || "unknown";
+        if (!allowAssistantRequest(clientIp)) {
           throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "Please wait a few minutes before asking another question." });
         }
         try {

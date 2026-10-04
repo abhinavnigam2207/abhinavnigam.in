@@ -2,6 +2,10 @@
   command = "pnpm run build"
   publish = "dist/public"
 
+[build.environment]
+  # vite.config.ts uses import.meta.dirname, which needs Node 20.11 or newer.
+  NODE_VERSION = "22"
+
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
