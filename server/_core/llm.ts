@@ -214,15 +214,12 @@ const normalizeToolChoice = (
   return toolChoice;
 };
 
-const platformApiBase = () => {
-  if (!ENV.llmApiUrl.trim()) throw new Error("MANUS_API_URL is not configured");
-  return ENV.llmApiUrl.replace(/\/$/, "");
-};
+const platformApiBase = () => ENV.llmApiUrl;
 const resolveApiUrl = () => `${platformApiBase()}/v1/chat/completions`;
 
 const assertApiKey = () => {
   if (!ENV.llmApiKey) {
-    throw new Error("MANUS_API_KEY is not configured");
+    throw new Error("GROQ_API_KEY is not configured");
   }
 };
 
@@ -311,7 +308,9 @@ const fetchWithBackoff = async (
   for (let attempt = 0; attempt <= RETRY_MAX_RETRIES; attempt++) {
     try {
       const response = await fetch(url, init);
-      if (response.ok || attempt === RETRY_MAX_RETRIES) {
+      // Only rate limits and server errors are worth retrying; a bad key or bad request will not fix itself.
+      const retryable = response.status === 429 || response.status >= 500;
+      if (response.ok || !retryable || attempt === RETRY_MAX_RETRIES) {
         return response;
       }
 

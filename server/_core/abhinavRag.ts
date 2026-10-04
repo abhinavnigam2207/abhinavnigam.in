@@ -3,7 +3,6 @@ import { BaseRetriever } from "@langchain/core/retrievers";
 import { RunnableLambda } from "@langchain/core/runnables";
 import type { CallbackManagerForRetrieverRun } from "@langchain/core/callbacks/manager";
 import { knowledgeSources, type KnowledgeSource } from "@shared/knowledge";
-import { ENV } from "./env";
 import { invokeLLM, type Message } from "./llm";
 
 const STOP_WORDS = new Set(["a", "an", "and", "are", "as", "at", "be", "by", "did", "do", "does", "for", "from", "has", "have", "he", "her", "his", "how", "i", "in", "is", "it", "me", "my", "of", "on", "or", "tell", "that", "the", "their", "this", "to", "was", "what", "when", "where", "which", "who", "why", "with", "worked", "work", "about", "abhinav", "nigam"]);
@@ -79,7 +78,6 @@ Internal reference: ${CANARY}`;
 
 // Llama Prompt Guard returns the probability that the text is a jailbreak or injection attempt.
 async function looksLikeInjection(text: string): Promise<boolean> {
-  if (!ENV.groqEnabled) return false;
   try {
     const response = await invokeLLM({ model: GUARD_MODEL, messages: [{ role: "user", content: text }] });
     const score = Number(response.choices?.[0]?.message?.content);

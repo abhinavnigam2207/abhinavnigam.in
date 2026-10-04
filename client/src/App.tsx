@@ -1,9 +1,6 @@
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { lazy, Suspense } from "react";
 import { Route, Router as WouterRouter, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { ThemeProvider } from "./contexts/ThemeContext";
 import Ask from "./pages/Ask";
 import Blog from "./pages/Blog";
 import Experiences from "./pages/Experiences";
@@ -53,14 +50,9 @@ function Routes() {
 function App({ ssrPath }: { ssrPath?: string } = {}) {
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="light">
-        <TooltipProvider>
-          <Toaster />
-          <WouterRouter ssrPath={ssrPath}>
-            <Routes />
-          </WouterRouter>
-        </TooltipProvider>
-      </ThemeProvider>
+      <WouterRouter ssrPath={ssrPath}>
+        <Routes />
+      </WouterRouter>
     </ErrorBoundary>
   );
 }

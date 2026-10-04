@@ -67,4 +67,4 @@ Limits: no chatbot is unbreakable. History comes from the browser and can be for
 1. Referral destination (Sheets or Excel) and who owns the credentials.
 2. LLM provider and monthly spend cap.
 3. Durable rate limit store for Ask on serverless.
-4. Removal of unused platform code (auth, storage, maps, voice, image generation, database).
+4. ~~Removal of unused platform code~~ — done, see Implementation Plan phase 5.

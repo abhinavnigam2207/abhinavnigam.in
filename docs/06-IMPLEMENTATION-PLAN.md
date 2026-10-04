@@ -34,9 +34,9 @@
 3. Own OG image, Person JSON-LD, per-page social images.
 4. Self-host fonts.
 
-## Phase 5 — Cleanup
+## Phase 5 — Cleanup (done 2026-10-05)
 
-Remove unused platform code and dependencies (auth, storage, maps, voice, image generation, database, unused UI components, Manus files).
+Removed the starter template's unused platform code: Manus OAuth and sessions, database (Drizzle/MySQL), storage, maps, voice, image generation, notification, about 50 unused UI components, the debug collector, and 56 packages. The API now has three surfaces only: `/api/health`, `/api/referrals*` and the `assistant.ask` tRPC procedure. Main CSS went from 152 kB to 65 kB and main JS from 460 kB to 342 kB.
 
 ## Launch checklist
 
