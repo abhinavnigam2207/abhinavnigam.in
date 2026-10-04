@@ -1,5 +1,5 @@
 import React from "react";
-import { Menu, Search, Palette, Sparkles, Terminal, X } from "lucide-react";
+import { LogOut, Menu, Search, Palette, Sparkles, Terminal, X } from "lucide-react";
 import { FileIcon } from "./FileIcon";
 import { IDE_FILES } from "../../content/ideContent";
 import type { FileId } from "../../types/ide";
@@ -51,6 +51,16 @@ export const CompactTopBar: React.FC<CompactTopBarProps> = ({
 
       {/* Right: Quick Action Buttons */}
       <div className="flex items-center gap-1 shrink-0">
+        {/* Exit to main site */}
+        <a
+          href="/"
+          className="flex items-center justify-center w-8 h-8 rounded text-vscode-dim hover:text-vscode-text hover:bg-vscode-bg3 transition-colors"
+          title="Back to the main site"
+          aria-label="Exit IDE, back to the main site"
+        >
+          <LogOut size={16} />
+        </a>
+
         {/* Search / Command Palette */}
         <button
           onClick={onOpenCmd}

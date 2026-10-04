@@ -2,7 +2,7 @@ export type KnowledgeSource = {
   id: string;
   title: string;
   url: string;
-  category: "CV" | "Article";
+  category: "CV" | "Article" | "Site";
   date?: string;
   content: string;
 };
@@ -66,5 +66,19 @@ export const knowledgeSources: KnowledgeSource[] = [
     category: "Article",
     date: "June 21, 2020",
     content: "In this architecture article, Abhinav describes dividing a large web application into smaller route-based mini-apps or MVPs. He discusses when faster, independent delivery may justify micro-frontends, their business-centric ownership, framework flexibility and resilience, and the choice between monorepo and multirepo approaches. He also provides a Next.js-oriented route and build example.",
+  },
+  {
+    id: "site-referral",
+    title: "Google referral page",
+    url: "/google-refer",
+    category: "Site",
+    content: "Abhinav's website has a Google referral page at /google-refer. A candidate shares their name, email, optional phone, current company, previous companies, the link to the job they plan to apply for, and a resume (PDF or Word, up to 5 MB). Abhinav reviews requests personally and gets back if there is a fit. A referral is not guaranteed. Until the form is open, candidates can email the role link and resume to abhinavnigam2207@gmail.com.",
+  },
+  {
+    id: "site-links",
+    title: "Where to find Abhinav",
+    url: "/knowme",
+    category: "Site",
+    content: "Abhinav's links: GitHub github.com/abhinavnigam2207, LinkedIn linkedin.com/in/abhinavnigam2207, articles on DEV.to at dev.to/abhinavnigam2207 and on Medium at medium.com/@abhinavnigam2207, email abhinavnigam2207@gmail.com. The website has a writing page at /blog, an ideologies page at /ideologies, and a page with all links at /knowme.",
   },
 ];

@@ -1,6 +1,7 @@
-import { ArrowUpRight, ArrowUp, MessageCircle, Sparkles } from "lucide-react";
+import { ArrowUpRight, ArrowUp, Search } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { PageMeta, SiteShell } from "@/components/site/SiteShell";
+import { pageMeta } from "@/content/pageMeta";
 import { trpc } from "@/lib/trpc";
 
 type ChatMessage = {
@@ -11,9 +12,9 @@ type ChatMessage = {
 
 const prompts = [
   "What has Abhinav worked on at Google?",
-  "Tell me about his product engineering experience.",
-  "What has he written about frontend architecture?",
   "Which measurable outcomes are in his CV?",
+  "When would you pick micro-frontends?",
+  "Give me a sci-fi riddle.",
 ];
 
 export default function AskAbhinav() {
@@ -44,22 +45,19 @@ export default function AskAbhinav() {
 
   return (
     <SiteShell compact>
-      <PageMeta title="Ask Abhinav" description="Ask about Abhinav Nigam's experience, skills, and writing. Answers are grounded in cited CV and article sources." />
+      <PageMeta {...pageMeta.ask} />
       <main className="ask-page">
-        <div className="ask-topline"><span className="ask-mark"><MessageCircle size={15} /></span><span>Ask Abhinav</span><span className="ask-powered">Grounded in work & writing</span></div>
         <section className={`ask-content ${messages.length ? "has-messages" : ""}`}>
           {messages.length === 0 ? (
             <div className="ask-welcome">
-              <img src="/brandmark.png" alt="" width="54" height="54" />
-              <p className="eyebrow">A small window into my work</p>
-              <h1>What would you like to know?</h1>
-              <p className="ask-subtitle">Ask about my experience, engineering, or articles. Answers use sources from my CV and public writing.</p>
+              <img className="avatar" src="/abhinav.jpg" alt="Abhinav Nigam" width="72" height="72" />
+              <h1>Ask <em>Abhinav</em></h1>
+              <p className="ask-subtitle">Chat about my work, engineering, or sci-fi, or play a quick game. Facts about me come from my CV and public writing.</p>
             </div>
           ) : (
             <div className="message-list" aria-live="polite" aria-relevant="additions">
               {messages.map((message, index) => (
                 <article className={`chat-message ${message.role === "user" ? "from-user" : "from-assistant"}`} key={`${index}-${message.role}`}>
-                  {message.role === "assistant" && <span className="assistant-avatar"><Sparkles size={14} /></span>}
                   <div className="message-content">
                     <p>{message.content}</p>
                     {message.sources && message.sources.length > 0 && <div className="answer-sources"><span>Sources</span>{message.sources.map(source => <a href={source.url} target={source.url.startsWith("http") ? "_blank" : undefined} rel={source.url.startsWith("http") ? "noreferrer" : undefined} key={source.title}>{source.title}<ArrowUpRight size={12} /></a>)}</div>}
@@ -70,15 +68,15 @@ export default function AskAbhinav() {
             </div>
           )}
           {requestError && <p className="form-error" role="alert">{requestError}</p>}
-          {messages.length === 0 && <div className="prompt-grid" aria-label="Suggested questions">{prompts.map(prompt => <button type="button" key={prompt} onClick={() => submit(undefined, prompt)}>{prompt}<ArrowUpRight size={14} /></button>)}</div>}
           <form className="ask-form" onSubmit={event => submit(event)}>
             <label className="sr-only" htmlFor="ask-input">Ask Abhinav a question</label>
-            <textarea id="ask-input" rows={1} maxLength={700} placeholder="Ask anything about my work…" value={draft} onChange={event => setDraft(event.target.value)} onKeyDown={event => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); submit(); } }} disabled={ask.isPending} />
+            <Search size={18} aria-hidden="true" />
+            <textarea id="ask-input" rows={1} maxLength={700} placeholder="Ask about work, tech or sci-fi" value={draft} onChange={event => setDraft(event.target.value)} onKeyDown={event => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); submit(); } }} disabled={ask.isPending} />
             <button type="submit" aria-label="Send question" disabled={!draft.trim() || ask.isPending}><ArrowUp size={17} /></button>
           </form>
-          <p className="ask-disclaimer">Answers are generated from a small, cited source set. If a detail isn’t in those sources, the assistant should say so.</p>
+          {messages.length === 0 && <div className="prompt-grid" aria-label="Suggested questions">{prompts.map(prompt => <button type="button" key={prompt} onClick={() => submit(undefined, prompt)}>{prompt}</button>)}</div>}
+          <p className="ask-disclaimer">An AI assistant answering from a small, cited source set. If a detail isn't in those sources, it should say so.</p>
         </section>
-        <div className="ask-bottom"><a href="/?site=main">← Back to portfolio</a><span>ask.abhinavnigam.in</span></div>
       </main>
     </SiteShell>
   );

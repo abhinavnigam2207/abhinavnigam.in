@@ -1,14 +1,15 @@
 import { ArrowUpRight, Clock3 } from "lucide-react";
 import { blogPosts, profile } from "@/content/site";
 import { PageIntro, PageMeta, SiteShell } from "@/components/site/SiteShell";
+import { pageMeta } from "@/content/pageMeta";
 
 export default function Blog() {
   return (
     <SiteShell>
-      <PageMeta title="Writing — Abhinav Nigam" description="Articles by Abhinav Nigam on JavaScript, developer tools, and frontend architecture." />
+      <PageMeta {...pageMeta.blog} />
       <main className="wrap page-main">
         <PageIntro eyebrow="Writing · 03 posts" title="Notes from building for the web.">
-          <p>Older writing, gathered from <a className="inline-link" href={profile.devto} target="_blank" rel="noreferrer">DEV.to <ArrowUpRight size={14} /></a>. New posts can be added here as they’re published.</p>
+          <p>Writing, gathered from <a className="inline-link" href={profile.devto} target="_blank" rel="noreferrer">DEV.to <ArrowUpRight size={14} /></a> and <a className="inline-link" href={profile.medium} target="_blank" rel="noreferrer">Medium <ArrowUpRight size={14} /></a>.</p>
         </PageIntro>
         <section className="post-list" aria-label="Published articles">
           {blogPosts.map((post, index) => (

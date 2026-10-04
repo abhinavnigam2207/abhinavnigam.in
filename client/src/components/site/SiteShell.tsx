@@ -1,14 +1,14 @@
-import { ArrowUpRight } from "lucide-react";
-import { Link, useLocation } from "wouter";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { Link } from "wouter";
 import { profile } from "@/content/site";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const navItems = [
-  { label: "About", href: "/#about" },
   { label: "Experience", href: "/#experience" },
   { label: "Writing", href: "/blog" },
   { label: "Ideologies", href: "/ideologies" },
   { label: "Ask", href: "/ask" },
+  { label: "Referral", href: "/google-refer" },
 ];
 
 export function PageMeta({ title, description }: { title: string; description: string }) {
@@ -40,29 +40,55 @@ export function PageMeta({ title, description }: { title: string; description: s
 }
 
 export function SiteShell({ children, compact = false }: { children: React.ReactNode; compact?: boolean }) {
-  const [path] = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") setMenuOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
   return (
     <div className="site-frame">
       <header className="site-header">
         <div className="header-inner">
           <Link href={compact ? "/?site=main" : "/"} className="brand" aria-label="Abhinav Nigam, home">
-            <img src="/brandmark.png" alt="" width="38" height="38" />
-            <span>Abhinav Nigam<span className="brand-period">.</span></span>
+            Abhinav Nigam
           </Link>
-          {!compact && (
-            <nav className="main-nav" aria-label="Main navigation">
-              {navItems.map(item => <a key={item.label} href={item.href} className={path === item.href ? "nav-active" : undefined}>{item.label}</a>)}
-            </nav>
-          )}
-          <Link href="/google-refer" className="header-cta">Refer me <ArrowUpRight size={15} aria-hidden="true" /></Link>
         </div>
       </header>
+      {/* Outside the header so it stacks above the open menu. */}
+      {compact
+        ? <a href="/?site=main" className="menu-button">Portfolio <ArrowUpRight size={16} aria-hidden="true" /></a>
+        : (
+          <button type="button" className="menu-button" aria-expanded={menuOpen} aria-controls="site-menu" onClick={() => setMenuOpen(open => !open)}>
+            {menuOpen ? "Close" : "Menu"}
+            <span className={`menu-icon ${menuOpen ? "is-open" : ""}`} aria-hidden="true" />
+          </button>
+        )}
+      {!compact && (
+        <nav id="site-menu" className={`site-menu ${menuOpen ? "is-open" : ""}`} aria-label="Main navigation" hidden={!menuOpen}>
+          {navItems.map(item => <a key={item.label} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</a>)}
+          <p><a href={`mailto:${profile.email}`}>{profile.email}</a></p>
+        </nav>
+      )}
       {children}
       <footer className="site-footer">
         <div className="footer-inner">
-          <span>© {new Date().getFullYear()} Abhinav Nigam</span>
-          <span className="footer-note">Built with care. Kept simple.</span>
-          <a href={`mailto:${profile.email}`}>{profile.email}</a>
+          <nav className="footer-nav" aria-label="Footer">
+            {navItems.map(item => <a key={item.label} href={item.href}>{item.label}</a>)}
+          </nav>
+          <div className="footer-meta">
+            <span>© {new Date().getFullYear()} Abhinav Nigam</span>
+            <span>Personal site. Views are my own, not my employer's.</span>
+            <span className="footer-links">
+              <a href="/bucket-list">Bucket list</a>
+              <a href="/knowme">All links</a>
+              <a href="/ide">IDE mode</a>
+              <a href={`mailto:${profile.email}`}>Email</a>
+            </span>
+          </div>
         </div>
       </footer>
     </div>
@@ -72,7 +98,7 @@ export function SiteShell({ children, compact = false }: { children: React.React
 export function SectionHeading({ number, eyebrow, title, children }: { number?: string; eyebrow?: string; title: string; children?: React.ReactNode }) {
   return (
     <div className="section-heading">
-      <div className="section-kicker">{number && <span className="section-number">{number}</span>}{eyebrow && <span>{eyebrow}</span>}</div>
+      <p className="eyebrow">{number && <span className="section-number">{number}</span>}{eyebrow}</p>
       <div className="section-title-row"><h2>{title}</h2>{children && <div className="section-aside">{children}</div>}</div>
     </div>
   );
@@ -86,4 +112,8 @@ export function PageIntro({ eyebrow, title, children }: { eyebrow: string; title
       <div className="intro-copy">{children}</div>
     </section>
   );
+}
+
+export function PillLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return <a className="button" href={href}>{children} <ArrowRight size={17} aria-hidden="true" /></a>;
 }

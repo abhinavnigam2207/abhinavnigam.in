@@ -1,111 +1,153 @@
-import { ArrowDown, ArrowUpRight, Github, Linkedin, Mail, Phone } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+import { useRef, useState } from "react";
 import { blogPosts, experiences, featuredWork, profile, skillGroups } from "@/content/site";
-import { PageMeta, SectionHeading, SiteShell } from "@/components/site/SiteShell";
+import { Lens } from "@/components/site/Lens";
+import { PageMeta, PillLink, SectionHeading, SiteShell } from "@/components/site/SiteShell";
+import { pageMeta } from "@/content/pageMeta";
+
+const capabilities = [
+  { line: "Web platforms", pill: "12+ years", detail: "Google Cloud SecOps · Observe.ai · Jio.com · Rapido" },
+  { line: "Engineering teams", pill: "5–14 led", detail: "Google 5 · Observe.ai 8 · Rapido 14 · Reliance Jio 8" },
+  { line: "Reliability", pill: "78% fewer flaky tests", detail: "Flaky tests cut from 14 to 3 per week" },
+  { line: "Product impact", pill: "40% more rides per rider", detail: "Rejection 19% → 7% · First interactive 1.7s → 0.8s" },
+];
+
+const roleLine = <p className="eyebrow"><span className="status-dot" /> Senior Software Engineer at Google</p>;
+
+function WorkSlider() {
+  const track = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+
+  const goTo = (index: number) => {
+    const el = track.current;
+    if (el) el.scrollTo({ left: index * el.clientWidth, behavior: "smooth" });
+    setActive(index);
+  };
+
+  return (
+    <div className="work-slider">
+      <div className="slider-dots" role="group" aria-label="Selected work">
+        {featuredWork.map((item, index) => (
+          <button type="button" key={item.title} className={index === active ? "is-active" : undefined} aria-label={`Show ${item.title}`} aria-pressed={index === active} onClick={() => goTo(index)} />
+        ))}
+      </div>
+      <div className="slider-track" ref={track} onScroll={event => setActive(Math.round(event.currentTarget.scrollLeft / event.currentTarget.clientWidth))}>
+        {featuredWork.map((item, index) => (
+          <article className="work-card" key={item.title}>
+            <p className="work-count">0{index + 1} / 0{featuredWork.length}</p>
+            <p className="work-result">{item.result}</p>
+            <div className="work-caption">
+              <h2>{item.title}</h2>
+              <p>{item.description}</p>
+              <span>{item.period}</span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   return (
     <SiteShell>
-      <PageMeta title="Abhinav Nigam — Senior Software Engineer" description="Abhinav Nigam is a Senior Software Engineer at Google with 12+ years of experience building web products, platforms, and reliable engineering teams." />
+      <PageMeta {...pageMeta.home} />
       <main>
-        <section className="hero wrap" id="home">
-          <p className="eyebrow"><span className="status-dot" /> Senior Software Engineer <span className="eyebrow-sep">/</span> Google</p>
-          <h1>Building useful software.<br /><span>Making complex things clearer.</span></h1>
-          <div className="hero-bottom">
-            <p className="hero-copy">I'm Abhinav — an engineer with 12+ years building web products and platforms across security, mobility, and customer operations.</p>
-            <div className="hero-actions">
-              <a className="button button-dark" href="#experience">Explore my work <ArrowDown size={16} /></a>
-              <a className="text-link" href={`mailto:${profile.email}`}>Get in touch <ArrowUpRight size={16} /></a>
-            </div>
+        <Lens
+          className="hero"
+          id="home"
+          back={<>
+            <div className="header-inner"><span className="brand">Abhinav Nigam</span></div>
+            <div className="wrap">{roleLine}<p className="hero-title">I lead engineers,<br />ship outcomes and scale.</p></div>
+          </>}
+        >
+          <div className="wrap">
+            {roleLine}
+            <h1 className="hero-title" data-lens>I engineer products,<br />platforms and teams.</h1>
+            <WorkSlider />
           </div>
-          <div className="hero-rule" />
-          <div className="quick-facts" aria-label="Highlights">
-            <div><strong>12+</strong><span>years in software</span></div>
-            <div><strong>5–14</strong><span>engineers led across teams</span></div>
-            <div><strong>78%</strong><span>fewer flaky tests per week</span></div>
-            <div><strong>40%</strong><span>more rides per rider in select cities</span></div>
+        </Lens>
+
+        <section className="content-section wrap" id="about">
+          <div className="about-head">
+            <h2 className="statement">From the interface to the systems behind it, I make complex things clearer.</h2>
+            <img className="portrait" src="/abhinav.jpg" alt="Abhinav Nigam" width="400" height="400" loading="lazy" />
+          </div>
+          <div className="about-grid">
+            <p>I'm Abhinav, an engineer with {profile.experience} building web products and platforms across security, mobility, and customer operations. I like problems where thoughtful engineering makes products easier to use and teams easier to move.</p>
+            <p>My experience spans Google Cloud SecOps, contact-center products, mobility, financial applications, and consumer platforms. I've built shared UI foundations, delivered product features, improved reliability, and led engineering teams.</p>
           </div>
         </section>
 
-        <section className="content-section wrap" id="about">
-          <SectionHeading number="01" eyebrow="A little about me" title="Engineering across the stack." />
-          <div className="about-grid">
-            <p className="lead-copy">From the interface to the systems behind it, I like working on problems where thoughtful engineering makes products easier to use and teams easier to move.</p>
-            <div className="about-detail">
-              <p>My experience spans Google Cloud SecOps, contact-center products, mobility, financial applications, and consumer platforms. I’ve built shared UI foundations, delivered product features, improved reliability, and led engineering teams.</p>
-              <a className="inline-link" href={profile.linkedin} target="_blank" rel="noreferrer">More about my work <ArrowUpRight size={15} /></a>
-            </div>
+        <section className="content-section wrap" aria-label="Capabilities">
+          <ul className="mega">
+            {capabilities.map(item => <li key={item.line}>{item.line} <span className="pill">{item.pill}</span><span className="mega-back">{item.detail}</span></li>)}
+          </ul>
+          <div className="center"><PillLink href="#experience">View experience</PillLink></div>
+        </section>
+
+        <section className="content-section wrap" aria-label="Companies I have worked at">
+          <ul className="employers">
+            {experiences.map(item => <li key={item.company}>{item.company}</li>)}
+          </ul>
+        </section>
+
+        <section className="content-section wrap" id="experience">
+          <SectionHeading eyebrow="Experience" title="Where I've worked." />
+          <div className="row-list">
+            {experiences.map(item => (
+              <article className="row" key={item.company}>
+                <div className="row-meta">{item.dates}</div>
+                <div className="row-body">
+                  <h3>{item.company} <span>{item.role}</span></h3>
+                  <p>{item.summary}</p>
+                  <p className="outcome">{item.outcome}</p>
+                  <p className="stack">{item.technologies.join(" · ")}</p>
+                </div>
+              </article>
+            ))}
           </div>
         </section>
 
         <section className="content-section wrap" id="skills">
-          <SectionHeading number="02" eyebrow="Tools of the trade" title="Skills & technologies" />
-          <div className="skill-grid">
+          <SectionHeading eyebrow="Skills" title="Tools of the trade." />
+          <dl className="skill-grid">
             {skillGroups.map(group => (
-              <div className="skill-group" key={group.label}>
-                <h3>{group.label}</h3>
-                <div className="tag-list">{group.items.map(item => <span className="tag" key={item}>{item}</span>)}</div>
-              </div>
+              <div key={group.label}><dt>{group.label}</dt><dd>{group.items.join(", ")}</dd></div>
             ))}
-          </div>
+          </dl>
         </section>
 
-        <section className="content-section wrap" id="experience">
-          <SectionHeading number="03" eyebrow="Where I've worked" title="Experience" />
-          <div className="timeline">
-            {experiences.map((item, index) => (
-              <article className="timeline-item" key={item.company}>
-                <div className="timeline-date">{item.dates}</div>
-                <div className="timeline-body">
-                  <div className="timeline-title"><h3>{item.company}</h3><span>{item.role}</span></div>
-                  <p>{item.summary}</p>
-                  <p className="outcome-copy">{item.outcome}</p>
-                  <div className="tag-list compact-tags">{item.technologies.map(tag => <span className="tag" key={`${index}-${tag}`}>{tag}</span>)}</div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="content-section wrap" id="projects">
-          <SectionHeading number="04" eyebrow="Selected work" title="A few problems I've worked on.">
-            <a className="inline-link" href="/blog">Read my writing <ArrowUpRight size={15} /></a>
+        <section className="content-section wrap" id="writing">
+          <SectionHeading eyebrow="Writing" title="Notes from building for the web.">
+            <a className="text-link" href="/blog">All writing <ArrowUpRight size={15} /></a>
           </SectionHeading>
-          <div className="work-list">
-            {featuredWork.map((item, index) => (
-              <article className="work-card" key={item.title}>
-                <div className="work-index">0{index + 1}</div>
-                <div className="work-main">
-                  <div className="work-title-row"><h3>{item.title}</h3><span className="muted-meta">{item.period}</span></div>
-                  <p>{item.description}</p>
-                  <div className="tag-list compact-tags">{item.tags.map(tag => <span className="tag" key={tag}>{tag}</span>)}</div>
-                </div>
-                <div className="work-result"><span>Outcome</span><strong>{item.result}</strong></div>
-              </article>
+          <div className="link-list">
+            {blogPosts.map(post => (
+              <a href={post.url} key={post.url} target="_blank" rel="noreferrer">
+                <span>{post.date}</span><strong>{post.title}</strong><ArrowUpRight size={18} />
+              </a>
             ))}
           </div>
         </section>
 
-        <section className="content-section wrap education-section">
-          <SectionHeading number="05" eyebrow="Education" title="Grounded in fundamentals." />
-          <div className="education-row"><strong>B.Tech, Computer Science</strong><span>Guru Gobind Singh Indraprastha University</span><span>2009 — 2013</span></div>
-        </section>
-
-        <section className="contact-band" id="contact">
-          <div className="wrap contact-inner">
-            <div><p className="eyebrow">Have a role or a good problem?</p><h2>Let’s talk.</h2><p className="contact-copy">For roles, referrals, or a thoughtful conversation about engineering.</p></div>
+        <Lens
+          className="contact"
+          id="contact"
+          back={<div className="wrap"><p className="statement">Tell me what you're building.<br />I'm listening.</p></div>}
+        >
+          <div className="wrap">
+            <h2 className="statement" data-lens>Have a role or a good problem?<br />Let's talk.</h2>
+            <PillLink href={`mailto:${profile.email}`}>Get in touch</PillLink>
             <div className="contact-links">
-              <a href={`mailto:${profile.email}`}><Mail size={17} /> {profile.email} <ArrowUpRight size={15} /></a>
-              <a href={`tel:${profile.phone.replaceAll("-", "")}`}><Phone size={17} /> {profile.phone}</a>
-              <a href={profile.linkedin} target="_blank" rel="noreferrer"><Linkedin size={17} /> LinkedIn <ArrowUpRight size={15} /></a>
-              <a href={profile.github} target="_blank" rel="noreferrer"><Github size={17} /> GitHub <ArrowUpRight size={15} /></a>
-              <a href="/google-refer">Refer me to Google <ArrowUpRight size={15} /></a>
+              <a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn <ArrowUpRight size={15} /></a>
+              <a href={profile.github} target="_blank" rel="noreferrer">GitHub <ArrowUpRight size={15} /></a>
+              <a href={profile.devto} target="_blank" rel="noreferrer">DEV.to <ArrowUpRight size={15} /></a>
+              <a href={profile.medium} target="_blank" rel="noreferrer">Medium <ArrowUpRight size={15} /></a>
+              <a href="/google-refer">Google referral <ArrowUpRight size={15} /></a>
             </div>
           </div>
-        </section>
-        <section className="writing-teaser wrap">
-          <div><p className="eyebrow">From the notebook</p><h2>Writing on the web.</h2></div>
-          <div className="teaser-posts">{blogPosts.slice(0, 2).map(post => <a href={post.url} key={post.url} target="_blank" rel="noreferrer"><span>{post.date}</span><strong>{post.title}</strong><ArrowUpRight size={15} /></a>)}<a className="all-writing" href="/blog">All writing <ArrowUpRight size={15} /></a></div>
-        </section>
+        </Lens>
       </main>
     </SiteShell>
   );

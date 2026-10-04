@@ -67,7 +67,7 @@ export function HomeView({ onNavigate, onToggleCopilot, onToggleTerm }: HomeView
               </h1>
               {/* Mobile compact avatar */}
               <div className="sm:hidden shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-vscode-blue2/20 via-vscode-purple/20 to-vscode-green/20 border border-vscode-border flex items-center justify-center overflow-hidden">
-                <span className="font-display font-black text-base text-vscode-bright">AN</span>
+                <img src="/abhinav.jpg" alt="Abhinav Nigam" className="w-full h-full object-cover" />
               </div>
             </div>
 
@@ -91,16 +91,10 @@ export function HomeView({ onNavigate, onToggleCopilot, onToggleTerm }: HomeView
           <div className="shrink-0 animate-avatar-float hidden sm:block">
             <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-gradient-to-br from-vscode-blue2/20 via-vscode-purple/20 to-vscode-green/20 border-2 border-vscode-border flex items-center justify-center shadow-lg relative overflow-hidden group">
               <img
-                src="/brandmark.png"
+                src="/abhinav.jpg"
                 alt="Abhinav Nigam"
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.style.display = "none";
-                }}
               />
-              <span className="font-display font-black text-3xl text-vscode-bright tracking-tighter">
-                AN
-              </span>
             </div>
           </div>
         </div>
@@ -158,9 +152,9 @@ export function HomeView({ onNavigate, onToggleCopilot, onToggleTerm }: HomeView
           {abhinavProfile.metrics.map((m, idx) => (
             <div
               key={idx}
-              className="p-4 rounded-lg bg-vscode-bg2 border border-vscode-border hover:border-vscode-blue2/50 transition-all shadow-xs"
+              className="min-w-0 p-4 rounded-lg bg-vscode-bg2 border border-vscode-border hover:border-vscode-blue2/50 transition-all shadow-xs"
             >
-              <div className="font-display text-xl md:text-2xl font-black text-vscode-bright tracking-tight">
+              <div className="font-display text-base sm:text-lg lg:text-xl leading-tight font-black text-vscode-bright tracking-tight [overflow-wrap:anywhere]">
                 {m.value}
               </div>
               <div className="text-xs font-medium text-vscode-text mt-1">{m.label}</div>

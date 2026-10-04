@@ -4,7 +4,6 @@
 
 [functions]
   directory = "netlify/functions"
-  external_node_modules = ["express"]
   node_bundler = "esbuild"
 
 [[redirects]]
@@ -13,10 +12,25 @@
   status = 200
   force = true
 
+# /experiences was a duplicate of /bucket-list.
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+  from = "/experiences/*"
+  to = "/bucket-list/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/experiences"
+  to = "/bucket-list/"
+  status = 301
+  force = true
+
+# www to the bare domain, so one canonical host.
+[[redirects]]
+  from = "https://www.abhinavnigam.in/*"
+  to = "https://abhinavnigam.in/:splat"
+  status = 301
+  force = true
 
 [[edge_functions]]
   function = "host-root"
@@ -26,8 +40,20 @@
   for = "/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    # Scripts only from this site. Inline styles are needed by React style attributes. Fonts come from Google Fonts.
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://avatars.githubusercontent.com; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
 
 [[headers]]
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.txt"
+  [headers.values]
+    Content-Type = "text/plain; charset=utf-8"

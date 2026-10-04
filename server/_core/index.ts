@@ -21,6 +21,7 @@ async function startServer() {
       "/google-refer": "google-refer",
       "/ask": "ask",
       "/knowme": "knowme",
+      "/ide": "ide",
     };
     app.get(Object.keys(pageFiles), (req, res, next) => {
       let page = pageFiles[req.path];

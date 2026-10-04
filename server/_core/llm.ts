@@ -215,13 +215,13 @@ const normalizeToolChoice = (
 };
 
 const platformApiBase = () => {
-  if (!ENV.forgeApiUrl.trim()) throw new Error("MANUS_API_URL is not configured");
-  return ENV.forgeApiUrl.replace(/\/$/, "");
+  if (!ENV.llmApiUrl.trim()) throw new Error("MANUS_API_URL is not configured");
+  return ENV.llmApiUrl.replace(/\/$/, "");
 };
 const resolveApiUrl = () => `${platformApiBase()}/v1/chat/completions`;
 
 const assertApiKey = () => {
-  if (!ENV.forgeApiKey) {
+  if (!ENV.llmApiKey) {
     throw new Error("MANUS_API_KEY is not configured");
   }
 };
@@ -413,7 +413,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      authorization: `Bearer ${ENV.forgeApiKey}`,
+      authorization: `Bearer ${ENV.llmApiKey}`,
     },
     body: JSON.stringify(payload),
   });
@@ -457,7 +457,7 @@ export async function listLLMModels(): Promise<ModelsResponse> {
   const url = `${platformApiBase()}/v1/models`;
 
   const response = await fetchWithBackoff(url, {
-    headers: { authorization: `Bearer ${ENV.forgeApiKey}` },
+    headers: { authorization: `Bearer ${ENV.llmApiKey}` },
   });
 
   if (!response.ok) {

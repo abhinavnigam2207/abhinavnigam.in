@@ -8,6 +8,7 @@ export const profile = {
   github: "https://github.com/abhinavnigam2207",
   linkedin: "https://www.linkedin.com/in/abhinavnigam2207",
   devto: "https://dev.to/abhinavnigam2207",
+  medium: "https://medium.com/@abhinavnigam2207",
   instagram: "https://www.instagram.com/abhinavnigam2207/",
   facebook: "https://www.facebook.com/abhinavnigam2207/",
 };
@@ -73,7 +74,7 @@ export const featuredWork = [
   {
     title: "Google Cloud SecOps",
     period: "Current",
-    description: "A cloud-native security operations platform. Abhinav engineered scheduled delivery for dashboard reports and contributed to a shared visualization library used across internal projects.",
+    description: "A cloud-native security operations platform. I engineered scheduled delivery for dashboard reports and contributed to a shared visualization library used across internal projects.",
     result: "14 → 3 flaky tests per week",
     tags: ["TypeScript", "Angular", "Go", "ECharts"],
   },
@@ -132,6 +133,7 @@ export const socialLinks = [
   { label: "GitHub", href: profile.github, note: "Code & projects" },
   { label: "LinkedIn", href: profile.linkedin, note: "Professional profile" },
   { label: "DEV.to", href: profile.devto, note: "Articles" },
+  { label: "Medium", href: profile.medium, note: "Articles" },
   { label: "Instagram", href: profile.instagram, note: "Social" },
   { label: "Facebook", href: profile.facebook, note: "Social" },
 ];

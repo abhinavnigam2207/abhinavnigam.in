@@ -1,26 +1,53 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { lazy, Suspense } from "react";
 import { Route, Router as WouterRouter, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import IDEApp from "./pages/IDEApp";
-import type { FileId } from "./types/ide";
+import Ask from "./pages/Ask";
+import Blog from "./pages/Blog";
+import Experiences from "./pages/Experiences";
+import GoogleRefer from "./pages/GoogleRefer";
+import Home from "./pages/Home";
+import Ideologies from "./pages/Ideologies";
+import KnowMe from "./pages/KnowMe";
+import NotFound from "./pages/NotFound";
 
-function RouteContent() {
-  const [rawPath] = useLocation();
-  const path = rawPath.split("?")[0].replace(/\/$/, "") || "/";
+const IDEApp = lazy(() => import("./pages/IDEApp"));
 
-  let initialFile: FileId = "home";
-  if (path === "/about") initialFile = "about";
-  else if (path === "/experience" || path === "/experiences") initialFile = "experience";
-  else if (path === "/projects") initialFile = "projects";
-  else if (path === "/skills") initialFile = "skills";
-  else if (path === "/google-refer") initialFile = "google-refer";
-  else if (path === "/blog") initialFile = "blog";
-  else if (path === "/contact") initialFile = "contact";
-  else if (path === "/readme") initialFile = "readme";
+// ask. and knowme. serve their own page at "/" (see netlify/edge-functions/host-root.ts).
+function SubdomainRoot() {
+  if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("site") !== "main") {
+    const host = window.location.hostname.toLowerCase();
+    if (host === "ask.abhinavnigam.in") return <Ask />;
+    if (host === "knowme.abhinavnigam.in") return <KnowMe />;
+  }
+  return <Home />;
+}
 
-  return <IDEApp initialFile={initialFile} />;
+function Routes() {
+  const [path] = useLocation();
+  // The prerender passes this path for the static 404 page.
+  if (path === "/__not_found__") return <NotFound />;
+
+  return (
+    <Switch>
+      <Route path="/" component={SubdomainRoot} />
+      <Route path="/blog" component={Blog} />
+      <Route path="/ideologies" component={Ideologies} />
+      <Route path="/experiences" component={Experiences} />
+      <Route path="/bucket-list" component={Experiences} />
+      <Route path="/google-refer" component={GoogleRefer} />
+      <Route path="/ask" component={Ask} />
+      <Route path="/knowme" component={KnowMe} />
+      <Route path="/ide">
+        <Suspense fallback={null}>
+          <IDEApp />
+        </Suspense>
+      </Route>
+      <Route component={NotFound} />
+    </Switch>
+  );
 }
 
 function App({ ssrPath }: { ssrPath?: string } = {}) {
@@ -30,7 +57,7 @@ function App({ ssrPath }: { ssrPath?: string } = {}) {
         <TooltipProvider>
           <Toaster />
           <WouterRouter ssrPath={ssrPath}>
-            <RouteContent />
+            <Routes />
           </WouterRouter>
         </TooltipProvider>
       </ThemeProvider>

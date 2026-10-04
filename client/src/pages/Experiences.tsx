@@ -1,10 +1,11 @@
 import { MapPinned } from "lucide-react";
 import { PageIntro, PageMeta, SiteShell } from "@/components/site/SiteShell";
+import { pageMeta } from "@/content/pageMeta";
 
 export default function Experiences() {
   return (
     <SiteShell>
-      <PageMeta title="Experiences — Abhinav Nigam" description="A list of experiences Abhinav Nigam has completed." />
+      <PageMeta {...pageMeta.bucketList} />
       <main className="wrap page-main">
         <PageIntro eyebrow="Bucket list · Experiences" title="A life outside the pull request.">
           <p>A list of memorable things done, places explored, and moments worth keeping.</p>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { ArrowLeft, Search } from "lucide-react";
 
 interface TitleBarProps {
   onOpenCmd: () => void;
@@ -80,8 +80,16 @@ export function TitleBar({ onOpenCmd }: TitleBarProps) {
       </button>
 
       {/* Right status info */}
-      <div className="flex items-center justify-end gap-2 w-48 text-[11px] font-mono">
-        <span className="inline-flex items-center gap-1 text-vscode-green font-medium">
+      <div className="flex items-center justify-end gap-3 shrink-0 text-[11px] font-mono">
+        <a
+          href="/"
+          className="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-vscode-border text-vscode-text hover:text-vscode-bright hover:border-vscode-blue2 transition-colors font-sans font-medium no-underline"
+          title="Back to the main site"
+        >
+          <ArrowLeft size={12} />
+          Exit IDE
+        </a>
+        <span className="hidden xl:inline-flex items-center gap-1 text-vscode-green font-medium">
           <span className="w-1.5 h-1.5 rounded-full bg-vscode-green animate-pulse" />
           Google Cloud SecOps
         </span>

@@ -103,7 +103,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-full border-2 border-vscode-blue overflow-hidden shrink-0 bg-vscode-bg">
               <img
-                src="/images/abhinav-avatar.png"
+                src="/abhinav.jpg"
                 alt="Abhinav Nigam"
                 className="w-full h-full object-cover"
                 onError={(e) => {

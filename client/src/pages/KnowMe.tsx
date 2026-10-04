@@ -1,12 +1,14 @@
-import { ArrowUpRight, Facebook, Github, Instagram, Linkedin, Mail, MessageCircle, PenLine } from "lucide-react";
+import { ArrowUpRight, BookOpen, Facebook, Github, Instagram, Linkedin, Mail, MessageCircle, PenLine } from "lucide-react";
 import { profile } from "@/content/site";
 import { PageMeta, SiteShell } from "@/components/site/SiteShell";
+import { pageMeta } from "@/content/pageMeta";
 
 const links = [
   { title: "Google referral", detail: "Share a role you think might fit", href: "/google-refer", icon: ArrowUpRight, local: true },
   { title: "Work with me", detail: "For roles, referrals, or collaborations, start a conversation.", href: `mailto:${profile.email}`, icon: Mail },
   { title: "Portfolio & experience", detail: "Selected work, career, and skills", href: "/?site=main", icon: ArrowUpRight, local: true },
   { title: "Writing on DEV.to", detail: "JavaScript, frontend architecture, and more", href: profile.devto, icon: PenLine },
+  { title: "Writing on Medium", detail: "Articles and notes", href: profile.medium, icon: BookOpen },
   { title: "Ask Abhinav", detail: "A grounded assistant about my work", href: "/ask", icon: MessageCircle, local: true },
   { title: "GitHub", detail: "Code and open-source work", href: profile.github, icon: Github },
   { title: "LinkedIn", detail: "Professional profile", href: profile.linkedin, icon: Linkedin },
@@ -17,11 +19,10 @@ const links = [
 export default function KnowMe() {
   return (
     <SiteShell compact>
-      <PageMeta title="Know Me — Abhinav Nigam" description="The links and profiles of Abhinav Nigam." />
+      <PageMeta {...pageMeta.knowMe} />
       <main className="wrap knowme-main">
         <section className="profile-card">
-          <div className="profile-avatar"><img src="/brandmark.png" alt="" width="72" height="72" /></div>
-          <p className="eyebrow">knowme.abhinavnigam.in</p>
+          <img className="avatar" src="/abhinav.jpg" alt="Abhinav Nigam" width="112" height="112" />
           <h1>{profile.name}</h1>
           <p className="profile-role">{profile.role} at {profile.company}</p>
           <p className="profile-bio">I build web products, platforms, and tools for teams — and share what I learn along the way.</p>
@@ -43,7 +44,6 @@ export default function KnowMe() {
             </a>;
           })}
         </section>
-        <p className="knowme-footnote">One page, all the right places.</p>
       </main>
     </SiteShell>
   );

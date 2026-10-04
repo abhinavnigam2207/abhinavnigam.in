@@ -8,7 +8,7 @@ import { answerAbhinavQuestion } from "./_core/abhinavRag";
 
 const assistantRequests = new Map<string, { startedAt: number; count: number }>();
 const ASSISTANT_WINDOW_MS = 5 * 60 * 1000;
-const ASSISTANT_REQUEST_LIMIT = 12;
+const ASSISTANT_REQUEST_LIMIT = 30;
 
 function allowAssistantRequest(ip: string) {
   const now = Date.now();
@@ -43,7 +43,7 @@ export const appRouter = router({
     ask: publicProcedure
       .input(z.object({
         question: z.string().trim().min(2).max(700),
-        history: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().max(700) })).max(6).default([]),
+        history: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().max(4000) })).max(10).default([]),
       }))
       .mutation(async ({ input, ctx }) => {
         if (!allowAssistantRequest(ctx.req.ip || "unknown")) {

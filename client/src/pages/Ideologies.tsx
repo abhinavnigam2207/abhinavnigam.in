@@ -1,10 +1,11 @@
 import { Lightbulb } from "lucide-react";
 import { PageIntro, PageMeta, SiteShell } from "@/components/site/SiteShell";
+import { pageMeta } from "@/content/pageMeta";
 
 export default function Ideologies() {
   return (
     <SiteShell>
-      <PageMeta title="Ideologies — Abhinav Nigam" description="A growing list of Abhinav Nigam's principles and ideas." />
+      <PageMeta {...pageMeta.ideologies} />
       <main className="wrap page-main">
         <PageIntro eyebrow="Principles & ideas" title="What I believe about building.">
           <p>A space for Abhinav’s own notes on software, teams, and the way we work.</p>

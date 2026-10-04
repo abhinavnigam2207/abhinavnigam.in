@@ -26,8 +26,10 @@ import { ResumeView } from "../components/ide/views/ResumeView";
 
 import type { FileId } from "../types/ide";
 import { IDE_FILES } from "../content/ideContent";
+import "../site.css";
 
 const STORAGE_THEME_KEY = "abhinav-portfolio-theme-v2";
+const IDE_FONTS_URL = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Syne:wght@700;800&display=swap";
 
 interface IDEAppProps {
   initialFile?: FileId;
@@ -56,6 +58,19 @@ export default function IDEApp({ initialFile = "home" }: IDEAppProps) {
     return false;
   });
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+
+  // The IDE shell's global styles and fonts apply only while it is mounted.
+  useEffect(() => {
+    document.documentElement.classList.add("ide-mode");
+    const fonts = document.createElement("link");
+    fonts.rel = "stylesheet";
+    fonts.href = IDE_FONTS_URL;
+    document.head.appendChild(fonts);
+    return () => {
+      document.documentElement.classList.remove("ide-mode");
+      fonts.remove();
+    };
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {

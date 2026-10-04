@@ -9,4 +9,8 @@ export const ENV = {
   get isProduction() { return process.env.NODE_ENV === "production"; },
   get forgeApiUrl() { return process.env.MANUS_API_URL ?? ""; },
   get forgeApiKey() { return process.env.MANUS_API_KEY ?? ""; },
+  // Chat completions go to Groq (OpenAI-compatible) when GROQ_API_KEY is set, otherwise to the platform API.
+  get llmApiUrl() { return process.env.GROQ_API_KEY ? "https://api.groq.com/openai" : this.forgeApiUrl; },
+  get groqEnabled() { return Boolean(process.env.GROQ_API_KEY); },
+  get llmApiKey() { return process.env.GROQ_API_KEY || this.forgeApiKey; },
 };

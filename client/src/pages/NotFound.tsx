@@ -1,10 +1,11 @@
 import { PageMeta, SiteShell } from "@/components/site/SiteShell";
+import { pageMeta } from "@/content/pageMeta";
 import { Link } from "wouter";
 
 export default function NotFound() {
   return (
     <SiteShell>
-      <PageMeta title="404 — Page not found" description="The requested page could not be found. Return to Abhinav Nigam's portfolio." />
+      <PageMeta {...pageMeta.notFound} />
       <main className="wrap not-found-page">
         <p className="eyebrow">404 · Not found</p>
         <h1>This page isn’t here.</h1>

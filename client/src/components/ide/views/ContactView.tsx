@@ -23,6 +23,7 @@ export function ContactView() {
     { label: "LinkedIn", value: "in/abhinavnigam2207", href: abhinavProfile.linkedin, icon: <Linkedin size={16} className="text-[#0a66c2]" /> },
     { label: "GitHub", value: "github.com/abhinavnigam2207", href: abhinavProfile.github, icon: <Github size={16} className="text-vscode-text" /> },
     { label: "DEV.to", value: "dev.to/abhinavnigam2207", href: abhinavProfile.devto, icon: <MessageSquare size={16} className="text-vscode-purple" /> },
+    { label: "Medium", value: "medium.com/@abhinavnigam2207", href: abhinavProfile.medium, icon: <MessageSquare size={16} className="text-vscode-green" /> },
   ];
 
   return (

@@ -37,6 +37,7 @@ export const abhinavProfile = {
   github: "https://github.com/abhinavnigam2207",
   linkedin: "https://www.linkedin.com/in/abhinavnigam2207",
   devto: "https://dev.to/abhinavnigam2207",
+  medium: "https://medium.com/@abhinavnigam2207",
   instagram: "https://www.instagram.com/abhinavnigam2207/",
   facebook: "https://www.facebook.com/abhinavnigam2207/",
   typingTaglines: [
