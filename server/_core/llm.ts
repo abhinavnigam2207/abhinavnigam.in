@@ -57,6 +57,8 @@ export type ToolChoice =
 
 export type InvokeParams = {
   messages: Message[];
+  /** How many times to retry a rate-limited or failed request. Defaults to 4. */
+  maxRetries?: number;
   tools?: Tool[];
   toolChoice?: ToolChoice;
   tool_choice?: ToolChoice;
@@ -301,16 +303,17 @@ const computeBackoffDelay = (
 // returns the final Response so callers keep their existing error handling.
 const fetchWithBackoff = async (
   url: string,
-  init: FetchInit
+  init: FetchInit,
+  maxRetries = RETRY_MAX_RETRIES
 ): Promise<Response> => {
   let lastError: unknown;
 
-  for (let attempt = 0; attempt <= RETRY_MAX_RETRIES; attempt++) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       const response = await fetch(url, init);
       // Only rate limits and server errors are worth retrying; a bad key or bad request will not fix itself.
       const retryable = response.status === 429 || response.status >= 500;
-      if (response.ok || !retryable || attempt === RETRY_MAX_RETRIES) {
+      if (response.ok || !retryable || attempt === maxRetries) {
         return response;
       }
 
@@ -323,14 +326,14 @@ const fetchWithBackoff = async (
         // Body already settled; nothing to clean up.
       }
       console.warn(
-        `LLM request retry ${attempt + 1}/${RETRY_MAX_RETRIES} after status ${response.status}`
+        `LLM request retry ${attempt + 1}/${maxRetries} after status ${response.status}`
       );
       await sleep(computeBackoffDelay(attempt, retryAfterMs));
     } catch (error) {
       lastError = error;
-      if (attempt === RETRY_MAX_RETRIES) throw error;
+      if (attempt === maxRetries) throw error;
       console.warn(
-        `LLM request retry ${attempt + 1}/${RETRY_MAX_RETRIES} after network error`
+        `LLM request retry ${attempt + 1}/${maxRetries} after network error`
       );
       await sleep(computeBackoffDelay(attempt));
     }
@@ -415,7 +418,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
       authorization: `Bearer ${ENV.llmApiKey}`,
     },
     body: JSON.stringify(payload),
-  });
+  }, params.maxRetries);
 
   if (!response.ok) {
     const errorText = await response.text();
