@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUp, ArrowUpRight } from "lucide-react";
 import { Link } from "wouter";
 import { profile } from "@/content/site";
 import { useEffect, useState } from "react";
@@ -39,7 +39,7 @@ export function PageMeta({ title, description }: { title: string; description: s
   return null;
 }
 
-export function SiteShell({ children, compact = false }: { children: React.ReactNode; compact?: boolean }) {
+export function SiteShell({ children, compact = false, portfolioLink = true }: { children: React.ReactNode; compact?: boolean; portfolioLink?: boolean }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -48,6 +48,18 @@ export function SiteShell({ children, compact = false }: { children: React.React
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [menuOpen]);
+
+  // The back-to-top button appears once the visitor is 40% of the way down the page.
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      setScrolled(scrollable > 0 && window.scrollY / scrollable >= 0.4);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <div className="site-frame">
@@ -60,7 +72,7 @@ export function SiteShell({ children, compact = false }: { children: React.React
       </header>
       {/* Outside the header so it stacks above the open menu. */}
       {compact
-        ? <a href="/?site=main" className="menu-button">Portfolio <ArrowUpRight size={16} aria-hidden="true" /></a>
+        ? portfolioLink && <a href="/?site=main" className="menu-button">Portfolio <ArrowUpRight size={16} aria-hidden="true" /></a>
         : (
           <button type="button" className="menu-button" aria-expanded={menuOpen} aria-controls="site-menu" onClick={() => setMenuOpen(open => !open)}>
             {menuOpen ? "Close" : "Menu"}
@@ -74,6 +86,9 @@ export function SiteShell({ children, compact = false }: { children: React.React
         </nav>
       )}
       {children}
+      <button type="button" className={`to-top ${scrolled ? "is-visible" : ""}`} aria-label="Scroll to top" tabIndex={scrolled ? 0 : -1} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+        <ArrowUp size={18} aria-hidden="true" />
+      </button>
       <footer className="site-footer">
         <div className="footer-inner">
           <nav className="footer-nav" aria-label="Footer">

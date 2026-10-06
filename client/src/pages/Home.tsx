@@ -1,6 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
-import { useRef, useState } from "react";
-import { blogPosts, experiences, featuredWork, profile, skillGroups } from "@/content/site";
+import { useEffect, useRef, useState } from "react";
+import { experiences, featuredWork, profile, skillGroups } from "@/content/site";
 import { Lens } from "@/components/site/Lens";
 import { PageMeta, PillLink, SectionHeading, SiteShell } from "@/components/site/SiteShell";
 import { pageMeta } from "@/content/pageMeta";
@@ -23,25 +23,43 @@ const roleLine = <p className="eyebrow"><span className="status-dot" /> Senior S
 
 function WorkSlider() {
   const track = useRef<HTMLDivElement>(null);
+  const resetTimer = useRef(0);
   const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const count = featuredWork.length;
 
   const goTo = (index: number) => {
     const el = track.current;
     if (el) el.scrollTo({ left: index * el.clientWidth, behavior: "smooth" });
-    setActive(index);
+    setActive(index % count);
   };
 
+  // Always slides right to left. A copy of the first card sits after the last one; once the copy is in view
+  // the track jumps back to the real first card, which looks identical, so the loop never rewinds.
+  // Stops while the pointer or keyboard focus is on the slider, in background tabs, and for reduced-motion users.
+  useEffect(() => {
+    if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setInterval(() => {
+      const el = track.current;
+      if (!el || document.hidden) return;
+      let position = Math.round(el.scrollLeft / el.clientWidth);
+      if (position >= count) { el.scrollTo({ left: 0, behavior: "instant" }); position = 0; }
+      goTo(position + 1);
+      if (position + 1 === count) {
+        window.clearTimeout(resetTimer.current);
+        resetTimer.current = window.setTimeout(() => el.scrollTo({ left: 0, behavior: "instant" }), 900);
+      }
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [paused, count]);
+  useEffect(() => () => window.clearTimeout(resetTimer.current), []);
+
   return (
-    <div className="work-slider">
-      <div className="slider-dots" role="group" aria-label="Selected work">
-        {featuredWork.map((item, index) => (
-          <button type="button" key={item.title} className={index === active ? "is-active" : undefined} aria-label={`Show ${item.title}`} aria-pressed={index === active} onClick={() => goTo(index)} />
-        ))}
-      </div>
-      <div className="slider-track" ref={track} onScroll={event => setActive(Math.round(event.currentTarget.scrollLeft / event.currentTarget.clientWidth))}>
-        {featuredWork.map((item, index) => (
-          <article className="work-card" key={item.title}>
-            <p className="work-count">0{index + 1} / 0{featuredWork.length}</p>
+    <div className="work-slider" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
+      <div className="slider-track" ref={track} onScroll={event => setActive(Math.round(event.currentTarget.scrollLeft / event.currentTarget.clientWidth) % count)}>
+        {[...featuredWork, featuredWork[0]].map((item, index) => (
+          <article className="work-card" key={index} aria-hidden={index === count ? true : undefined}>
+            <p className="work-count">0{(index % count) + 1} / 0{count}</p>
             <p className="work-result">{item.result}</p>
             <div className="work-caption">
               <h2>{item.title}</h2>
@@ -51,7 +69,42 @@ function WorkSlider() {
           </article>
         ))}
       </div>
+      <div className="slider-dots" role="group" aria-label="Selected work">
+        {featuredWork.map((item, index) => (
+          <button type="button" key={item.title} className={index === active ? "is-active" : undefined} aria-label={`Show ${item.title}`} aria-pressed={index === active} onClick={() => goTo(index)} />
+        ))}
+      </div>
     </div>
+  );
+}
+
+// Every few seconds two company names flip out, trade places and flip back in.
+function EmployerGrid() {
+  const [names, setNames] = useState(() => experiences.map(item => item.company));
+  const [flipping, setFlipping] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const count = experiences.length;
+    let swap = 0;
+    const timer = window.setInterval(() => {
+      if (document.hidden) return;
+      const a = Math.floor(Math.random() * count);
+      const b = (a + 1 + Math.floor(Math.random() * (count - 1))) % count;
+      setFlipping([a, b]);
+      // Swap while both names are edge-on, so the change is never seen.
+      swap = window.setTimeout(() => {
+        setNames(current => { const next = [...current]; [next[a], next[b]] = [next[b], next[a]]; return next; });
+        setFlipping([]);
+      }, 400);
+    }, 3000);
+    return () => { window.clearInterval(timer); window.clearTimeout(swap); };
+  }, []);
+
+  return (
+    <ul className="employers">
+      {names.map((name, index) => <li key={index}><span className={flipping.includes(index) ? "is-flipping" : undefined}>{name}</span></li>)}
+    </ul>
   );
 }
 
@@ -65,37 +118,39 @@ export default function Home() {
           id="home"
           back={<>
             <div className="header-inner"><span className="brand">Abhinav Nigam</span></div>
-            <div className="wrap">{roleLine}<p className="hero-title">I lead engineers,<br />ship outcomes and scale.</p></div>
+            <div className="wrap">
+              {/* Same layout as the front, with an empty box where the photo sits, so the lines wrap identically. */}
+              <div className="hero-head">
+                <div>{roleLine}<p className="hero-title">I lead teams and<br />ship real outcomes.</p></div>
+                <span className="hero-photo" />
+              </div>
+            </div>
           </>}
         >
           <div className="wrap">
-            {roleLine}
-            <h1 className="hero-title" data-lens>I engineer products,<br />platforms and teams.</h1>
+            <div className="hero-head">
+              <div>{roleLine}<h1 className="hero-title" data-lens>I engineer products,<br />platforms and teams.</h1></div>
+              <img className="hero-photo" src="/abhinav.jpg" alt="Abhinav Nigam" width="400" height="400" />
+            </div>
             <WorkSlider />
           </div>
         </Lens>
 
         <section className="content-section wrap" id="about">
-          <div className="about-head">
-            <h2 className="statement">From the interface to the systems behind it, I make complex things clearer.</h2>
-            <img className="portrait" src="/abhinav.jpg" alt="Abhinav Nigam" width="400" height="400" loading="lazy" />
-          </div>
+          <h2 className="statement">From the interface to the systems behind it, I make complex things clearer.</h2>
           <div className="about-grid">
             <p>I'm Abhinav, an engineer with {profile.experience} building web products and platforms across security, mobility, and customer operations. I like problems where thoughtful engineering makes products easier to use and teams easier to move.</p>
             <p>My experience spans Google Cloud SecOps, contact-center products, mobility, financial applications, and consumer platforms. I've built shared UI foundations, delivered product features, improved reliability, and led engineering teams.</p>
           </div>
         </section>
 
+        <section className="content-section wrap" aria-label="Companies I have worked at">
+          <EmployerGrid />
+        </section>
+
         <section className="content-section wrap" aria-label="Capabilities">
           <ul className="mega">
             {capabilities.map(item => <li key={item.line}>{item.line} <span className="pill">{item.pill}</span><span className="mega-back">{item.detail}</span></li>)}
-          </ul>
-          <div className="center"><PillLink href="#experience">View experience</PillLink></div>
-        </section>
-
-        <section className="content-section wrap" aria-label="Companies I have worked at">
-          <ul className="employers">
-            {experiences.map(item => <li key={item.company}>{item.company}</li>)}
           </ul>
         </section>
 
@@ -125,19 +180,6 @@ export default function Home() {
           </dl>
         </section>
 
-        <section className="content-section wrap" id="writing">
-          <SectionHeading eyebrow="Writing" title="Notes from building for the web.">
-            <a className="text-link" href="/blog">All writing <ArrowUpRight size={15} /></a>
-          </SectionHeading>
-          <div className="link-list">
-            {blogPosts.map(post => (
-              <a href={post.url} key={post.url} target="_blank" rel="noreferrer">
-                <span>{post.date}</span><strong>{post.title}</strong><ArrowUpRight size={18} />
-              </a>
-            ))}
-          </div>
-        </section>
-
         <Lens
           className="contact"
           id="contact"
@@ -145,7 +187,7 @@ export default function Home() {
         >
           <div className="wrap">
             <h2 className="statement" data-lens>Have a role or a good problem?<br />Let's talk.</h2>
-            <PillLink href={`mailto:${profile.email}`}>Get in touch</PillLink>
+            <PillLink href="/knowme">Get in touch</PillLink>
             <div className="contact-links">
               <a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn <ArrowUpRight size={15} /></a>
               <a href={profile.github} target="_blank" rel="noreferrer">GitHub <ArrowUpRight size={15} /></a>

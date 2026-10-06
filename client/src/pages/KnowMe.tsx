@@ -1,24 +1,26 @@
-import { ArrowUpRight, BookOpen, Facebook, Github, Instagram, Linkedin, Mail, MessageCircle, PenLine } from "lucide-react";
+import { BookOpen, ExternalLink, Facebook, Github, Instagram, Linkedin, Mail, MessageCircle, PenLine, User } from "lucide-react";
 import { profile } from "@/content/site";
 import { PageMeta, SiteShell } from "@/components/site/SiteShell";
 import { pageMeta } from "@/content/pageMeta";
+
+const GoogleG = ({ size }: { size: number }) => <img src="/google-g.png" alt="" width={size} height={size} style={{ objectFit: "contain" }} />;
 
 const links = [
   { title: "LinkedIn", detail: "Professional profile", href: profile.linkedin, icon: Linkedin },
   { title: "GitHub", detail: "Code and open-source work", href: profile.github, icon: Github },
   { title: "Ask Abhinav", detail: "A grounded assistant about my work", href: "/ask", icon: MessageCircle, local: true },
-  { title: "Portfolio & experience", detail: "Selected work, career, and skills", href: "/?site=main", icon: ArrowUpRight, local: true },
+  { title: "Portfolio & experience", detail: "Selected work, career, and skills", href: "/?site=main", icon: GoogleG, local: true },
   { title: "Writing on Medium", detail: "Articles and notes", href: profile.medium, icon: BookOpen },
   { title: "Writing on DEV.to", detail: "JavaScript, frontend architecture, and more", href: profile.devto, icon: PenLine },
   { title: "Work with me", detail: "For roles, referrals, or collaborations, start a conversation.", href: `mailto:${profile.email}`, icon: Mail },
-  { title: "Google referral", detail: "Share a role you think might fit", href: "/google-refer", icon: ArrowUpRight, local: true },
+  { title: "Google referral", detail: "Share a role you think might fit", href: "/google-refer", icon: User, local: true },
   { title: "Instagram", detail: "Follow along", href: profile.instagram, icon: Instagram },
   { title: "Facebook", detail: "Connect socially", href: profile.facebook, icon: Facebook },
 ];
 
 export default function KnowMe() {
   return (
-    <SiteShell compact>
+    <SiteShell compact portfolioLink={false}>
       <PageMeta {...pageMeta.knowMe} />
       <main className="wrap knowme-main">
         <section className="profile-card">
@@ -40,7 +42,7 @@ export default function KnowMe() {
             return <a className="bio-link" href={item.href} key={item.title} target={item.local || item.href.startsWith("mailto:") ? undefined : "_blank"} rel={item.local || item.href.startsWith("mailto:") ? undefined : "noreferrer"}>
               <span className="bio-link-icon"><Icon size={18} /></span>
               <span className="bio-link-copy"><strong>{item.title}</strong><small>{item.detail}</small></span>
-              <ArrowUpRight className="bio-link-arrow" size={17} aria-hidden="true" />
+              <ExternalLink className="bio-link-arrow" size={17} aria-hidden="true" />
             </a>;
           })}
         </section>
