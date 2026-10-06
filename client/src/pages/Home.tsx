@@ -12,7 +12,14 @@ const capabilities = [
   { line: "Product impact", pill: "40% more rides per rider", detail: "Rejection 19% → 7% · First interactive 1.7s → 0.8s" },
 ];
 
-const roleLine = <p className="eyebrow"><span className="status-dot" /> Senior Software Engineer at Google</p>;
+// "Google" set in the brand's letter colours. Screen readers get the plain word.
+const googleWord = (
+  <span className="google-word" role="img" aria-label="Google">
+    {["G", "o", "o", "g", "l", "e"].map((letter, index) => <span key={index} aria-hidden="true">{letter}</span>)}
+  </span>
+);
+
+const roleLine = <p className="eyebrow"><span className="status-dot" /> Senior Software Engineer at {googleWord}</p>;
 
 function WorkSlider() {
   const track = useRef<HTMLDivElement>(null);

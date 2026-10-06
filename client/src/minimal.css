@@ -51,6 +51,13 @@ body { background: var(--m-paper); }
 .site-frame .eyebrow { display: flex; align-items: center; gap: 10px; font-size: 0.875rem; font-weight: 500; letter-spacing: 0; color: var(--m-muted); }
 .site-frame .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #1e9e5a; box-shadow: 0 0 0 4px rgb(30 158 90 / 0.18); }
 
+/* "Google" in the brand's letter colours: blue, red, yellow, blue, green, red */
+.site-frame .google-word { font-family: var(--m-display); font-weight: 600; font-size: 1.15em; letter-spacing: -0.03em; margin-left: -4px; }
+.site-frame .google-word span:nth-child(1), .site-frame .google-word span:nth-child(4) { color: #4285f4; }
+.site-frame .google-word span:nth-child(2), .site-frame .google-word span:nth-child(6) { color: #ea4335; }
+.site-frame .google-word span:nth-child(3) { color: #fbbc05; }
+.site-frame .google-word span:nth-child(5) { color: #34a853; }
+
 /* Links and buttons */
 .site-frame .button {
   display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 28px;
@@ -157,12 +164,10 @@ body { background: var(--m-paper); }
 /* Sections */
 .site-frame .content-section { padding-top: clamp(80px, 11vw, 144px); }
 .site-frame .statement { max-width: 20ch; font-family: var(--m-display); font-weight: 600; font-size: clamp(2rem, 5vw, 4rem); line-height: 1.12; letter-spacing: -0.05em; }
-/* Client photo: monochrome to match the palette, colour on hover */
+/* Client photo, always in colour */
 .site-frame .about-head { display: flex; align-items: flex-end; justify-content: space-between; gap: clamp(24px, 5vw, 72px); }
-.site-frame .portrait { flex: none; width: clamp(180px, 24vw, 300px); height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 20px; filter: grayscale(1); transition: filter 400ms; }
-.site-frame .portrait:hover { filter: none; }
-.site-frame .avatar { margin: 0 auto 20px; border-radius: 50%; object-fit: cover; filter: grayscale(1); transition: filter 400ms; }
-.site-frame .avatar:hover { filter: none; }
+.site-frame .portrait { flex: none; width: clamp(180px, 24vw, 300px); height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 20px; }
+.site-frame .avatar { margin: 0 auto 20px; border-radius: 50%; object-fit: cover; }
 .site-frame .about-grid { margin-top: clamp(32px, 5vw, 64px); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px clamp(32px, 6vw, 96px); max-width: 1100px; }
 .site-frame .section-heading { margin-bottom: clamp(28px, 4vw, 56px); }
 .site-frame .section-title-row { margin-top: 12px; display: flex; align-items: end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }

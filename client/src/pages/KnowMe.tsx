@@ -4,14 +4,14 @@ import { PageMeta, SiteShell } from "@/components/site/SiteShell";
 import { pageMeta } from "@/content/pageMeta";
 
 const links = [
-  { title: "Google referral", detail: "Share a role you think might fit", href: "/google-refer", icon: ArrowUpRight, local: true },
-  { title: "Work with me", detail: "For roles, referrals, or collaborations, start a conversation.", href: `mailto:${profile.email}`, icon: Mail },
-  { title: "Portfolio & experience", detail: "Selected work, career, and skills", href: "/?site=main", icon: ArrowUpRight, local: true },
-  { title: "Writing on DEV.to", detail: "JavaScript, frontend architecture, and more", href: profile.devto, icon: PenLine },
-  { title: "Writing on Medium", detail: "Articles and notes", href: profile.medium, icon: BookOpen },
-  { title: "Ask Abhinav", detail: "A grounded assistant about my work", href: "/ask", icon: MessageCircle, local: true },
-  { title: "GitHub", detail: "Code and open-source work", href: profile.github, icon: Github },
   { title: "LinkedIn", detail: "Professional profile", href: profile.linkedin, icon: Linkedin },
+  { title: "GitHub", detail: "Code and open-source work", href: profile.github, icon: Github },
+  { title: "Ask Abhinav", detail: "A grounded assistant about my work", href: "/ask", icon: MessageCircle, local: true },
+  { title: "Portfolio & experience", detail: "Selected work, career, and skills", href: "/?site=main", icon: ArrowUpRight, local: true },
+  { title: "Writing on Medium", detail: "Articles and notes", href: profile.medium, icon: BookOpen },
+  { title: "Writing on DEV.to", detail: "JavaScript, frontend architecture, and more", href: profile.devto, icon: PenLine },
+  { title: "Work with me", detail: "For roles, referrals, or collaborations, start a conversation.", href: `mailto:${profile.email}`, icon: Mail },
+  { title: "Google referral", detail: "Share a role you think might fit", href: "/google-refer", icon: ArrowUpRight, local: true },
   { title: "Instagram", detail: "Follow along", href: profile.instagram, icon: Instagram },
   { title: "Facebook", detail: "Connect socially", href: profile.facebook, icon: Facebook },
 ];
