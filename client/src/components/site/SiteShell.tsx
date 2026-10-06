@@ -52,13 +52,17 @@ export function SiteShell({ children, compact = false, portfolioLink = true, the
   // The back-to-top button appears once the visitor is 40% of the way down the page.
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const onScroll = () => {
+    // Measuring the page forces layout, so do it at most once per frame rather than on every scroll event.
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
       const scrollable = document.documentElement.scrollHeight - window.innerHeight;
       setScrolled(scrollable > 0 && window.scrollY / scrollable >= 0.4);
     };
-    onScroll();
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(measure); };
+    measure();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => { window.removeEventListener("scroll", onScroll); cancelAnimationFrame(frame); };
   }, []);
 
   return (

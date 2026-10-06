@@ -26,7 +26,8 @@ Reference copy: `D:\Development\WEb-download\reinostudio.com.br`. We borrow its 
 | `--m-ink` | `#2b2f31` | Headings, text, dark cards |
 | `--m-ink-2` | `#393c3e` | Hover on dark surfaces |
 | `--m-black` | `#000000` | Buttons |
-| `--m-muted` | `#6f7477` | Secondary text |
+| `--m-muted` | `#666b6e` | Secondary text (4.5:1 or better on white and on `--m-surface`) |
+| `--m-quiet` | `#8f9497` | Large pale type only: company names, second word of a title (3:1 on white) |
 | `--m-line` | `#e0e0e0` | Rules, borders |
 | `--m-faint` | `#bdbdbd` | Placeholder marks, inactive dots |
 

@@ -86,9 +86,14 @@ export function Aurora() {
     const uMouse = gl.getUniformLocation(program, "u_mouse");
 
     // The picture is all soft gradients, so half resolution is enough and keeps it cheap.
+    // On phones the browser bar slides away while scrolling, which changes the window height on every frame.
+    // Re-sizing the canvas each time made scrolling stutter, so only a change in width (rotation, window resize) counts.
+    let sizedForWidth = 0;
     const resize = () => {
+      if (window.innerWidth === sizedForWidth) return;
+      sizedForWidth = window.innerWidth;
       canvas.width = Math.max(1, Math.round(window.innerWidth / 2));
-      canvas.height = Math.max(1, Math.round(window.innerHeight / 2));
+      canvas.height = Math.max(1, Math.round(window.screen.height / 2));
       gl.viewport(0, 0, canvas.width, canvas.height);
     };
     resize();
@@ -104,7 +109,11 @@ export function Aurora() {
 
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let frame = 0;
+    let lastDraw = 0;
     const draw = (now: number) => {
+      // The drift is slow, so 30 frames a second looks the same and leaves the GPU free for scrolling.
+      if (!still && now - lastDraw < 32) { frame = requestAnimationFrame(draw); return; }
+      lastDraw = now;
       // Ease toward the pointer so the curtains glide instead of snapping.
       mouse.x += (target.x - mouse.x) * 0.05;
       mouse.y += (target.y - mouse.y) * 0.05;
