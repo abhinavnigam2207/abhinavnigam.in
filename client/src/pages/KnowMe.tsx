@@ -1,5 +1,6 @@
 import { BookOpen, ExternalLink, Facebook, Github, Instagram, Linkedin, Mail, MessageCircle, PenLine, User } from "lucide-react";
 import { profile } from "@/content/site";
+import { Aurora } from "@/components/site/Aurora";
 import { PageMeta, SiteShell } from "@/components/site/SiteShell";
 import { pageMeta } from "@/content/pageMeta";
 
@@ -20,9 +21,10 @@ const links = [
 
 export default function KnowMe() {
   return (
-    <SiteShell compact portfolioLink={false}>
+    <SiteShell compact portfolioLink={false} theme="sky">
       <PageMeta {...pageMeta.knowMe} />
       <main className="wrap knowme-main">
+        <Aurora />
         <section className="profile-card">
           <img className="avatar" src="/abhinav.jpg" alt="Abhinav Nigam" width="112" height="112" />
           <h1>{profile.name}</h1>

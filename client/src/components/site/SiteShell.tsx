@@ -39,7 +39,7 @@ export function PageMeta({ title, description }: { title: string; description: s
   return null;
 }
 
-export function SiteShell({ children, compact = false, portfolioLink = true }: { children: React.ReactNode; compact?: boolean; portfolioLink?: boolean }) {
+export function SiteShell({ children, compact = false, portfolioLink = true, theme }: { children: React.ReactNode; compact?: boolean; portfolioLink?: boolean; theme?: string }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export function SiteShell({ children, compact = false, portfolioLink = true }: {
   }, []);
 
   return (
-    <div className="site-frame">
+    <div className="site-frame" data-theme={theme}>
       <header className="site-header">
         <div className="header-inner">
           <Link href={compact ? "/?site=main" : "/"} className="brand" aria-label="Abhinav Nigam, home">
