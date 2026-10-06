@@ -325,7 +325,27 @@ body { background: var(--m-paper); }
 /* Ask */
 .site-frame .ask-page { width: 100%; max-width: 760px; margin-inline: auto; padding: 0 20px 64px; display: flex; flex-direction: column; }
 .site-frame .ask-content { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 24px; padding-top: clamp(32px, 10vh, 120px); }
-.site-frame .ask-content.has-messages { justify-content: flex-start; padding-top: 32px; }
+/* A chat fills the screen under the header, so the input rests at the bottom and the footer starts below the fold. */
+.site-frame .ask-content.has-messages { justify-content: flex-start; padding-top: 32px; min-height: calc(100vh - 88px - 64px); min-height: calc(100dvh - 88px - 64px); }
+.site-frame .ask-content.has-messages .message-list { flex: 1; align-content: start; }
+/* In a chat the input stays within reach at the bottom of the screen. */
+.site-frame .ask-content.has-messages .ask-form { position: sticky; bottom: 20px; background: var(--m-surface); box-shadow: 0 0 0 10px var(--m-paper), 0 -18px 28px 10px var(--m-paper); }
+
+/* Once a chat starts, the photo and title settle into this pill at the top right, with the control to end the chat. */
+.site-frame .ask-chip {
+  position: fixed; top: 22px; right: max(var(--m-pad), calc((100vw - 1360px) / 2 + var(--m-pad))); z-index: 41;
+  display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 5px 5px 5px 6px; border-radius: 999px;
+  background: rgb(255 255 255 / 0.82); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid var(--m-line);
+}
+.site-frame .ask-chip-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+.site-frame .ask-chip h1 { font-size: 1rem; letter-spacing: -0.04em; line-height: 1; white-space: nowrap; }
+.site-frame .ask-chip button { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 14px 0 10px; margin-left: 4px; border-radius: 999px; background: var(--m-ink); color: #fff; font-size: 0.875rem; font-weight: 500; letter-spacing: 0; white-space: nowrap; transition: background 200ms; }
+.site-frame .ask-chip button:hover { background: var(--m-black); }
+
+/* The pieces that travel between the welcome layout and the chat layout (Ask.tsx, withTransition). */
+.site-frame .ask-welcome .avatar, .site-frame .ask-chip-avatar { view-transition-name: ask-avatar; }
+.site-frame .ask-welcome h1, .site-frame .ask-chip h1 { view-transition-name: ask-title; }
+.site-frame .ask-form { view-transition-name: ask-form; }
 .site-frame .ask-welcome { text-align: center; }
 .site-frame .ask-welcome h1 { font-size: clamp(2.8rem, 10vw, 5.5rem); line-height: 1; }
 .site-frame .ask-subtitle { margin: 18px auto 0; max-width: 30rem; color: var(--m-muted); }
@@ -347,7 +367,13 @@ body { background: var(--m-paper); }
 .site-frame .answer-sources span { color: var(--m-muted); }
 .site-frame .answer-sources a { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 999px; background: var(--m-surface); }
 .site-frame .answer-sources a:hover { background: var(--m-ink); color: #fff; }
-.site-frame .thinking-line { color: var(--m-muted); font-size: 0.95rem; }
+.site-frame .chat-message { animation: m-rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+/* Three dots that rise in turn while a reply is on its way. */
+.site-frame .thinking-line { display: flex; gap: 6px; padding: 6px 0; }
+.site-frame .thinking-line span { width: 7px; height: 7px; border-radius: 50%; background: var(--m-faint); animation: m-dot 1.2s ease-in-out infinite; }
+.site-frame .thinking-line span:nth-child(2) { animation-delay: 150ms; }
+.site-frame .thinking-line span:nth-child(3) { animation-delay: 300ms; }
+@keyframes m-dot { 0%, 60%, 100% { transform: none; background: var(--m-faint); } 30% { transform: translateY(-5px); background: var(--m-ink); } }
 
 /* Know Me */
 .site-frame .knowme-main { max-width: 600px; padding-top: clamp(40px, 8vw, 88px); padding-bottom: 88px; padding-inline: 20px; }
@@ -419,6 +445,9 @@ body { background: var(--m-paper); }
 @media (prefers-reduced-motion: reduce) { .site-frame[data-theme]::after { animation: none; } }
 
 @media (max-width: 760px) {
+  .site-frame .ask-chip { top: 14px; }
+  .site-frame .ask-chip h1, .site-frame .ask-chip button span { display: none; }
+  .site-frame .ask-chip button { padding: 0 10px; margin-left: 0; }
   :root { --m-pad: 20px; }
   .site-frame .header-inner { min-height: 72px; }
   .site-frame .menu-button { top: 14px; }
@@ -440,3 +469,7 @@ body { background: var(--m-paper); }
   html { scroll-behavior: auto; }
   .site-frame *, .site-frame *::before, .site-frame *::after { animation: none !important; transition: none !important; }
 }
+
+/* View-transition timing for the Ask page: the photo, title and input glide; everything else cross-fades. */
+::view-transition-group(ask-avatar), ::view-transition-group(ask-title), ::view-transition-group(ask-form) { animation-duration: 1400ms; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 700ms; }
