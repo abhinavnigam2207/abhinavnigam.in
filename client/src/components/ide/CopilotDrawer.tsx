@@ -49,7 +49,7 @@ export function CopilotDrawer({ isOpen, onClose }: CopilotDrawerProps) {
     const trimmed = q.trim();
     if (!trimmed || askMutation.isPending) return;
 
-    const prior = messages.slice(-6).map((m) => ({ role: m.role, content: m.content }));
+    const prior = messages.slice(-20).map((m) => ({ role: m.role, content: m.content.slice(0, 4000) }));
     setMessages((prev) => [...prev, { role: "user", content: trimmed }]);
     setInputVal("");
     askMutation.mutate({ question: trimmed, history: prior });

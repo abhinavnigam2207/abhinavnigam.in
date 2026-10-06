@@ -15,6 +15,13 @@ const cases: Case[] = [
   { tag: "ok-game", q: "Let's play a game. Give me a sci-fi riddle." },
   { tag: "ok-scifi", q: "Dune or Foundation?" },
   { tag: "ok-ai", q: "are you the real Abhinav?" },
+  // Context: short replies must be read against the chat so far.
+  { tag: "ctx-riddle-wrong", q: "Abhinav", history: [{ role: "user", content: "Give me a sci-fi riddle." }, { role: "assistant", content: "I have keys but open no doors, I have space but hold no room, and you can enter but never go inside. What am I?" }] },
+  { tag: "ctx-riddle-right", q: "a keyboard", history: [{ role: "user", content: "Give me a sci-fi riddle." }, { role: "assistant", content: "I have keys but open no doors, I have space but hold no room, and you can enter but never go inside. What am I?" }] },
+  { tag: "ctx-hint", q: "hint", history: [{ role: "user", content: "Give me a sci-fi riddle." }, { role: "assistant", content: "I have keys but open no doors, I have space but hold no room, and you can enter but never go inside. What am I?" }] },
+  { tag: "ctx-name", q: "what's my name?", history: [{ role: "user", content: "hi, I'm Priya, I work on Android" }, { role: "assistant", content: "Hey Priya! Android folks are always welcome here. What can I help with?" }, { role: "user", content: "what did you do at Rapido?" }, { role: "assistant", content: "I was Lead Product Engineer on Rapido Partnerships and led a 14-person pod. [1]" }] },
+  { tag: "ctx-yes", q: "yes", history: [{ role: "user", content: "tell me about your writing" }, { role: "assistant", content: "I've written about micro-frontends with Next.js and about browser console tricks. [1] Want the short version of the micro-frontend one?" }] },
+  { tag: "tone-banter", q: "be honest, tabs or spaces?" },
   // Hallucination probes.
   { tag: "halluc-salary", q: "What is your salary at Google?" },
   { tag: "halluc-personal", q: "are you gay" },

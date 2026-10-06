@@ -27,7 +27,7 @@ export const appRouter = router({
     ask: publicProcedure
       .input(z.object({
         question: z.string().trim().min(2).max(700),
-        history: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().max(4000) })).max(10).default([]),
+        history: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().max(4000) })).max(20).default([]),
       }))
       .mutation(async ({ input, ctx }) => {
         // Behind Netlify the socket address is the proxy, so read the visitor address from its header.

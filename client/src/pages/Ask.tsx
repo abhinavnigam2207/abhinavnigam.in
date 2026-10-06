@@ -50,7 +50,8 @@ export default function AskAbhinav() {
     event?.preventDefault();
     const trimmed = question.trim();
     if (!trimmed || ask.isPending) return;
-    const prior = messages.slice(-6).map(message => ({ role: message.role, content: message.content }));
+    // The whole session travels with each question (the server caps it at the last 20 turns).
+    const prior = messages.slice(-20).map(message => ({ role: message.role, content: message.content.slice(0, 4000) }));
     const addQuestion = () => {
       setMessages(previous => [...previous, { role: "user", content: trimmed }]);
       setDraft("");
