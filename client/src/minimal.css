@@ -445,6 +445,9 @@ body { background: var(--m-paper); }
 @media (prefers-reduced-motion: reduce) { .site-frame[data-theme]::after { animation: none; } }
 
 @media (max-width: 760px) {
+  /* Phones: back-to-top sits bottom right, under the thumb. It hides during a chat, where the send button lives there. */
+  .site-frame .to-top { left: auto; right: 16px; bottom: 18px; }
+  .site-frame:has(.ask-content.has-messages) .to-top { display: none; }
   .site-frame .ask-chip { top: 14px; }
   .site-frame .ask-chip h1, .site-frame .ask-chip button span { display: none; }
   .site-frame .ask-chip button { padding: 0 10px; margin-left: 0; }
