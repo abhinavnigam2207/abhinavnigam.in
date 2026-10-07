@@ -35,7 +35,20 @@ All generated at build time by `scripts/prerender.ts`, so they stay in step with
 - **`robots.txt`**: allows all crawlers and names the main AI crawlers; blocks `/api/`.
 - **Headers** (`netlify.toml`): HSTS, `nosniff`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, and a Content-Security-Policy that allows scripts from this site only.
 
-Unverified until a deploy: the CSP against the live site, redirect behaviour, 404 status, and response times.
+### Build gate: `pnpm check:seo`
+
+`scripts/check-seo.ts` runs inside `pnpm build`, after the prerender. It reads the built HTML and stops the build (so Netlify does not deploy) if any of these fail:
+
+- Site files: `robots.txt` points to the sitemap, blocks nothing site-wide and names the main AI crawlers; `sitemap.xml` has a `lastmod` per URL and every URL has a built page; `llms.txt` and `llms-full.txt` exist and link only to built pages; `404.html` is `noindex`; icons and the social image exist.
+- Every page: `lang`, viewport, robots meta, canonical on the production domain, no leftover template references.
+- Every indexable page: in the sitemap, self-canonical, title 30–60 characters and unique, description 120–160 characters and unique, Open Graph and Twitter tags, exactly one `<h1>` and one `<main>`, at least 60 words of text without JavaScript, alt on every image, valid JSON-LD, no broken internal links.
+- Home: `WebSite` and `Person` structured data with name, URL, image, job title, employer, description, 3+ `sameAs` links and 5+ `knowsAbout` entries.
+- Every sitemap page is linked from the home page.
+- Main JS at most 400 kB and main CSS at most 90 kB.
+
+Pages under 150 words are reported as thin-content warnings; they do not fail the build.
+
+Unverified until a deploy: redirect behaviour on the custom domain, and response times.
 
 ## Ask guardrails
 

@@ -13,7 +13,7 @@ export const pageMeta = {
     description: "The principles and ideas Abhinav Nigam, Senior Software Engineer at Google, works by: notes on software, teams and how good engineering gets done.",
   },
   bucketList: {
-    title: "Bucket List | Abhinav Nigam",
+    title: "Bucket List and Experiences | Abhinav Nigam",
     description: "Things Abhinav Nigam has done outside of work: memorable experiences, places explored and moments worth keeping, collected in one list.",
   },
   googleRefer: {
