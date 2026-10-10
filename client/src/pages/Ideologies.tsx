@@ -1,5 +1,5 @@
-import { Lightbulb } from "lucide-react";
-import { PageIntro, PageMeta, SiteShell } from "@/components/site/SiteShell";
+import { PageIntro, PageMeta, SectionHeading, SiteShell } from "@/components/site/SiteShell";
+import { ideologies } from "@/content/ideologies";
 import { pageMeta } from "@/content/pageMeta";
 
 export default function Ideologies() {
@@ -8,14 +8,22 @@ export default function Ideologies() {
       <PageMeta {...pageMeta.ideologies} />
       <main className="wrap page-main">
         <PageIntro eyebrow="Principles & ideas" title="What I believe about building.">
-          <p>A space for Abhinav’s own notes on software, teams, and the way we work.</p>
+          <p>What changes when you move from writing code to leading the people who write it. Twenty things I've learned, ten for each seat.</p>
         </PageIntro>
-        <section className="empty-state">
-          <span className="empty-icon"><Lightbulb size={20} /></span>
-          <h2>The list is taking shape.</h2>
-          <p>No entries have been added yet. This page is ready for Abhinav’s own principles and ideas.</p>
-          <a className="inline-link" href="mailto:abhinavnigam2207@gmail.com?subject=Ideologies%20for%20the%20portfolio">Suggest an update <span aria-hidden="true">↗</span></a>
-        </section>
+        {ideologies.map(group => (
+          <section className="content-section principles" key={group.id} id={group.id}>
+            <SectionHeading eyebrow="Ten truths" title={group.title}>{group.audience}</SectionHeading>
+            <ol className="row-list">
+              {group.points.map(([lead, body], index) => (
+                <li className="row" key={lead}>
+                  <div className="row-meta">{String(index + 1).padStart(2, "0")}</div>
+                  <div className="row-body"><h3>{lead}</h3><p>{body}</p></div>
+                </li>
+              ))}
+            </ol>
+            <p className="statement">{group.closing}</p>
+          </section>
+        ))}
       </main>
     </SiteShell>
   );

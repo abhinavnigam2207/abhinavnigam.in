@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { subdomainRootPath } from "./edge-functions/host-root";
 import { handler } from "./functions/api";
 
@@ -44,7 +44,9 @@ describe("Netlify Express function", () => {
     expect(response.headers["cache-control"]).toBe("no-store");
   });
 
-  it("does not accept referrals until Microsoft storage is authorized", async () => {
+  it("does not accept referrals until the sheet script is configured", async () => {
+    vi.stubEnv("REFERRAL_SCRIPT_URL", "");
+    vi.stubEnv("REFERRAL_SCRIPT_SECRET", "");
     const status = await callApi("GET", "/api/referrals/status");
     expect(status.statusCode).toBe(200);
     expect(JSON.parse(status.body).ready).toBe(false);
@@ -52,7 +54,7 @@ describe("Netlify Express function", () => {
 
     const submission = await callApi("POST", "/api/referrals");
     expect(submission.statusCode).toBe(503);
-    expect(JSON.parse(submission.body).error).toContain("authorized Microsoft");
     expect(submission.headers["cache-control"]).toBe("no-store");
+    vi.unstubAllEnvs();
   });
 });

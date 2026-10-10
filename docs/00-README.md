@@ -25,10 +25,12 @@ Docs are the source of truth. Scope changes edit these first, then code.
 | 2026-10-05 | Header is brand plus a Menu button that opens a full-screen menu | Locked |
 | 2026-10-05 | Public content comes only from `client/src/content/site.ts`, which mirrors the CV | Locked |
 | 2026-10-05 | Phone number is not shown publicly | Locked (default taken) |
-| — | Referral destination: Google Sheets + Drive, or Microsoft Excel + OneDrive | **Open, client to confirm** |
+| 2026-10-11 | Referral destination: the client's Google Sheet, with resumes in his Drive, written by an Apps Script web app attached to the sheet. Setup in `docs/referral-sheet/README.md` | Locked |
+| 2026-10-11 | Resume limit 4 MB (was 5): the file travels base64 inside a Netlify function request, capped at 6 MB | Locked |
 | 2026-10-05 | Ask runs on Groq, model `openai/gpt-oss-120b`, key in `GROQ_API_KEY` (local `.env`, Netlify env var in production) | Locked |
 | 2026-10-05 | Ask sends every source when keyword retrieval finds nothing, and lists only the sources the answer cites | Locked |
-| — | Ideologies and bucket-list content | **Open, client to supply** |
+| 2026-10-11 | Ideologies page holds the client's 20 principles (manager, senior engineer); Observe.ai and Rapido rows on Home get a fold-out with full detail; both feed the Ask knowledge set | Locked |
+| — | Bucket-list content | **Open, client to supply** |
 | — | OG/social image hosted on own domain | **Open, asset needed** |
 | — | Client sign-off on every metric and claim shown | **Open** |
 | — | Client check of employer policy for Google metrics and the referral page | **Open** |

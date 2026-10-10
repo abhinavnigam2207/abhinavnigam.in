@@ -19,7 +19,7 @@ React 19, TypeScript, Vite 7, wouter, Tailwind v4 (reset and utilities only on t
 |---------|-----|----------|
 | Google Fonts | Poppins, Inter | System sans stack in the font tokens |
 | Groq (`openai/gpt-oss-120b`, OpenAI-compatible API) | Ask answers | Ask page shows a clear unavailable message with an email link |
-| Spreadsheet + file storage (open) | Referral intake | Form is disabled and points to email |
+| Google Sheet + Drive via Apps Script web app (free) | Referral intake | Without `REFERRAL_SCRIPT_URL` and `REFERRAL_SCRIPT_SECRET` the form is disabled and points to email |
 | Netlify | Hosting, function, edge | Dockerfile and Express static server already in the repo |
 
 ## Search, answer-engine and AI visibility
@@ -28,7 +28,7 @@ All generated at build time by `scripts/prerender.ts`, so they stay in step with
 
 - **Titles and descriptions**: one source, `client/src/content/pageMeta.ts`, used by pages and the prerender.
 - **Canonical and `og:url`** on every page. `/ask` and `/knowme` canonicalise to their subdomains. `/experiences` canonicalises and 301-redirects to `/bucket-list`.
-- **Robots meta**: indexable pages allow large image previews and full snippets. Ideologies, bucket list, `/ide` and 404 are `noindex` until they have real content.
+- **Robots meta**: indexable pages allow large image previews and full snippets. `/ide`, `/experiences` and 404 are `noindex`.
 - **Structured data (JSON-LD)**: `WebSite` and `ProfilePage` with a full `Person` on Home; `Blog` with `BlogPosting` entries; `FAQPage` on the referral page (questions are visible on the page); `BreadcrumbList` on inner pages.
 - **`sitemap.xml`** with `lastmod`, indexable main-domain pages only.
 - **`llms.txt` and `llms-full.txt`**: plain-text profile for AI assistants, built from `content/site.ts`.
@@ -77,7 +77,7 @@ Limits: no chatbot is unbreakable. History comes from the browser and can be for
 
 ## Open questions
 
-1. Referral destination (Sheets or Excel) and who owns the credentials.
+1. Referral: confirmation email to the candidate (not built).
 2. LLM provider and monthly spend cap.
 3. Durable rate limit store for Ask on serverless.
 4. ~~Removal of unused platform code~~ — done, see Implementation Plan phase 5.

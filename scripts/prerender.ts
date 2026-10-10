@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import superjson from "superjson";
 import { pageMeta } from "../client/src/content/pageMeta";
+import { ideologies } from "../client/src/content/ideologies";
 import { referralFaq } from "../client/src/content/referralFaq";
 import { blogPosts, experiences, featuredWork, profile, skillGroups } from "../client/src/content/site";
 
@@ -94,6 +95,7 @@ function llmsTxt(full: boolean) {
     "## Pages",
     `- [Portfolio](${SITE}/): role, experience, selected work, skills and contact`,
     `- [Writing](${SITE}/blog/): articles on frontend architecture and JavaScript`,
+    `- [Ideologies](${SITE}/ideologies/): his principles for engineering managers and senior engineers`,
     `- [Google referral](${SITE}/google-refer/): how to request a Google referral from Abhinav`,
     `- [Ask Abhinav](${ASK}): AI assistant that answers questions about his work`,
     `- [All links](${KNOWME}): profiles and contact`,
@@ -107,7 +109,10 @@ function llmsTxt(full: boolean) {
   ];
   if (full) {
     lines.push("", "## Experience");
-    for (const item of experiences) lines.push("", `### ${item.company} — ${item.role} (${item.dates})`, `${item.team}. ${item.summary}`, `Outcome: ${item.outcome}`, `Technologies: ${item.technologies.join(", ")}`);
+    for (const item of experiences) {
+      lines.push("", `### ${item.company} — ${item.role} (${item.dates})`, `${item.team}. ${item.summary}`, `Outcome: ${item.outcome}`, `Technologies: ${item.technologies.join(", ")}`);
+      for (const group of item.details ?? []) lines.push("", `${group.title}:`, ...group.points.map(point => `- ${point}`));
+    }
     lines.push("", "## Selected work");
     for (const item of featuredWork) lines.push("", `### ${item.title} (${item.period})`, item.description, `Result: ${item.result}`);
     lines.push("", "## Skills");
@@ -115,6 +120,8 @@ function llmsTxt(full: boolean) {
     lines.push("", "## Education", "- B.Tech, Computer Science, Guru Gobind Singh Indraprastha University, 2009–2013");
     lines.push("", "## Articles");
     for (const post of blogPosts) lines.push("", `### [${post.title}](${post.url})`, `${post.date}. ${post.description}`);
+    lines.push("", "## Ideologies");
+    for (const group of ideologies) lines.push("", `### ${group.title}`, group.audience, "", ...group.points.map(([lead, body], index) => `${index + 1}. ${lead} ${body}`), "", group.closing);
     lines.push("", "## Google referral FAQ");
     for (const item of referralFaq) lines.push("", `### ${item.question}`, item.answer);
   } else {

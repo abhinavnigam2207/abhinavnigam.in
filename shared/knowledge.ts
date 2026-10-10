@@ -1,3 +1,5 @@
+import { ideologies } from "../client/src/content/ideologies";
+
 export type KnowledgeSource = {
   id: string;
   title: string;
@@ -27,7 +29,7 @@ export const knowledgeSources: KnowledgeSource[] = [
     title: "Abhinav Nigam CV — Rapido",
     url: "/#experience",
     category: "CV",
-    content: "At Rapido from September 2020 to February 2023, Abhinav was Lead Product Engineer on Rapido Partnerships and led a 14-person pod. He introduced a React SLA dashboard; critical-ride rejection decreased from 19% to 7%. He improved the main website's first interactive time from 1.7 seconds to 0.8 seconds. Order batching in multiple cities increased rides per rider by 40% in those cities. Technologies included JavaScript, React, Next.js, and Angular.",
+    content: "At Rapido from September 2020 to February 2023, Abhinav was Lead Product Engineer. He led two pods: the 14-person Captain Acquisition pod and the 8-person Partnerships pod. He introduced a React SLA dashboard; critical-ride rejection decreased from 19% to 7%. He improved the main website's first interactive time from 1.7 seconds to 0.8 seconds. Order batching in multiple cities increased rides per rider by 40% in those cities. Production bugs in his pod fell from 71 to 9. Technologies included JavaScript, React, Next.js, and Angular.",
   },
   {
     id: "cv-jio",
@@ -72,7 +74,7 @@ export const knowledgeSources: KnowledgeSource[] = [
     title: "Google referral page",
     url: "/google-refer",
     category: "Site",
-    content: "Abhinav's website has a Google referral page at /google-refer. A candidate shares their name, email, optional phone, current company, previous companies, the link to the job they plan to apply for, and a resume (PDF or Word, up to 5 MB). Abhinav reviews requests personally and gets back if there is a fit. A referral is not guaranteed. Until the form is open, candidates can email the role link and resume to abhinavnigam2207@gmail.com.",
+    content: "Abhinav's website has a Google referral page at /google-refer. A candidate shares their name, email, optional phone, current company, previous companies, the link to the job they plan to apply for, and a resume (PDF or Word, up to 4 MB). Abhinav reviews requests personally and gets back if there is a fit. A referral is not guaranteed. If the form is unavailable, candidates can email the role link and resume to abhinavnigam2207@gmail.com.",
   },
   {
     id: "site-links",
@@ -81,4 +83,33 @@ export const knowledgeSources: KnowledgeSource[] = [
     category: "Site",
     content: "Abhinav's links: GitHub github.com/abhinavnigam2207, LinkedIn linkedin.com/in/abhinavnigam2207, articles on DEV.to at dev.to/abhinavnigam2207 and on Medium at medium.com/@abhinavnigam2207, email abhinavnigam2207@gmail.com. The website has a writing page at /blog, an ideologies page at /ideologies, and a page with all links at /knowme.",
   },
+  {
+    id: "cv-observe-platform",
+    title: "Observe.ai in detail — component library, design system, BFF",
+    url: "/#experience",
+    category: "CV",
+    content: "At Observe.ai Abhinav split his time between the Platform team, which improves developer productivity for the main web app and org-wide admin configuration, and APEX, a React application for contact-center quality-assurance workflows. It was his move from a B2C to a B2B SaaS company, where he learned SaaS priorities and build-versus-buy trade-offs. Web component library: to raise UI development velocity he designed and built it from scratch. Components were first imported straight from Material UI; he wrapped them in a shared folder, then moved them to a separate repository. For hosting he explored a private npm registry (paid) and built a proof of concept on Verdaccio (open source, but permissions and a database would be self-managed), then chose AWS CodeArtifact because Observe.ai already ran on AWS, combined with Jenkins jobs and AWS IAM for authorization. Material UI was the base and Rollup the bundler, so components are tree-shakable. Nazca design system: he led the revamp on top of that library, managing cross-team collaboration, delivery and conflict resolution, with no bugs or rollbacks. Team hierarchy cascader: built single-handedly; team selection changed from a dropdown to a hierarchy cascader where selecting a team includes everything below it; a shared component used in 10 to 12 places. Backend-for-Frontend microservice: he introduced and architected it because the same heavy APIs were reused in many places; it adds a data-massaging layer, proxying and caching, moved third-party whitelisting for client compliance out of nginx configuration, and gave the frontend a place to write logs. Retention and deletion policy UI: users set how long a conversation is kept before it is deleted or moved to cold storage; monthly MongoDB storage cost fell 14%. Security: yarn audit issues went from critical 9 to 0, high 28 to 6, moderate 10 to 3, low 2 to 0. Delivery: for a project due in 1.5 months he managed the 8-person team while coding, handling leave, work allocation, the production-support rota, MVP scope reduction and architecture.",
+  },
+  {
+    id: "cv-observe-culture",
+    title: "Observe.ai in detail — team culture, mentoring, processes",
+    url: "/#experience",
+    category: "CV",
+    content: "Beyond code at Observe.ai, Abhinav worked on developer culture. He was heavily involved in PR code reviews, peer coding sessions, hiring and onboarding engineers, and product discussions with product managers. He introduced and ran UI architecture guild meetings to break problems into solvable modules, and UI learning meetings where teammates shared what they learned every two weeks. He wrote the most Confluence documentation on the team so people did not have to ask each other for procedures. He mentored teammates through pair coding and debugging. He created processes: PR review guidelines, Jenkins PR checks for size, SonarQube integration, a test-case count pipeline, a Bitbucket pipeline for restricted merges to master, a rule of two reviews before merge, and a high-level design in Confluence before presenting to the guild. He managed and served on the UI on-call support rota: production issues, backlog bugs, deployments, post-deployment monitoring and alerts. Teamwork example: when he was busy managing an urgent delivery, a junior teammate picked up the component library pipeline work, came with written questions, and Abhinav helped him finish it. He was runner-up in the company hackathon.",
+  },
+  {
+    id: "cv-rapido-pods",
+    title: "Rapido in detail — Captain Acquisition and Partnerships pods",
+    url: "/#experience",
+    category: "CV",
+    content: "Captain Acquisition pod (14 members): Abhinav led the pod that acquires a captain (driver) at Rapido, from installing the app to the first ride, covering authentication, KYC, referral, learning modules and the lead-creation SDK. It owned the Backend-for-Frontend for all driver-app APIs at a scale of 8.5 million captains, with about 3.1 lakh (310,000) captain registrations and 1.53 lakh (153,000) activations. He reduced the production bug count from 71 to 9 using a task-batching technique, moving the pod from the most bugs in the company to the third fewest, and received the Rapido Spot Award. He led the architecture and extraction of the KYC service from the monolith to a standalone microservice, and fixed duplicate records in the data-ingestion service with a colleague, writing a backfill script. Partnerships pod (8 members): he grew into a full-stack engineer leading Rapido Partnerships, a vertical generating 25% of revenue, which handles tie-ups with delivery providers such as Swiggy, Zomato and Dotpe. He set up the React SLA dashboard (rejection 19% to 7%) and introduced React and a Next.js starter kit to the company, architected the Rewards and Penalty dashboard to improve captain quality, improved the main website's first interactive time from 1.7 to 0.8 seconds, raised the website from rank 3 to rank 1 on Google search, and migrated domain-specific collections from the main MongoDB to a dedicated B2B MongoDB, for which he received a spot award.",
+  },
+  // Abhinav's own principles, as published on /ideologies.
+  ...ideologies.map((group): KnowledgeSource => ({
+    id: `ideologies-${group.id}`,
+    title: `Abhinav's ideologies and beliefs — ${group.title.toLowerCase()}`,
+    url: "/ideologies",
+    category: "Site",
+    content: `Abhinav's principles, philosophy and advice on leadership and management, ${group.title.toLowerCase()}: ${group.points.map(([lead, body], index) => `${index + 1}. ${lead} ${body}`).join(" ")} ${group.closing} ${group.audience}`,
+  })),
 ];

@@ -6,33 +6,33 @@ Draft. Phase 1 changes no backend behaviour.
 
 No database. Two data stores:
 
-### Referral row (spreadsheet, destination open)
+### Referral row (Google Sheet, first tab)
 
 | Column | Type | Notes |
 |--------|------|-------|
-| submitted_at | ISO datetime | Server time |
+| Submitted at | date and time | Set by the script, spreadsheet time zone |
 | name | text | Required |
 | email | text | Required |
 | phone | text | Optional |
-| current_company | text | From dropdown, or free text when "Other" |
+| Current company | text | From dropdown |
 | previous_companies | text | Comma-separated |
 | job_link | URL | Required |
 | resume_url | URL | Link to the stored file |
-| status | text | `new` by default, edited by Abhinav |
+| Status | text | `New` by default, edited by Abhinav |
 
-Resume file: PDF, DOC, or DOCX up to 5 MB, stored in a private folder next to the sheet.
+Resume file: PDF, DOC, or DOCX up to 4 MB, stored in the private Drive folder "Google referral resumes". Script and setup: `docs/referral-sheet/`.
 
 ### Ask knowledge (`shared/knowledge.ts`)
 
-`{ id, title, url, category: "CV" | "Article", date?, content }`. To grow with full CV, all articles, ideologies, and an FAQ.
+`{ id, title, url, category: "CV" | "Article" | "Site", date?, content }`. Holds CV summaries, detailed Observe.ai and Rapido entries, articles, site pages and the ideologies (generated from `client/src/content/ideologies.ts`). Every source goes into each prompt; retrieval sets the order.
 
 ## API contracts
 
 | Method | Path | Now | Target |
 |--------|------|-----|--------|
 | GET | `/api/health` | `{ status: "ok" }` | same |
-| GET | `/api/referrals/status` | `{ ready: false, message }` | `ready: true` once the destination is configured |
-| POST | `/api/referrals` | 503 | multipart form, validates, stores file, appends row, returns `{ ok: true }` |
+| GET | `/api/referrals/status` | `{ ready, message }`; `ready` is true when both referral env vars are set | same |
+| POST | `/api/referrals` | JSON `{ name, email, phone, currentCompany, previousCompanies[], jobLink, consent, website, resume: { name, data(base64) } }` → `{ ok: true }`, or `{ error }` with 400 (invalid), 429 (rate limit), 502 (sheet script failed), 503 (not configured) | same |
 | POST | `/api/trpc/assistant.ask` | `{ answer, sources[] }`, 12 requests per 5 minutes per IP in memory | same shape, durable rate limit |
 
 ## Auth
@@ -41,5 +41,5 @@ None for visitors. The spreadsheet and file folder are private to Abhinav. Serve
 
 ## Abuse controls (target)
 
-- Referral: bot check on submit, 5 MB limit, MIME and extension check server-side.
+- Referral (built): honeypot field, 5 submissions per hour per IP in memory, 4 MB limit, extension and file-signature check server-side, shared secret between server and script, leading `= + - @` neutralised before writing to the sheet.
 - Ask: durable per-IP limit and a monthly spend cap.

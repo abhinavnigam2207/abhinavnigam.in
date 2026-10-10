@@ -35,7 +35,8 @@ Reference copy: `D:\Development\WEb-download\reinostudio.com.br`. We borrow its 
 
 | Role | Family | Size | Weight | Tracking |
 |------|--------|------|--------|----------|
-| Hero statement | Poppins | `clamp(2.5rem, 6.6vw, 5.5rem)`, line-height 1.1 | 600 | -0.06em |
+| Hero statement | Poppins | `clamp(2.1rem, 5vw, 4.25rem)`, line-height 1.1 | 600 | -0.055em |
+| Carousel result | Poppins | `clamp(1.7rem, 4.4vw, 3.6rem)`, line-height 1.08 | 600 | -0.055em |
 | Section statement (h2) | Poppins | `clamp(2rem, 5vw, 4rem)`, line-height 1.12 | 600 | -0.05em |
 | Capability lines | Poppins, uppercase | `clamp(1.9rem, 6vw, 5rem)` | 500 | -0.03em |
 | Item title (h3) | Poppins | 1.25–1.5rem | 600 | -0.03em |

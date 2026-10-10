@@ -34,8 +34,10 @@ Header on every full page: brand and a Menu button. Menu opens a full-screen lis
 | Page | Empty | Loading | Success | Error |
 |------|-------|---------|---------|-------|
 | Blog | n/a (static) | n/a | List of posts | n/a |
-| Ideologies, Bucket list | "List is taking shape" message | n/a | List | n/a |
-| Referral | Form | Status check on load | Confirmation message | Field errors inline; form disabled with email fallback when the destination is not connected |
+| Ideologies | n/a (static) | n/a | Two numbered lists of ten principles | n/a |
+| Bucket list | "List is taking shape" message | n/a | List | n/a |
+| Home experience rows | Summary, outcome, stack | n/a | Observe.ai and Rapido have a closed "The full story" fold-out | n/a |
+| Referral | Form beside a fold-out FAQ (stacked under 1100px) | Status check on load; button reads "Sending…" while submitting | Thank-you message, form cleared | Field errors inline; server message shown on failure; form disabled with email fallback when the destination is not connected |
 | Ask | Heading, search box, four suggestions | "Looking through the notes" | Answer with sources | Inline message that the service is unavailable |
 | Know Me | n/a | n/a | Link list | n/a |
 
@@ -43,7 +45,7 @@ Header on every full page: brand and a Menu button. Menu opens a full-screen lis
 
 - Header nav: in-page anchors on Home, page links elsewhere.
 - Ask: suggestion click or Enter submits; Shift+Enter adds a line.
-- Referral: submit validates file type (PDF, DOC, DOCX) and size (5 MB) before any request.
+- Referral: submit validates file type (PDF, DOC, DOCX) and size (4 MB) before any request. Previous companies are picked from a dropdown and shown as removable chips.
 
 ## Edge cases
 

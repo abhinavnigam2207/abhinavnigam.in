@@ -1,4 +1,4 @@
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { experiences, featuredWork, profile, skillGroups } from "@/content/site";
 import { Lens } from "@/components/site/Lens";
@@ -78,23 +78,34 @@ function WorkSlider() {
   );
 }
 
-// Every few seconds two company names flip out, trade places and flip back in.
+// Company logos, in career order. `size` evens out how large each mark looks: wide wordmarks are set a little
+// smaller and the round Jio badge a little larger, so no logo dominates the grid.
+const employerLogos = [
+  { name: "Google", src: "/logos/google.png", width: 502, size: 1 },
+  { name: "Observe.ai", src: "/logos/observe-ai.png", width: 943, size: 0.7 },
+  { name: "Rapido", src: "/logos/rapido.png", width: 459, size: 0.9 },
+  { name: "Reliance Jio", src: "/logos/jio.png", width: 160, size: 1.5 },
+  { name: "IHS Markit", src: "/logos/ihs-markit.png", width: 588, size: 1 },
+  { name: "MetaDesign Solutions", src: "/logos/metadesign.png", width: 636, size: 1 },
+];
+
+// Every few seconds two company logos flip out, trade places and flip back in.
 function EmployerGrid() {
-  const [names, setNames] = useState(() => experiences.map(item => item.company));
+  const [logos, setLogos] = useState(employerLogos);
   const [flipping, setFlipping] = useState<number[]>([]);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const count = experiences.length;
+    const count = employerLogos.length;
     let swap = 0;
     const timer = window.setInterval(() => {
       if (document.hidden) return;
       const a = Math.floor(Math.random() * count);
       const b = (a + 1 + Math.floor(Math.random() * (count - 1))) % count;
       setFlipping([a, b]);
-      // Swap while both names are edge-on, so the change is never seen.
+      // Swap while both logos are edge-on, so the change is never seen.
       swap = window.setTimeout(() => {
-        setNames(current => { const next = [...current]; [next[a], next[b]] = [next[b], next[a]]; return next; });
+        setLogos(current => { const next = [...current]; [next[a], next[b]] = [next[b], next[a]]; return next; });
         setFlipping([]);
       }, 400);
     }, 3000);
@@ -103,7 +114,13 @@ function EmployerGrid() {
 
   return (
     <ul className="employers">
-      {names.map((name, index) => <li key={index}><span className={flipping.includes(index) ? "is-flipping" : undefined}>{name}</span></li>)}
+      {logos.map((logo, index) => (
+        <li key={index}>
+          <span className={flipping.includes(index) ? "is-flipping" : undefined}>
+            <img src={logo.src} alt={logo.name} width={logo.width} height={160} loading="lazy" style={{ "--logo-size": logo.size } as React.CSSProperties} />
+          </span>
+        </li>
+      ))}
     </ul>
   );
 }
@@ -165,6 +182,17 @@ export default function Home() {
                   <p>{item.summary}</p>
                   <p className="outcome">{item.outcome}</p>
                   <p className="stack">{item.technologies.join(" · ")}</p>
+                  {item.details && (
+                    <details className="row-details">
+                      <summary>The full story <ChevronDown size={16} aria-hidden="true" /></summary>
+                      {item.details.map(group => (
+                        <div key={group.title}>
+                          <h4>{group.title}</h4>
+                          <ul>{group.points.map(point => <li key={point}>{point}</li>)}</ul>
+                        </div>
+                      ))}
+                    </details>
+                  )}
                 </div>
               </article>
             ))}

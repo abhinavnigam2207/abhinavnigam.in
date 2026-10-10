@@ -10,7 +10,7 @@ export const pageMeta = {
   },
   ideologies: {
     title: "Engineering Principles | Abhinav Nigam",
-    description: "The principles and ideas Abhinav Nigam, Senior Software Engineer at Google, works by: notes on software, teams and how good engineering gets done.",
+    description: "Twenty principles from Abhinav Nigam, Senior Software Engineer at Google: ten for engineering managers and ten for senior engineers growing into leadership.",
   },
   bucketList: {
     title: "Bucket List and Experiences | Abhinav Nigam",

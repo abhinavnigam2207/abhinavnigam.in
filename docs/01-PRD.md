@@ -49,5 +49,5 @@ The previous build was a VS Code look-alike. It was visually busy, used very sma
 ## Risks
 
 - Employer policy: internal metrics and a referral page on a personal site. Client must confirm.
-- Thin content: three blog posts from 2020, empty ideologies and bucket list.
+- Thin content: three blog posts from 2020, empty bucket list.
 - Ask assistant cost and abuse without a durable rate limit.

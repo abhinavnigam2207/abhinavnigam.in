@@ -1,7 +1,7 @@
 import { ArrowRight, ArrowUp, ArrowUpRight } from "lucide-react";
 import { Link } from "wouter";
 import { profile } from "@/content/site";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const navItems = [
   { label: "Experience", href: "/#experience" },
@@ -41,6 +41,20 @@ export function PageMeta({ title, description }: { title: string; description: s
 
 export function SiteShell({ children, compact = false, portfolioLink = true, theme }: { children: React.ReactNode; compact?: boolean; portfolioLink?: boolean; theme?: string }) {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // The pages are prerendered, so the year in the HTML is the year of the last build. Write the visitor's current
+  // year over it once the page is running, so the footer rolls over on 1 January without a rebuild.
+  const yearRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (yearRef.current) yearRef.current.textContent = String(new Date().getFullYear());
+  }, []);
+
+  // Coming back with the browser's Back button restores the page as it was left, menu open. Close it then.
+  useEffect(() => {
+    const onShow = (event: PageTransitionEvent) => { if (event.persisted) setMenuOpen(false); };
+    window.addEventListener("pageshow", onShow);
+    return () => window.removeEventListener("pageshow", onShow);
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -85,7 +99,9 @@ export function SiteShell({ children, compact = false, portfolioLink = true, the
         )}
       {!compact && (
         <nav id="site-menu" className={`site-menu ${menuOpen ? "is-open" : ""}`} aria-label="Main navigation" hidden={!menuOpen}>
-          {navItems.map(item => <a key={item.label} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</a>)}
+          {/* A link to another page leaves the menu open: the browser swaps straight to the new page. Closing it first
+              flashed the current page for a moment. Only a jump within this page needs the menu closed. */}
+          {navItems.map(item => <a key={item.label} href={item.href} onClick={() => { if (item.href.startsWith(`${window.location.pathname}#`)) setMenuOpen(false); }}>{item.label}</a>)}
           <p><a href={`mailto:${profile.email}`}>{profile.email}</a></p>
         </nav>
       )}
@@ -99,7 +115,7 @@ export function SiteShell({ children, compact = false, portfolioLink = true, the
             {navItems.map(item => <a key={item.label} href={item.href}>{item.label}</a>)}
           </nav>
           <div className="footer-meta">
-            <span>© {new Date().getFullYear()} Abhinav Nigam</span>
+            <span>© <span ref={yearRef} suppressHydrationWarning>{new Date().getFullYear()}</span> Abhinav Nigam</span>
             <span>Personal site. Views are my own, not my employer's.</span>
             <span className="footer-links">
               <a href="/bucket-list">Bucket list</a>

@@ -14,11 +14,12 @@
 | `robots.txt`, `sitemap.xml` | Files served |
 | Prerender `/ide` | `pnpm build` steps pass |
 
-## Phase 2 — Referral backend (blocked: destination decision)
+## Phase 2 — Referral backend (built; goes live once the client deploys the sheet script)
 
-1. Server: multipart upload, validation, file store, row append.
-2. Bot check and confirmation email.
-3. Tests for validation and the happy path with a mocked destination.
+1. Done: server validation, hand-off to the sheet's Apps Script, file store, row append.
+2. Done: honeypot and rate limit. Open: confirmation email.
+3. Done: tests for validation and the happy path with a mocked destination.
+4. Client: follow `docs/referral-sheet/README.md`, then set the two Netlify variables.
 
 ## Phase 3 — Ask
 
