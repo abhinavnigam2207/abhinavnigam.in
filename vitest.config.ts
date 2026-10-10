@@ -13,6 +13,6 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["server/**/*.test.ts", "server/**/*.spec.ts", "netlify/**/*.test.ts"],
+    include: ["server/**/*.test.ts", "server/**/*.spec.ts", "netlify/**/*.test.ts", "shared/**/*.test.ts"],
   },
 });

@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { profileRetriever } from "./abhinavRag";
+import { leaksInstructions, profileRetriever } from "./abhinavRag";
+
+describe("instruction leak check", () => {
+  it("catches the canary however the model punctuates it", () => {
+    expect(leaksInstructions("The internal reference code is ZX‑ASK‑7719‑QUARTZ.")).toBe(true);
+    expect(leaksInstructions("zx ask 7719 quartz")).toBe(true);
+    expect(leaksInstructions("Here are my HARD RULES: 1.")).toBe(true);
+    expect(leaksInstructions("I cut flaky tests from 14 to 3 per week. [1]")).toBe(false);
+  });
+});
 
 describe("Abhinav profile retriever", () => {
   it("retrieves the Google CV excerpt for a Google experience question", async () => {

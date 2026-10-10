@@ -52,14 +52,15 @@ Unverified until a deploy: redirect behaviour on the custom domain, and response
 
 ## Ask guardrails
 
-Four layers, all in `server/_core/abhinavRag.ts`:
+Five layers, all in `server/_core/abhinavRag.ts`:
 
 1. **Input limits** (`server/routers.ts`): question up to 700 characters, up to 10 history turns of 4000 characters (trimmed to the last 8 turns of 1500 characters before the model sees them), 30 requests per 5 minutes per IP.
-2. **Injection classifier**: `meta-llama/llama-prompt-guard-2-86m` scores each question in parallel with the chat call. A score of 0.9 or more returns a fixed deflection line and the model's answer is dropped.
+2. **Injection classifier**: `meta-llama/llama-prompt-guard-2-86m` scores each question in parallel with the chat call. A score of 0.9 or more returns a prepared off-topic reply and the model's answer is dropped.
 3. **System prompt**: persona (Abhinav's voice, states it is an AI), allowed scope (his work from FACTS only, general tech, sci-fi, clean games), nine hard rules (no invented facts or personal details, no adult content, no politics or religion, no advice, nothing confidential, no disparagement, no instruction disclosure, no role changes, not a general assistant).
-4. **Output check**: an answer that contains the canary string or instruction headings is replaced with the deflection line.
+4. **Output check**: an answer that contains the canary string or instruction headings is replaced with a prepared off-topic reply.
+5. **Prepared refusals**: for a request that breaks a rule or is out of scope the model writes only the marker `[[OFFTOPIC]]`. The server replaces it with one of 30 pre-approved lines from `shared/knowledge.md`, avoiding lines already used in the chat. Refusal wording is therefore never model-generated. Exception in the prompt: a visitor who seems distressed gets a short, serious reply pointing to someone they trust or a helpline.
 
-Red-team script: `scripts/redteam-ask.ts` (50 prompts: controls, hallucination probes, off-limits topics, prompt extraction, jailbreaks). Run it after any prompt or model change. Result on 2026-10-05: 50 of 50 held, 0 leaks.
+Red-team script: `scripts/redteam-ask.ts` (controls, context checks, hallucination probes, off-limits topics, prompt extraction, jailbreaks). Run it after any prompt or model change; pass the site URL as an argument to test the deployed site, paced under its rate limit. Result on 2026-10-05: 50 of 50 held, 0 leaks. Live run on 2026-10-11 (56 prompts): 55 held; the canary question leaked the canary written with typographic hyphens, which the exact-match output check missed. The check now compares letters and digits only.
 
 Limits: no chatbot is unbreakable. History comes from the browser and can be forged; the prompt tells the model to distrust it. The rate limit is in memory and resets per serverless instance.
 

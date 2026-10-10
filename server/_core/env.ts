@@ -4,6 +4,8 @@ export const ENV = {
   llmApiUrl: "https://api.groq.com/openai",
   get llmApiKey() { return process.env.GROQ_API_KEY ?? ""; },
   // Google Apps Script web app attached to the referral sheet, and the secret it expects.
-  get referralScriptUrl() { return process.env.REFERRAL_SCRIPT_URL ?? ""; },
-  get referralScriptSecret() { return process.env.REFERRAL_SCRIPT_SECRET ?? ""; },
+  // Trimmed: a pasted value often carries a stray space or line break. The secret is also taken from after
+  // any "=", in case the whole "REFERRAL_SCRIPT_SECRET = …" log line was pasted (the secret itself has no "=").
+  get referralScriptUrl() { return (process.env.REFERRAL_SCRIPT_URL ?? "").trim(); },
+  get referralScriptSecret() { return (process.env.REFERRAL_SCRIPT_SECRET ?? "").split("=").pop()!.trim(); },
 };

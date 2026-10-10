@@ -53,6 +53,7 @@ body { background: var(--m-paper); }
 .site-frame .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #1e9e5a; box-shadow: 0 0 0 4px rgb(30 158 90 / 0.18); }
 
 /* "Google" in the brand's letter colours: blue, red, yellow, blue, green, red */
+.site-frame .hero .eyebrow { font-size: 1rem; }
 .site-frame .google-word { font-family: var(--m-display); font-weight: 600; font-size: 1.15em; letter-spacing: -0.03em; margin-left: -4px; }
 .site-frame .google-word span:nth-child(1), .site-frame .google-word span:nth-child(4) { color: #4285f4; }
 .site-frame .google-word span:nth-child(2), .site-frame .google-word span:nth-child(6) { color: #ea4335; }

@@ -5,14 +5,15 @@
   "license": "MIT",
   "scripts": {
     "dev": "node ./node_modules/tsx/dist/cli.mjs server/_core/index.ts",
-    "build": "vite build && tsx scripts/prerender.ts && tsx scripts/check-seo.ts && esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
+    "build": "tsx scripts/build-knowledge.ts && vite build && tsx scripts/prerender.ts && tsx scripts/check-seo.ts && esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc --noEmit",
     "format": "prettier --write .",
     "test": "vitest run",
     "dev:static": "vite --host 0.0.0.0 --port ${PORT:-3000} --strictPort",
     "build:static": "vite build",
-    "check:seo": "tsx scripts/check-seo.ts"
+    "check:seo": "tsx scripts/check-seo.ts",
+    "knowledge": "tsx scripts/build-knowledge.ts"
   },
   "dependencies": {
     "@langchain/core": "^1.2.13",

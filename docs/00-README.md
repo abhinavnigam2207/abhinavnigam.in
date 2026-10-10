@@ -29,6 +29,8 @@ Docs are the source of truth. Scope changes edit these first, then code.
 | 2026-10-11 | Resume limit 4 MB (was 5): the file travels base64 inside a Netlify function request, capped at 6 MB | Locked |
 | 2026-10-05 | Ask runs on Groq, model `openai/gpt-oss-120b`, key in `GROQ_API_KEY` (local `.env`, Netlify env var in production) | Locked |
 | 2026-10-05 | Ask sends every source when keyword retrieval finds nothing, and lists only the sources the answer cites | Locked |
+| 2026-10-11 | Everything Ask knows lives in one editable file, `shared/knowledge.md`; `pnpm knowledge` (also the first build step) generates `shared/knowledge.generated.ts` from it | Locked |
+| 2026-10-11 | Ask refuses with one of 30 prepared lines (in `shared/knowledge.md`), chosen by the server, not with text the model writes | Locked |
 | 2026-10-11 | Ideologies page holds the client's 20 principles (manager, senior engineer); Observe.ai and Rapido rows on Home get a fold-out with full detail; both feed the Ask knowledge set | Locked |
 | — | Bucket-list content | **Open, client to supply** |
 | — | OG/social image hosted on own domain | **Open, asset needed** |

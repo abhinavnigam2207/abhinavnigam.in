@@ -22,9 +22,9 @@ No database. Two data stores:
 
 Resume file: PDF, DOC, or DOCX up to 4 MB, stored in the private Drive folder "Google referral resumes". Script and setup: `docs/referral-sheet/`.
 
-### Ask knowledge (`shared/knowledge.ts`)
+### Ask knowledge (`shared/knowledge.md`)
 
-`{ id, title, url, category: "CV" | "Article" | "Site", date?, content }`. Holds CV summaries, detailed Observe.ai and Rapido entries, articles, site pages and the ideologies (generated from `client/src/content/ideologies.ts`). Every source goes into each prompt; retrieval sets the order.
+One Markdown file is the source of truth. Under `# Knowledge`, each `##` heading is a source with `- id`, `- url`, `- category` (`CV`, `Article` or `Site`), optional `- date`, then its text. Under `# Off-topic replies`, a bullet list of the 30 prepared refusal lines. `scripts/build-knowledge.ts` validates it and writes `shared/knowledge.generated.ts`; a test fails if the two are out of step or if a principle on the Ideologies page is missing from the file. Holds CV summaries, detailed Observe.ai and Rapido entries, articles, site pages and the ideologies. Every source goes into each prompt; retrieval sets the order.
 
 ## API contracts
 
