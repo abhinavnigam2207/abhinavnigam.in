@@ -146,10 +146,12 @@ const answerChain = RunnableLambda.from(async (input: { question: string; histor
   ];
 
   // Try the main model once; if it is rate limited, answer from the fallback instead of making the visitor wait.
+  // Neither call retries: waiting out a rate limit runs past the serverless time limit, and the visitor then
+  // sees a hung chat and a gateway error instead of the "try again in a moment" message.
   const complete = () => invokeLLM({ model: CHAT_MODEL, maxCompletionTokens: 1600, maxRetries: 0, messages })
     .catch(error => {
       if (!(error instanceof Error) || !error.message.startsWith("LLM invoke failed: 429")) throw error;
-      return invokeLLM({ model: FALLBACK_MODEL, maxCompletionTokens: 1600, maxRetries: 2, messages });
+      return invokeLLM({ model: FALLBACK_MODEL, maxCompletionTokens: 1600, maxRetries: 0, messages });
     });
   const [blocked, response] = await Promise.all([looksLikeInjection(input.question), complete()]);
   if (blocked) return { answer: offTopicReply(input.history), sources: [] };

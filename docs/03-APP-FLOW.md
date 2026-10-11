@@ -37,7 +37,7 @@ Header on every full page: brand and a Menu button. Menu opens a full-screen lis
 | Ideologies | n/a (static) | n/a | Two numbered lists of ten principles | n/a |
 | Bucket list | "List is taking shape" message | n/a | List | n/a |
 | Home experience rows | Summary, outcome, stack | n/a | Observe.ai and Rapido have a closed "The full story" fold-out | n/a |
-| Referral | Form beside a fold-out FAQ (stacked under 1100px) | Status check on load; button reads "Sending…" while submitting | Thank-you message, form cleared | Field errors inline; server message shown on failure; form disabled with email fallback when the destination is not connected |
+| Referral | Form beside a fold-out FAQ (stacked under 1100px) | Status check on load; button reads "Sending…" while submitting | Thank-you message, form cleared | Field errors inline; server message shown on failure. The form renders open; only if the status check answers "not connected" does it show the email fallback and disable Submit |
 | Ask | Heading, search box, four suggestions | "Looking through the notes" | Answer with sources | Inline message that the service is unavailable |
 | Know Me | n/a | n/a | Link list | n/a |
 

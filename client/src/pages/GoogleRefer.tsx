@@ -5,10 +5,11 @@ import { pageMeta } from "@/content/pageMeta";
 import { referralFaq } from "@/content/referralFaq";
 
 const companies = ["Amazon", "Apple", "Meta", "Microsoft", "Netflix", "NVIDIA", "Adobe", "Uber", "Airbnb", "Atlassian", "Stripe", "Salesforce", "Oracle", "LinkedIn", "Flipkart", "Other"];
-type ReferralStatus = { ready: boolean; message: string };
 
 export default function GoogleRefer() {
-  const [status, setStatus] = useState<ReferralStatus>({ ready: false, message: "" });
+  // The form is open unless the server says the sheet is not connected. Starting open keeps the
+  // "opens soon" notice out of the pre-rendered page and off the screen while the check is in flight.
+  const [closed, setClosed] = useState(false);
   const [notice, setNotice] = useState("");
   const [fileError, setFileError] = useState("");
   const [sending, setSending] = useState(false);
@@ -17,9 +18,9 @@ export default function GoogleRefer() {
   useEffect(() => {
     let mounted = true;
     fetch("/api/referrals/status")
-      .then(response => response.ok ? response.json() as Promise<ReferralStatus> : Promise.reject())
-      .then(value => { if (mounted) setStatus(value); })
-      .catch(() => { if (mounted) setStatus({ ready: false, message: "" }); });
+      .then(response => response.ok ? response.json() as Promise<{ ready: boolean }> : Promise.reject())
+      .then(value => { if (mounted) setClosed(!value.ready); })
+      .catch(() => {});
     return () => { mounted = false; };
   }, []);
 
@@ -47,7 +48,7 @@ export default function GoogleRefer() {
       setFileError("Upload a PDF or Word document up to 4 MB.");
       return;
     }
-    if (!status.ready) {
+    if (closed) {
       setNotice("The form is not open yet. Nothing was sent. Please email the role link and your resume instead.");
       return;
     }
@@ -91,7 +92,7 @@ export default function GoogleRefer() {
         </PageIntro>
         <div className="referral-layout">
         <div className="referral-column">
-        {!status.ready && (
+        {closed && (
           <div className="integration-banner" role="status">
             <LockKeyhole size={17} aria-hidden="true" />
             <p><strong>This form opens soon.</strong> Until then, <a className="inline-link" href="mailto:abhinavnigam2207@gmail.com?subject=Google%20referral">email me the role link and your resume</a>.</p>
@@ -148,7 +149,7 @@ export default function GoogleRefer() {
           {fileError && <p className="form-error" role="alert">{fileError}</p>}
           <label className="consent-row"><input type="checkbox" required /><span>I agree to share these details and my resume with Abhinav for this referral request.</span></label>
           {notice && <p className="form-note" role="status">{notice}</p>}
-          <div className="form-footer"><button className="button" type="submit" disabled={!status.ready || sending}>{sending ? "Sending…" : "Submit referral"} <ArrowUpRight size={15} /></button><p>Your details go to Abhinav only. A referral is not guaranteed.</p></div>
+          <div className="form-footer"><button className="button" type="submit" disabled={closed || sending}>{sending ? "Sending…" : "Submit referral"} <ArrowUpRight size={15} /></button><p>Your details go to Abhinav only. A referral is not guaranteed.</p></div>
         </form>
         </div>
         <section className="faq" aria-labelledby="faq-title">
