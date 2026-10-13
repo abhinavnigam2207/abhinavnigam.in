@@ -1,23 +1,82 @@
-import { ArrowLeft, ArrowUpRight, Minus, Plus } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { ExpeditionMap, type Camera, type Mark, type MarkHit } from "@/components/site/ExpeditionMap";
+import { ArrowLeft, ArrowUpRight, BookOpen, Globe, Minus, Plus } from "lucide-react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { EraDoor, EraSwitch, StampBook } from "@/components/site/EraControls";
+import type { Camera, Mark, MarkHit } from "@/components/site/ExpeditionMap";
 import { Photo } from "@/components/site/Photo";
 import { PageMeta, PillLink, SiteShell } from "@/components/site/SiteShell";
 import { pageMeta } from "@/content/pageMeta";
 import { bucketList, chest, countries, home, indiaPlaces, stories, travelsAreSample } from "@/content/travels";
+import { useEra, type Era } from "@/lib/era";
 import { addStamp, readStamps } from "@/lib/stamps";
 import { TravelFonts, TravelTransitions } from "./TravelStory";
 
-// Two ways to draw the same expedition, kept side by side for the client to choose between: a flat sea
-// chart and an old globe. Once one is chosen, remove the other and this switch.
-const views = [{ id: "flat", label: "Chart" }, { id: "globe", label: "Globe" }] as const;
+// The map engine is fetched only when this page is opened, so the rest of the site does not carry it.
+const ExpeditionMap = lazy(() => import("@/components/site/ExpeditionMap").then(module => ({ default: module.ExpeditionMap })));
+
+// Each era opens on the map that suits it (1826 a flat chart, 2026 a globe); the visitor can swap.
+const views = [{ id: "flat", label: "Map" }, { id: "globe", label: "Globe" }] as const;
 type View = (typeof views)[number]["id"];
 
 const storyPath = (slug: string, city?: string) => `/bucket-list/${slug}${city ? `/${city}` : ""}`;
 const uncharted = bucketList.filter(item => !item.done && item.lon !== undefined);
+const two = (value: number) => String(value).padStart(2, "0");
+
+// The passport, page by page. The section is tall and its stage stays pinned: each stretch of scrolling
+// turns one page and stamps the next country, with that stop's note beside it. In 1826 the same pages are
+// folios carrying wax seals. This is the travellers' own passport, so every page is stamped; the
+// visitor's collection is the separate stamp book on the map.
+function PassportTour({ era }: { era: Era }) {
+  const section = useRef<HTMLElement>(null);
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const measure = () => {
+      const el = section.current;
+      if (!el) return;
+      const box = el.getBoundingClientRect();
+      const travel = box.height - window.innerHeight;
+      const progress = travel > 0 ? Math.min(1, Math.max(0, -box.top / travel)) : 0;
+      setIndex(Math.min(countries.length - 1, Math.floor(progress * countries.length)));
+    };
+    measure();
+    window.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("resize", measure);
+    return () => { window.removeEventListener("scroll", measure); window.removeEventListener("resize", measure); };
+  }, []);
+  const place = countries[index];
+  const modern = era === "2026";
+  return (
+    <section className="tour" ref={section} style={{ height: `${(countries.length + 1) * 70}svh` }} aria-label={modern ? "The passport, page by page" : "The book of seals, page by page"}>
+      <div className="tour-stage">
+        <h2 className="tour-title">{modern ? "Every stamp in the passport." : "Every seal in the book."}</h2>
+        <div className="passport" aria-hidden="true">
+          {countries.map((item, i) => (
+            <div className={`passport-page${i < index ? " is-turned" : ""}${i === index ? " is-open" : ""}`} key={item.code} style={{ zIndex: countries.length - i }}>
+              <p className="passport-line"><span>{modern ? "Visa" : "Folio"}</span><span>{two(i + 1)}</span></p>
+              <div className="stamp" style={{ rotate: `${((i * 37) % 17) - 8}deg` }}><span>{item.code}</span><strong>{item.name}</strong><span>{item.spot}</span></div>
+              <p className="passport-line"><span>{modern ? "Arrival · Immigration" : "Entered in the log"}</span></p>
+            </div>
+          ))}
+        </div>
+        <div className="tour-card" key={place.code} aria-live="polite">
+          <p className="tour-count">{two(index + 1)} <span>/ {two(countries.length)}</span></p>
+          <h3>{place.name}</h3>
+          <p className="tour-spot">{place.spot}</p>
+          <p className="tour-note">{place.note}</p>
+          {place.story && <a className="tour-link" href={storyPath(place.story)}>{modern ? "Open the story" : "Read the journal"} <ArrowUpRight size={15} aria-hidden="true" /></a>}
+        </div>
+        <p className="tour-hint" aria-hidden="true">Scroll</p>
+      </div>
+    </section>
+  );
+}
 
 export default function Experiences() {
-  const [view, setView] = useState<View>("flat");
+  const { era, chosen, setEra } = useEra();
+  const modern = era === "2026";
+  const [viewPick, setViewPick] = useState<View | null>(null);
+  const view: View = viewPick ?? (modern ? "globe" : "flat");
+  const [book, setBook] = useState(false);
+  const [recenter, setRecenter] = useState(0);
   // The place the map has dived into: a country code, the home code, or nothing for the whole world.
   const [focus, setFocus] = useState<string | null>(null);
   const [zoomBy, setZoomBy] = useState(1);
@@ -31,10 +90,10 @@ export default function Experiences() {
     setStamps(readStamps());
     setPhone(window.innerWidth < 760);
     const asked = new URLSearchParams(window.location.search).get("view");
-    if (views.some(item => item.id === asked)) setView(asked as View);
+    if (views.some(item => item.id === asked)) setViewPick(asked as View);
   }, []);
   const chooseView = (next: View) => {
-    setView(next);
+    setViewPick(next);
     const url = new URL(window.location.href);
     url.searchParams.set("view", next);
     window.history.replaceState(null, "", url);
@@ -64,9 +123,19 @@ export default function Experiences() {
     : atHome ? { lon: 81, lat: 22, zoom: (phone ? 5.2 : 4.2) * zoomBy }
     : story ? { lon: story.lon, lat: story.lat, zoom: 6.2 * zoomBy }
     : country ? { lon: country.lon, lat: country.lat, zoom: 5 * zoomBy }
-    // A phone is too narrow for the whole world: it opens on Asia, and a drag shows the rest.
-    : { lon: phone ? 84 : 48, lat: 16, zoom: zoomBy };
+    // A phone is too narrow for the whole world: it opens on Asia, and a drag shows the rest. The flat map
+    // sits a little further east there, so India and Japan are both on screen.
+    : { lon: phone ? (view === "flat" ? 108 : 84) : 48, lat: phone && view === "flat" ? 20 : 16, zoom: zoomBy };
 
+  // Back to the whole world at its opening size, wherever the visitor has zoomed or dragged to.
+  const wholeMap = () => { setFocus(null); setZoomBy(1); setFresh(""); setHover(null); setRecenter(value => value + 1); };
+  // Zooming out steps back through the levels: a zoomed-in view returns to its normal size first, and from
+  // there one more press leaves the country for the whole world.
+  const zoomOut = () => {
+    if (zoomBy > 1.01) setZoomBy(value => Math.max(1, value / 1.5));
+    else if (focus) wholeMap();
+    else setRecenter(value => value + 1);
+  };
   const dive = (code: string) => {
     setFocus(code); setZoomBy(1); setHover(null);
     if (code !== home.code) { const result = addStamp(code); setStamps(result.stamps); setFresh(result.fresh ? code : ""); }
@@ -89,37 +158,39 @@ export default function Experiences() {
   const preview = (() => {
     if (!hover) return null;
     const [kind, key] = hover.id.split(":");
-    if (hover.id === "chest") return stamps.includes("chest") ? { title: chest.title, text: chest.line } : { title: "What's this?", text: "Something is buried here. Click it." };
+    if (hover.id === "chest") return stamps.includes("chest") ? { title: chest.title, text: chest.line } : { title: "What's this?", text: modern ? "Something is circling here. Click it." : "Something is buried here. Click it." };
     if (kind === "uncharted") { const item = uncharted[Number(key)]; return { title: item.title, text: `${item.where} · still to find` }; }
     if (kind === "city" && story) { const city = story.cities.find(item => item.slug === key); return city ? { title: city.name, text: city.tagline, photo: city.cover, action: "Open the journal" } : null; }
     if (kind === "india") { const place = indiaPlaces.find(item => item.code === key); return place ? { title: place.name, text: place.spot } : null; }
     if (kind === "spot") return country ? { title: country.spot, text: "Journal not written yet" } : null;
     if (hover.id === home.code) return { title: home.name, text: "Home. Every route starts here.", action: "Explore" };
     const place = countries.find(item => item.code === hover.id);
-    return place ? { title: place.name, text: place.note, action: stamps.includes(place.code) ? "Explore again" : "Explore" } : null;
+    return place ? { title: place.name, text: place.note, route: `${home.code} → ${place.code}`, action: stamps.includes(place.code) ? "Explore again" : "Explore" } : null;
   })();
 
   const found = countries.filter(item => stamps.includes(item.code)).length;
   const focusName = atHome ? home.name : country?.name;
 
   return (
-    <SiteShell theme="parchment">
+    <SiteShell theme={modern ? undefined : "parchment"}>
       <PageMeta {...pageMeta.bucketList} />
       <TravelTransitions />
       <TravelFonts />
       <main className="travel-main">
-        <section className={`expedition${focus ? " is-dived" : ""}${leaving ? " is-leaving" : ""}`} aria-label="Map of places visited">
-          <ExpeditionMap className="expedition-canvas" projection={view} camera={camera} marks={marks} home={[home.lon, home.lat]} onHover={setHover} onPick={pick} />
+        <section className={`expedition era-${era}${focus ? " is-dived" : ""}${leaving ? " is-leaving" : ""}`} aria-label="Map of places visited">
+          <Suspense fallback={null}>
+            <ExpeditionMap className="expedition-canvas" era={era} projection={view} spin={modern && !focus} camera={camera} recenter={recenter} marks={marks} home={[home.lon, home.lat]} onHover={setHover} onPick={pick} />
+          </Suspense>
 
           <div className="cartouche">
             <p className="eyebrow">Bucket list · Experiences</p>
             <h1>A life outside the pull request.</h1>
-            <p className="cartouche-lede">Fourteen countries, most of India, and a map that is far from finished. Follow the red line. Pick an X.</p>
+            <p className="cartouche-lede">Fourteen countries, most of India, and a map that is far from finished. {modern ? "Spin the globe. Pick a pin." : "Follow the red line. Pick an X."}</p>
           </div>
 
           {focus && (
             <aside className="dive-panel" key={focus}>
-              <button type="button" className="dive-back" onClick={() => { setFocus(null); setZoomBy(1); setFresh(""); }}><ArrowLeft size={16} aria-hidden="true" /> The whole map</button>
+              <button type="button" className="dive-back" onClick={wholeMap}><ArrowLeft size={16} aria-hidden="true" /> The whole map</button>
               <p className="dive-code">{focus}</p>
               <h2>{focusName}</h2>
               <p className="dive-note">{atHome ? "Home ground. The places below are where the map is most worn." : story?.tagline ?? country?.note}</p>
@@ -142,28 +213,34 @@ export default function Experiences() {
           {hover && preview && (
             <div className={`map-card${preview.photo ? " has-photo" : ""}`} style={{ left: hover.x, top: hover.y }} key={hover.id}>
               {preview.photo && <Photo photo={preview.photo} />}
-              <span className="map-card-copy"><strong>{preview.title}</strong><span>{preview.text}</span>{preview.action && <em>{preview.action}</em>}</span>
+              <span className="map-card-copy">{modern && "route" in preview && <b className="map-card-route">{preview.route}</b>}<strong>{preview.title}</strong><span>{preview.text}</span>{preview.action && <em>{preview.action}</em>}</span>
             </div>
           )}
 
           <div className="map-tools">
+            <EraSwitch era={era} onChoose={setEra} />
             <div className="map-switch" role="group" aria-label="Draw the map as">
               {views.map(item => <button type="button" key={item.id} aria-pressed={view === item.id} onClick={() => chooseView(item.id)}>{item.label}</button>)}
             </div>
             <div className="map-zoom" role="group" aria-label="Zoom">
               <button type="button" aria-label="Zoom in" onClick={() => setZoomBy(value => Math.min(4, value * 1.5))}><Plus size={18} aria-hidden="true" /></button>
-              <button type="button" aria-label="Zoom out" onClick={() => setZoomBy(value => Math.max(focus ? 0.5 : 1, value / 1.5))}><Minus size={18} aria-hidden="true" /></button>
+              <button type="button" aria-label="Zoom out" onClick={zoomOut}><Minus size={18} aria-hidden="true" /></button>
+              <button type="button" aria-label="Show the whole map" title="Whole map" onClick={wholeMap}><Globe size={18} aria-hidden="true" /></button>
             </div>
           </div>
 
-          <p className="map-tally" aria-live="polite">
-            <span className="tally-seal" aria-hidden="true" />
-            {found === countries.length ? "Expedition complete" : `${found} of ${countries.length} discovered`}
-            {stamps.includes("chest") && <em> · chest found</em>}
-          </p>
+          <button type="button" className="map-tally" onClick={() => setBook(true)}>
+            {modern ? <BookOpen size={18} aria-hidden="true" /> : <span className="tally-seal" aria-hidden="true" />}
+            <span aria-live="polite">{found === countries.length ? "Expedition complete" : `${found} of ${countries.length} ${modern ? "stamps" : "discovered"}`}{stamps.includes("chest") && <em> · {modern ? "plane found" : "chest found"}</em>}</span>
+          </button>
+
+          {book && <StampBook era={era} entries={countries} stamps={stamps} onClose={() => setBook(false)} onGo={code => { setBook(false); dive(code); }} />}
         </section>
+        {!chosen && <EraDoor onChoose={setEra} />}
 
         {travelsAreSample && <p className="sample-note wrap" role="note"><strong>Preview with sample places.</strong> These are stand-ins to show the design, not Abhinav’s real trips.</p>}
+
+        <PassportTour era={era} />
 
         <section className="content-section wrap" aria-labelledby="ledger-title">
           <h2 className="statement" id="ledger-title">The ledger.</h2>

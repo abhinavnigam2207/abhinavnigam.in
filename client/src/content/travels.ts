@@ -68,7 +68,8 @@ export const bucketList: { title: string; where: string; done: boolean; lon?: nu
 // `travelsAreSample` is false) its sitemap entries.
 //
 // A photo without `src` renders as a labelled placeholder block. `tone` is the hue (0-360) of that block.
-export type Photo = { caption: string; tone: number; src?: string; tall?: boolean };
+// `video` is a clip to play in place of the still (the still, if given, is its poster frame).
+export type Photo = { caption: string; tone: number; src?: string; video?: string; tall?: boolean };
 export type City = {
   slug: string; name: string; lon: number; lat: number;
   tagline: string; intro: string;

@@ -46,6 +46,11 @@ const breadcrumb = (name: string, url: string): JsonLd => ({
 
 type RoutePage = { path: string; file: string; meta: { title: string; description: string }; canonical: string; noindex?: boolean; jsonLd?: JsonLd[] };
 
+// The travel pages have their own stylesheet and typeface. The links go in <head> of those pages only
+// (see TravelFonts in client/src/pages/TravelStory.tsx).
+const travelStylesheets = ["/travel/travel.css", "https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap"];
+const isTravel = (route: string) => route === "/experiences" || route === "/bucket-list" || route.startsWith("/bucket-list/");
+
 const routePages: RoutePage[] = [
   {
     path: "/", file: "home", meta: pageMeta.home, canonical: `${SITE}/`,
@@ -181,6 +186,7 @@ async function main() {
         `    <meta property="og:url" content="${page.canonical}" />`,
         `    <meta name="robots" content="${page.noindex ? "noindex, follow" : "index, follow, max-image-preview:large, max-snippet:-1"}" />`,
         ...(page.jsonLd ?? []).map(jsonLdTag),
+        ...(isTravel(page.path) ? travelStylesheets.map(href => `    <link rel="stylesheet" href="${escapeHtml(href)}" />`) : []),
       ];
       html = html.replace("</head>", `${headTags.join("\n")}\n  </head>`);
       await writeFile(path.join(destination, `${page.file}.html`), html, "utf8");

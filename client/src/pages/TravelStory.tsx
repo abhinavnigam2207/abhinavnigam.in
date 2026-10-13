@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { Photo } from "@/components/site/Photo";
 import { PageMeta, SiteShell } from "@/components/site/SiteShell";
 import { stories, storyMeta, travelsAreSample, type City, type Story } from "@/content/travels";
+import { EraSwitch } from "@/components/site/EraControls";
+import { useEra } from "@/lib/era";
 import { addStamp } from "@/lib/stamps";
 import NotFound from "./NotFound";
 
@@ -17,10 +19,24 @@ export function TravelTransitions() {
   `}</style>;
 }
 
-// The old-print lettering used on the map and for headings on the journal pages. Loaded only here, so the
-// rest of the site does not pay for it.
+// What only the travel pages need: their stylesheet, and the old-print lettering of the 1826 era.
+// They are separate files rather than part of the bundle, so the rest of the site does not pay for them.
+//
+// The built pages already carry these two links in <head> (scripts/prerender.ts writes them, using the
+// same list), so the page is styled before any script runs. This component only adds them when they are
+// missing, which is the case in development. They are not rendered as React elements: the app replaces
+// the pre-rendered markup on start-up, and a stylesheet link inside it would be thrown away with it.
+export const travelStylesheets = ["/travel/travel.css", "https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap"];
 export function TravelFonts() {
-  return <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap" precedence="default" />;
+  useEffect(() => {
+    for (const href of travelStylesheets) {
+      if ([...document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')].some(link => link.getAttribute("href") === href)) continue;
+      const link = document.createElement("link");
+      link.rel = "stylesheet"; link.href = href;
+      document.head.appendChild(link);
+    }
+  }, []);
+  return null;
 }
 
 // Reading a country's journal counts as discovering it, the same as opening it on the map.
@@ -37,9 +53,10 @@ function Facts({ facts }: { facts: { label: string; value: string }[] }) {
 export function TravelCountry({ slug }: { slug: string }) {
   const story = stories.find(item => item.slug === slug);
   useStamp(story?.code);
+  const { era, setEra } = useEra();
   if (!story) return <NotFound />;
   return (
-    <SiteShell theme="parchment">
+    <SiteShell theme={era === "1826" ? "parchment" : undefined}>
       <PageMeta {...storyMeta(story)} />
       <TravelTransitions />
       <TravelFonts />
@@ -77,6 +94,7 @@ export function TravelCountry({ slug }: { slug: string }) {
         <section className="content-section wrap story-end">
           <a className="story-next" href="/bucket-list"><span>Back to</span><strong>The whole map <ArrowRight size={28} aria-hidden="true" /></strong></a>
         </section>
+        <EraSwitch era={era} onChoose={setEra} className="is-floating" />
       </main>
     </SiteShell>
   );
@@ -86,11 +104,12 @@ export function TravelCity({ country, slug }: { country: string; slug: string })
   const story: Story | undefined = stories.find(item => item.slug === country);
   const index = story ? story.cities.findIndex(item => item.slug === slug) : -1;
   useStamp(index >= 0 ? story?.code : undefined);
+  const { era, setEra } = useEra();
   if (!story || index < 0) return <NotFound />;
   const city: City = story.cities[index];
   const next = story.cities[(index + 1) % story.cities.length];
   return (
-    <SiteShell theme="parchment">
+    <SiteShell theme={era === "1826" ? "parchment" : undefined}>
       <PageMeta {...storyMeta(story, city)} />
       <TravelTransitions />
       <TravelFonts />
@@ -128,6 +147,7 @@ export function TravelCity({ country, slug }: { country: string; slug: string })
         <section className="content-section wrap story-end">
           <a className="story-next" href={`/bucket-list/${story.slug}/${next.slug}`}><span>Next stop</span><strong>{next.name} <ArrowRight size={28} aria-hidden="true" /></strong></a>
         </section>
+        <EraSwitch era={era} onChoose={setEra} className="is-floating" />
       </main>
     </SiteShell>
   );
