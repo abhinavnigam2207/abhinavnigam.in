@@ -38,6 +38,12 @@ export async function setupVite(app: Express, server: Server) {
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`
       );
+      // Travel pages get the same two head tags the build gives them (scripts/prerender.ts): the era
+      // script and their stylesheet. Without them a page in development appears unstyled, in both eras
+      // at once, until its own script has added the stylesheet.
+      if (/^\/(bucket-list|experiences)([/?#]|$)/.test(url)) {
+        template = template.replace("</head>", `  <script src="/travel/era.js"></script>\n    <link rel="stylesheet" href="/travel/travel.css" />\n  </head>`);
+      }
       const page = await vite.transformIndexHtml(url, template);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {

@@ -1,4 +1,4 @@
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import type { Era } from "@/lib/era";
 
@@ -6,30 +6,64 @@ type Choose = (era: Era, origin?: { x: number; y: number }) => void;
 const eras: Era[] = ["1826", "2026"];
 const at = (event: MouseEvent) => ({ x: event.clientX, y: event.clientY });
 
+/**
+ * Words that differ between the eras. Both are put in the page and the stylesheet shows the one for the
+ * era on <html>, so a pre-built page reads right from its first frame, whichever era the visitor chose.
+ */
+export function EraText({ old, now }: { old: ReactNode; now: ReactNode }) {
+  return <><span className="only-1826">{old}</span><span className="only-2026">{now}</span></>;
+}
+
 /** The small time machine: flips the travel pages between the two eras. */
 export function EraSwitch({ era, onChoose, className }: { era: Era; onChoose: Choose; className?: string }) {
   return (
     <div className={`era-switch${className ? ` ${className}` : ""}`} role="group" aria-label="Choose the era to read this in">
-      {eras.map(item => <button type="button" key={item} aria-pressed={era === item} onClick={event => onChoose(item, at(event))}>{item}</button>)}
+      {eras.map(item => <button type="button" key={item} data-era={item} aria-pressed={era === item} onClick={event => onChoose(item, at(event))}>{item}</button>)}
     </div>
   );
 }
 
-/** The door: shown once, to a visitor who has not yet chosen an era. The page is already there behind it. */
-export function EraDoor({ onChoose }: { onChoose: Choose }) {
+const doorHalves: { era: Era; line: string; go: string }[] = [
+  { era: "1826", line: "Parchment, red ink and an X to find.", go: "Unroll the chart" },
+  { era: "2026", line: "A spinning globe, flight paths and a passport to fill.", go: "Spin the globe" },
+];
+
+/**
+ * The door: shown once, to a visitor who has not yet chosen an era. The page is already there behind it.
+ * Pressing a half makes it swell to three quarters of the screen; letting go lets it take the whole
+ * screen, and then the door fades away onto the map. `onChoose` is called when the half has filled the
+ * screen, `onDone` when the door has gone.
+ */
+export function EraDoor({ onChoose, onDone }: { onChoose: (era: Era) => void; onDone: () => void }) {
+  const [held, setHeld] = useState<Era | null>(null);
+  const [picked, setPicked] = useState<Era | null>(null);
+  const [leaving, setLeaving] = useState(false);
+  // The door itself takes the focus, so the keyboard's next Tab lands on the first choice. Focusing a
+  // half directly would ring it as if it had been picked.
+  const door = useRef<HTMLDivElement>(null);
+  useEffect(() => { door.current?.focus({ preventScroll: true }); }, []);
+  const pick = (era: Era) => {
+    if (picked) return;
+    setPicked(era);
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.setTimeout(() => { onChoose(era); setLeaving(true); window.setTimeout(onDone, still ? 0 : 480); }, still ? 0 : 620);
+  };
   return (
-    <div className="era-door" role="dialog" aria-modal="true" aria-label="Choose how to read this journal">
+    <div className={`era-door${picked ? " is-picked" : ""}${leaving ? " is-leaving" : ""}`} role="dialog" aria-modal="true" aria-label="Choose how to read this journal" ref={door} tabIndex={-1}>
       <p className="era-door-ask">Same journeys, two centuries apart. Choose yours.</p>
-      <button type="button" className="era-half is-1826" onClick={event => onChoose("1826", at(event))}>
-        <span className="era-year">1826</span>
-        <span className="era-line">Parchment, red ink and an X to find.</span>
-        <span className="era-go">Unroll the chart</span>
-      </button>
-      <button type="button" className="era-half is-2026" onClick={event => onChoose("2026", at(event))}>
-        <span className="era-year">2026</span>
-        <span className="era-line">A spinning globe, flight paths and a passport to fill.</span>
-        <span className="era-go">Spin the globe</span>
-      </button>
+      {doorHalves.map(half => (
+        <button
+          type="button" key={half.era}
+          className={`era-half is-${half.era}${held === half.era ? " is-held" : ""}${picked === half.era ? " is-chosen" : ""}${picked && picked !== half.era ? " is-out" : ""}`}
+          onPointerDown={() => setHeld(half.era)} onPointerUp={() => setHeld(null)} onPointerLeave={() => setHeld(null)} onPointerCancel={() => setHeld(null)}
+          onContextMenu={event => event.preventDefault()}
+          onClick={() => pick(half.era)}
+        >
+          <span className="era-year">{half.era}</span>
+          <span className="era-line">{half.line}</span>
+          <span className="era-go">{half.go}</span>
+        </button>
+      ))}
     </div>
   );
 }
@@ -55,6 +89,14 @@ export function StampBook({ era, entries, stamps, onClose, onGo }: { era: Era; e
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
+  // Focus moves into the book while it is open and returns to whatever opened it.
+  const closeButton = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null;
+    closeButton.current?.focus({ preventScroll: true });
+    return () => opener?.focus?.({ preventScroll: true });
+  }, []);
+
   const found = entries.filter(item => stamps.includes(item.code)).length;
   const current = entries[index];
   return (
@@ -62,7 +104,7 @@ export function StampBook({ era, entries, stamps, onClose, onGo }: { era: Era; e
       <div className="book" role="dialog" aria-modal="true" aria-label={era === "2026" ? "Your passport" : "Your book of seals"} onClick={event => event.stopPropagation()}>
         <header className="book-head">
           <p><strong>{era === "2026" ? "Passport" : "Book of seals"}</strong><span>{found} of {entries.length} collected</span></p>
-          <button type="button" aria-label="Close" onClick={onClose}><X size={20} aria-hidden="true" /></button>
+          <button type="button" aria-label="Close" ref={closeButton} onClick={onClose}><X size={20} aria-hidden="true" /></button>
         </header>
         <div className="book-pages">
           {entries.map((item, i) => {

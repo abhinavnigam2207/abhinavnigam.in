@@ -1,6 +1,6 @@
 import { createElement, type ComponentType } from "react";
 import { renderToString } from "react-dom/server";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { createServer } from "vite";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -48,8 +48,9 @@ type RoutePage = { path: string; file: string; meta: { title: string; descriptio
 
 // The travel pages have their own stylesheet and typeface. The links go in <head> of those pages only
 // (see TravelFonts in client/src/pages/TravelStory.tsx).
-const travelStylesheets = ["/travel/travel.css", "https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap"];
+const travelStylesheets = ["/travel/travel.css"];
 const isTravel = (route: string) => route === "/experiences" || route === "/bucket-list" || route.startsWith("/bucket-list/");
+const isMap = (route: string) => route === "/experiences" || route === "/bucket-list";
 
 const routePages: RoutePage[] = [
   {
@@ -161,6 +162,11 @@ async function main() {
     const { trpc } = trpcModule as { trpc: { Provider: unknown; createClient: (options: unknown) => unknown } };
     const builtTemplate = await readFile(path.resolve("dist/public/index.html"), "utf8");
     if (!builtTemplate.includes('<div id="root"></div>')) throw new Error("Built HTML root marker is missing");
+    // The map is drawn by code that is loaded on demand, from a coastline file. Left alone, both are asked
+    // for only after the main script has run; named in <head>, they come down beside it.
+    const mapChunk = (await readdir(path.resolve("dist/public/assets"))).find(name => /^ExpeditionMap-.+\.js$/.test(name));
+    if (!mapChunk) throw new Error("Built map chunk (assets/ExpeditionMap-*.js) is missing");
+    const mapPreloads = [`    <link rel="modulepreload" href="/assets/${mapChunk}" />`, `    <link rel="preload" href="/travel/coast-110.json" as="fetch" crossorigin />`];
     const destination = path.resolve("dist/prerender");
     await mkdir(destination, { recursive: true });
 
@@ -186,7 +192,9 @@ async function main() {
         `    <meta property="og:url" content="${page.canonical}" />`,
         `    <meta name="robots" content="${page.noindex ? "noindex, follow" : "index, follow, max-image-preview:large, max-snippet:-1"}" />`,
         ...(page.jsonLd ?? []).map(jsonLdTag),
-        ...(isTravel(page.path) ? travelStylesheets.map(href => `    <link rel="stylesheet" href="${escapeHtml(href)}" />`) : []),
+        // The era script comes first: it must run before the stylesheet it steers is applied to anything.
+        ...(isTravel(page.path) ? [`    <script src="/travel/era.js"></script>`, ...travelStylesheets.map(href => `    <link rel="stylesheet" href="${escapeHtml(href)}" />`)] : []),
+        ...(isMap(page.path) ? mapPreloads : []),
       ];
       html = html.replace("</head>", `${headTags.join("\n")}\n  </head>`);
       await writeFile(path.join(destination, `${page.file}.html`), html, "utf8");

@@ -2,6 +2,37 @@
    those pages (see TravelFonts in pages/TravelStory.tsx), so no other page downloads it.
    Rules are scoped under .site-frame like the main stylesheet and use its tokens. */
 
+/* The old-print typeface of the 1826 era (IM Fell English, SIL Open Font Licence), served from this site.
+   /travel/era.js asks for the files early when the page is going to open in 1826, so headings appear in
+   their own lettering at once instead of in a stand-in that is swapped a moment later. */
+@font-face { font-family: "IM Fell English"; font-style: normal; font-weight: 400; font-display: swap; src: url("/travel/fonts/im-fell-english.woff2") format("woff2"); }
+@font-face { font-family: "IM Fell English"; font-style: italic; font-weight: 400; font-display: swap; src: url("/travel/fonts/im-fell-english-italic.woff2") format("woff2"); }
+@font-face { font-family: "IM Fell English SC"; font-style: normal; font-weight: 400; font-display: swap; src: url("/travel/fonts/im-fell-english-sc.woff2") format("woff2"); }
+
+/* Moving between travel pages. The browser animates from one page to the next (cross-document view
+   transitions) when both pages carry this rule, which is why it lives here, in a stylesheet in <head>:
+   it must be known before the new page's first frame. The old page pushes towards the viewer and fades
+   while the new one settles in from slightly further back; a photo that was clicked grows into the next
+   page's cover. Only transform and opacity move. Browsers without support simply load the page. */
+@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }
+::view-transition-old(root) { animation: travel-out 380ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+::view-transition-new(root) { animation: travel-in 460ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@keyframes travel-out { to { opacity: 0; transform: scale(1.06); } }
+@keyframes travel-in { from { opacity: 0; transform: scale(0.95); } }
+::view-transition-group(*) { animation-duration: 560ms; animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1); }
+
+/* A page opened straight into a country (a shared link, or coming back from a city) has no title block;
+   this keeps it from showing for the moment before the script takes over. */
+html[data-dived] .site-frame .cartouche { opacity: 0; }
+/* Words and parts that belong to one era only (see EraText). */
+html[data-era="1826"] .only-2026, html:not([data-era="1826"]) .only-1826 { display: none !important; }
+/* The map's controls depend on the visitor: their stamps, their era, map or globe. The pre-built page
+   cannot know those, so the controls wait until the page does, then arrive with the map. */
+.site-frame .expedition:not(.is-live) .map-tools, .site-frame .expedition:not(.is-live) .map-tally { visibility: hidden; }
+.site-frame .expedition.is-live .map-tools, .site-frame .expedition.is-live .map-tally { animation: tools-in 500ms ease backwards; }
+@keyframes tools-in { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .site-frame .expedition.is-live .map-tools, .site-frame .expedition.is-live .map-tally { animation: none; } }
+
 /* ---------- Travel: photos, pin preview, country and city pages ---------- */
 .site-frame .photo { position: relative; display: block; overflow: hidden; border-radius: 20px; background: var(--m-surface); }
 .site-frame .photo img { width: 100%; height: 100%; object-fit: cover; }
@@ -65,26 +96,31 @@
 
 /* ---------- Travel: parchment theme and the Expedition Map ---------- */
 /* The travel pages wear their own skin: old paper, sepia ink, one red. Everything is still light. */
-.site-frame[data-theme="parchment"] {
+/* Era rules are written against <html data-era>, which /travel/era.js sets before the first paint and
+   lib/era.ts keeps up to date. They must not depend on anything React renders, or a page would show in
+   the wrong era for a moment while the script starts. */
+/* The paper colour sits behind the page itself, so the instant before anything is drawn is paper too, not white. */
+html[data-era="1826"], html[data-era="1826"] body { background-color: #ead9b0; }
+html[data-era="1826"] .site-frame {
   --k-base: #ead9b0; --k-ink: #38281a; --k-muted: #6a5237;
   --m-paper: #f5ebcf; --m-surface: #e3d1a3; --m-line: rgb(74 50 28 / 0.26); --m-quiet: #8a7150; --m-faint: #b59d74; --m-black: #38281a; --m-ink-2: #4d3823;
   --ink: 74 50 28; --red: #a6221e;
+  color: var(--k-ink); --m-ink: var(--k-ink); --m-muted: var(--k-muted);
   /* Paper grain (generated noise, no image file), then foxing and darker corners. */
   background-color: var(--k-base);
   background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.29 0 0 0 0 0.2 0 0 0 0 0.11 0 0 0 0.22 0'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23n)'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.006' numOctaves='4' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.3 0 0 0 0 0.14 1.6 0 0 0 -0.62'/%3E%3C/filter%3E%3Crect width='900' height='900' filter='url(%23s)'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.29 0 0 0 0 0.2 0 0 0 0 0.11 0 0 0 0.22 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520'%3E%3Cfilter id='s' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.01' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.3 0 0 0 0 0.14 1.6 0 0 0 -0.62'/%3E%3C/filter%3E%3Crect width='520' height='520' filter='url(%23s)'/%3E%3C/svg%3E");
 }
-.site-frame[data-theme="parchment"]::before, .site-frame[data-theme="parchment"]::after { display: none; }
-.site-frame[data-theme="parchment"] h1, .site-frame[data-theme="parchment"] h2, .site-frame[data-theme="parchment"] h3,
-.site-frame[data-theme="parchment"] .statement, .site-frame[data-theme="parchment"] .brand { font-family: "IM Fell English", "Iowan Old Style", Georgia, serif; font-weight: 400; letter-spacing: -0.015em; }
+html[data-era="1826"] .site-frame h1, html[data-era="1826"] .site-frame h2, html[data-era="1826"] .site-frame h3,
+html[data-era="1826"] .site-frame .statement, html[data-era="1826"] .site-frame .brand { font-family: "IM Fell English", "Iowan Old Style", Georgia, serif; font-weight: 400; letter-spacing: -0.015em; }
 
 /* The map fills the first screen and runs up under the header. */
 .site-frame .expedition { position: relative; height: 100svh; min-height: 560px; margin-top: -88px; overflow: hidden; }
-.site-frame .expedition-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.site-frame .expedition-canvas { position: absolute; inset: 0; width: 100%; height: 100%; will-change: transform; }
 /* Neatline (the ruled border of an old chart) and lamp-light falling off towards the edges. */
 .site-frame .expedition::before { content: ""; position: absolute; inset: 10px; z-index: 2; pointer-events: none; border: 1px solid rgb(var(--ink) / 0.55); outline: 3px double rgb(var(--ink) / 0.4); outline-offset: -8px; }
-.site-frame .expedition::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; box-shadow: inset 0 0 140px 30px rgb(72 44 16 / 0.42), inset 0 0 36px rgb(60 36 12 / 0.35); }
+.site-frame .expedition::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: radial-gradient(120% 95% at 50% 50%, transparent 52%, rgb(72 44 16 / 0.34) 100%); }
 
 /* Title block, like the cartouche in the corner of a chart. */
 .site-frame .cartouche, .site-frame .dive-panel {
@@ -139,7 +175,7 @@
 .site-frame .map-switch, .site-frame .map-zoom { display: flex; background: color-mix(in srgb, var(--m-paper) 92%, transparent); border: 1px solid rgb(var(--ink) / 0.6); }
 .site-frame .map-tools button { min-width: 44px; min-height: 44px; padding: 0 14px; display: grid; place-items: center; font-family: var(--t-caps); letter-spacing: 0.06em; cursor: pointer; }
 .site-frame .map-tools button + button { border-left: 1px solid rgb(var(--ink) / 0.35); }
-.site-frame .map-tools button[aria-pressed="true"] { background: var(--m-ink); color: var(--m-paper); }
+.site-frame .map-switch button[aria-pressed="true"] { background: var(--m-ink); color: var(--m-paper); }
 .site-frame .map-tally { position: absolute; z-index: 3; left: max(28px, calc((100vw - 1360px) / 2 + var(--m-pad))); bottom: 34px; display: flex; align-items: center; gap: 10px; font-family: var(--t-caps); letter-spacing: 0.08em; }
 .site-frame .map-tally em { font-style: normal; color: var(--red); }
 .site-frame .tally-seal { width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #cf463f, #96201c 65%); box-shadow: 0 1px 3px rgb(60 20 10 / 0.5); }
@@ -167,37 +203,40 @@
 .site-frame .ledger h3 { font-family: var(--t-caps); font-size: 1.05rem; letter-spacing: 0.14em; color: var(--red); padding-bottom: 10px; border-bottom: 3px double rgb(var(--ink) / 0.45); }
 .site-frame .ledger li { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px dotted rgb(var(--ink) / 0.4); }
 .site-frame .ledger li span { text-align: right; font-size: 0.85rem; color: var(--m-muted); }
+.site-frame .ledger h3 a { text-decoration: none; }
+.site-frame .ledger li > a { text-decoration: none; }
+.site-frame .ledger li > a:hover, .site-frame .ledger li > a:focus-visible, .site-frame .ledger h3 a:hover { text-decoration: underline; text-decoration-color: var(--red); text-decoration-thickness: 2px; text-underline-offset: 5px; }
 .site-frame .ledger a { text-decoration: underline; text-decoration-color: var(--red); text-decoration-thickness: 2px; text-underline-offset: 5px; }
 .site-frame .ledger .is-done { text-decoration: line-through; text-decoration-color: rgb(var(--ink) / 0.5); color: var(--m-muted); }
 
 /* Journal pages: photographs are prints laid on the paper, sepia until looked at. */
-.site-frame[data-theme="parchment"] .photo { border-radius: 3px; filter: sepia(0.55) saturate(0.75) contrast(0.96); transition: filter 500ms, rotate 500ms, scale 500ms; }
-.site-frame[data-theme="parchment"] .story-cover { border-radius: 4px; }
-.site-frame[data-theme="parchment"] .story-cover::after { background: linear-gradient(to top, rgb(234 217 176 / 0.92) 0%, rgb(234 217 176 / 0.35) 46%, transparent 72%); }
-.site-frame[data-theme="parchment"] .story-code { font-family: var(--t-caps); font-weight: 400; color: var(--red); }
-.site-frame[data-theme="parchment"] .story-hero h1 { letter-spacing: -0.03em; }
-.site-frame[data-theme="parchment"] .story-facts dd, .site-frame[data-theme="parchment"] .story-highlights dt, .site-frame[data-theme="parchment"] .city-card strong, .site-frame[data-theme="parchment"] .story-next strong { font-family: var(--t-serif); font-weight: 400; letter-spacing: -0.015em; }
-.site-frame[data-theme="parchment"] .story-photos .photo, .site-frame[data-theme="parchment"] .city-card .photo { border: 9px solid #f8f0da; border-bottom-width: 26px; box-shadow: 0 10px 26px rgb(60 36 12 / 0.28); }
-.site-frame[data-theme="parchment"] .story-photos figure:nth-of-type(odd) .photo, .site-frame[data-theme="parchment"] .city-card:nth-of-type(odd) .photo { rotate: -1.1deg; }
-.site-frame[data-theme="parchment"] .story-photos figure:nth-of-type(even) .photo, .site-frame[data-theme="parchment"] .city-card:nth-of-type(even) .photo { rotate: 0.9deg; }
+html[data-era="1826"] .site-frame .photo { border-radius: 3px; filter: sepia(0.55) saturate(0.75) contrast(0.96); transition: filter 500ms, rotate 500ms, scale 500ms; }
+html[data-era="1826"] .site-frame .story-cover { border-radius: 4px; }
+html[data-era="1826"] .site-frame .story-cover::after { background: linear-gradient(to top, rgb(234 217 176 / 0.92) 0%, rgb(234 217 176 / 0.35) 46%, transparent 72%); }
+html[data-era="1826"] .site-frame .story-code { font-family: var(--t-caps); font-weight: 400; color: var(--red); }
+html[data-era="1826"] .site-frame .story-hero h1 { letter-spacing: -0.03em; }
+html[data-era="1826"] .site-frame .story-facts dd, html[data-era="1826"] .site-frame .story-highlights dt, html[data-era="1826"] .site-frame .city-card strong, html[data-era="1826"] .site-frame .story-next strong { font-family: var(--t-serif); font-weight: 400; letter-spacing: -0.015em; }
+html[data-era="1826"] .site-frame .story-photos .photo, html[data-era="1826"] .site-frame .city-card .photo { border: 9px solid #f8f0da; border-bottom-width: 26px; box-shadow: 0 10px 26px rgb(60 36 12 / 0.28); }
+html[data-era="1826"] .site-frame .story-photos figure:nth-of-type(odd) .photo, html[data-era="1826"] .site-frame .city-card:nth-of-type(odd) .photo { rotate: -1.1deg; }
+html[data-era="1826"] .site-frame .story-photos figure:nth-of-type(even) .photo, html[data-era="1826"] .site-frame .city-card:nth-of-type(even) .photo { rotate: 0.9deg; }
 /* A strip of tape holding each print down. */
-.site-frame[data-theme="parchment"] .story-photos figure { position: relative; }
-.site-frame[data-theme="parchment"] .story-photos figure::before { content: ""; position: absolute; z-index: 1; left: 50%; top: -11px; width: 92px; height: 24px; translate: -50% 0; rotate: -2deg; background: rgb(236 222 178 / 0.78); box-shadow: 0 1px 3px rgb(60 36 12 / 0.25); }
-.site-frame[data-theme="parchment"] .story-photos figcaption { font-family: var(--t-serif); font-style: italic; font-size: 1.05rem; color: var(--m-ink); }
-.site-frame[data-theme="parchment"] .city-card-copy { bottom: 38px; }
-.site-frame[data-theme="parchment"] .city-card-arrow { top: 24px; right: 24px; }
+html[data-era="1826"] .site-frame .story-photos figure { position: relative; }
+html[data-era="1826"] .site-frame .story-photos figure::before { content: ""; position: absolute; z-index: 1; left: 50%; top: -11px; width: 92px; height: 24px; translate: -50% 0; rotate: -2deg; background: rgb(236 222 178 / 0.78); box-shadow: 0 1px 3px rgb(60 36 12 / 0.25); }
+html[data-era="1826"] .site-frame .story-photos figcaption { font-family: var(--t-serif); font-style: italic; font-size: 1.05rem; color: var(--m-ink); }
+html[data-era="1826"] .site-frame .city-card-copy { bottom: 38px; }
+html[data-era="1826"] .site-frame .city-card-arrow { top: 24px; right: 24px; }
 @media (hover: hover) {
-  .site-frame[data-theme="parchment"] .story-photos figure:hover .photo, .site-frame[data-theme="parchment"] .city-card:hover .photo { filter: none; rotate: 0deg; scale: 1.015; }
+  html[data-era="1826"] .site-frame .story-photos figure:hover .photo, html[data-era="1826"] .site-frame .city-card:hover .photo { filter: none; rotate: 0deg; scale: 1.015; }
 }
 @media (prefers-reduced-motion: reduce) {
   .site-frame .dive-panel, .site-frame .seal, .site-frame .map-card { animation: none; }
-  .site-frame .cartouche, .site-frame[data-theme="parchment"] .photo { transition: none; }
+  .site-frame .cartouche, html[data-era="1826"] .site-frame .photo { transition: none; }
 }
 
 /* ---------- Travel: the two eras ---------- */
 /* Defaults are 2026 (the site's own look). The parchment theme above swaps these for 1826. */
 .site-frame { --ink: 43 47 49; --red: #e5484d; --t-serif: var(--m-display); --t-caps: var(--m-display); }
-.site-frame[data-theme="parchment"] { --t-serif: "IM Fell English", "Iowan Old Style", Georgia, serif; --t-caps: "IM Fell English SC", "IM Fell English", Georgia, serif; }
+html[data-era="1826"] .site-frame { --t-serif: "IM Fell English", "Iowan Old Style", Georgia, serif; --t-caps: "IM Fell English SC", "IM Fell English", Georgia, serif; }
 .site-frame .sample-note { margin-top: 28px; font-size: 0.9rem; color: var(--m-muted); }
 .site-frame .sample-note strong { color: var(--m-ink); font-weight: 500; }
 .site-frame .travel-close { padding-bottom: clamp(96px, 12vw, 160px); }
@@ -205,37 +244,34 @@
 .site-frame .travel-main > header, .site-frame:has(.travel-main) > .site-header, .site-frame:has(.story-main) > .site-header { position: relative; z-index: 6; }
 
 /* 2026 map: clean paper, soft cards, pills. No chart border, no lamp-light. */
-.site-frame .expedition.era-2026 { background: radial-gradient(120% 90% at 50% 40%, #ffffff 0%, var(--m-surface) 70%); }
-.site-frame .expedition.era-2026::before, .site-frame .expedition.era-2026::after { display: none; }
-.site-frame .era-2026 .cartouche, .site-frame .era-2026 .dive-panel { background: rgb(255 255 255 / 0.94); border: 1px solid var(--m-line); outline: 0; border-radius: 22px; box-shadow: 0 18px 50px rgb(0 0 0 / 0.09); }
-.site-frame .era-2026 .cartouche h1, .site-frame .era-2026 .dive-panel h2 { letter-spacing: -0.05em; }
-.site-frame .era-2026 .dive-code, .site-frame .era-2026 .map-tools button, .site-frame .era-2026 .map-tally, .site-frame .era-2026 .map-card em { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
-.site-frame .era-2026 .dive-stops a { border-radius: 14px; }
-.site-frame .era-2026 .dive-stops a:hover { border-color: var(--m-line); background: var(--m-surface); }
-.site-frame .era-2026 .dive-stops .photo { border-radius: 10px; }
-.site-frame .era-2026 .dive-stops strong { font-weight: 600; font-size: 1.1rem; letter-spacing: -0.03em; }
-.site-frame .era-2026 .dive-places li { border-bottom: 1px solid var(--m-line); }
+html:not([data-era="1826"]) .site-frame .expedition { background: radial-gradient(120% 90% at 50% 40%, #ffffff 0%, var(--m-surface) 70%); }
+html:not([data-era="1826"]) .site-frame .expedition::before, html:not([data-era="1826"]) .site-frame .expedition::after { display: none; }
+html:not([data-era="1826"]) .site-frame .cartouche, html:not([data-era="1826"]) .site-frame .dive-panel { background: rgb(255 255 255 / 0.94); border: 1px solid var(--m-line); outline: 0; border-radius: 22px; box-shadow: 0 18px 50px rgb(0 0 0 / 0.09); }
+html:not([data-era="1826"]) .site-frame .cartouche h1, html:not([data-era="1826"]) .site-frame .dive-panel h2 { letter-spacing: -0.05em; }
+html:not([data-era="1826"]) .site-frame .dive-code, html:not([data-era="1826"]) .site-frame .map-tools button, html:not([data-era="1826"]) .site-frame .map-tally, html:not([data-era="1826"]) .site-frame .map-card em { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+html:not([data-era="1826"]) .site-frame .dive-stops a { border-radius: 14px; }
+html:not([data-era="1826"]) .site-frame .dive-stops a:hover { border-color: var(--m-line); background: var(--m-surface); }
+html:not([data-era="1826"]) .site-frame .dive-stops .photo { border-radius: 10px; }
+html:not([data-era="1826"]) .site-frame .dive-stops strong { font-weight: 600; font-size: 1.1rem; letter-spacing: -0.03em; }
+html:not([data-era="1826"]) .site-frame .dive-places li { border-bottom: 1px solid var(--m-line); }
 /* The stamp for a first discovery is passport ink, not wax. */
-.site-frame .era-2026 .seal { background: none; color: var(--red); border: 3px double var(--red); box-shadow: none; }
-.site-frame .era-2026 .seal span { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+html:not([data-era="1826"]) .site-frame .seal { background: none; color: var(--red); border: 3px double var(--red); box-shadow: none; }
+html:not([data-era="1826"]) .site-frame .seal span { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
 /* The preview is a boarding pass. */
-.site-frame .era-2026 .map-card { border: 1px solid var(--m-line); border-radius: 14px; overflow: hidden; box-shadow: 0 16px 40px rgb(0 0 0 / 0.14); }
+html:not([data-era="1826"]) .site-frame .map-card { border: 1px solid var(--m-line); border-radius: 14px; overflow: hidden; box-shadow: 0 16px 40px rgb(0 0 0 / 0.14); }
 .site-frame .map-card-route { display: block; padding-bottom: 8px; margin-bottom: 6px; border-bottom: 1px dashed var(--m-faint); font-family: var(--m-display); font-weight: 600; font-size: 0.95rem; letter-spacing: 0.06em; color: var(--red); }
-.site-frame .era-2026 .map-card strong { font-weight: 600; font-size: 1.1rem; letter-spacing: -0.03em; }
-.site-frame .era-2026 .map-switch, .site-frame .era-2026 .map-zoom, .site-frame .era-2026 .era-switch { background: rgb(255 255 255 / 0.95); border: 1px solid var(--m-line); border-radius: 999px; overflow: hidden; box-shadow: 0 6px 20px rgb(0 0 0 / 0.06); }
-.site-frame .era-2026 .map-tools button + button { border-left: 1px solid var(--m-line); }
-.site-frame .era-2026 .map-tally { background: rgb(255 255 255 / 0.95); border: 1px solid var(--m-line); border-radius: 999px; box-shadow: 0 6px 20px rgb(0 0 0 / 0.06); }
-.site-frame .era-2026 ~ .content-section .ledger h3, .site-frame:not([data-theme]) .ledger h3 { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--m-ink); }
-.site-frame:not([data-theme]) .ledger li { border-bottom: 1px solid var(--m-line); }
+html:not([data-era="1826"]) .site-frame .map-card strong { font-weight: 600; font-size: 1.1rem; letter-spacing: -0.03em; }
+html:not([data-era="1826"]) .site-frame .map-switch, html:not([data-era="1826"]) .site-frame .map-zoom, html:not([data-era="1826"]) .site-frame .era-switch { background: rgb(255 255 255 / 0.95); border: 1px solid var(--m-line); border-radius: 999px; overflow: hidden; box-shadow: 0 6px 20px rgb(0 0 0 / 0.06); }
+html:not([data-era="1826"]) .site-frame .map-tools button + button { border-left: 1px solid var(--m-line); }
+html:not([data-era="1826"]) .site-frame .map-tally { background: rgb(255 255 255 / 0.95); border: 1px solid var(--m-line); border-radius: 999px; box-shadow: 0 6px 20px rgb(0 0 0 / 0.06); }
+html:not([data-era="1826"]) .site-frame .ledger h3 { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--m-ink); }
+html:not([data-era="1826"]) .site-frame .ledger li { border-bottom: 1px solid var(--m-line); }
 
 /* Era switch and the stamp-book button */
 .site-frame .era-switch { display: flex; background: color-mix(in srgb, var(--m-paper) 92%, transparent); border: 1px solid rgb(var(--ink) / 0.6); }
 .site-frame .era-switch button { min-width: 52px; min-height: 44px; padding: 0 14px; font-family: var(--t-caps); letter-spacing: 0.06em; cursor: pointer; }
 .site-frame .era-switch button + button { border-left: 1px solid rgb(var(--ink) / 0.35); }
-.site-frame .era-switch button[aria-pressed="true"] { background: var(--m-ink); color: var(--m-paper); }
-.site-frame .era-switch.is-floating { position: fixed; right: 22px; bottom: 22px; z-index: 20; box-shadow: 0 8px 24px rgb(0 0 0 / 0.14); }
-.site-frame:not([data-theme]) .era-switch.is-floating { border-color: var(--m-line); border-radius: 999px; overflow: hidden; background: #fff; }
-.site-frame:not([data-theme]) .era-switch.is-floating button { font-size: 0.78rem; font-weight: 600; }
+html[data-era="1826"] .site-frame .era-switch button[data-era="1826"], html:not([data-era="1826"]) .site-frame .era-switch button[data-era="2026"] { background: var(--m-ink); color: var(--m-paper); }
 .site-frame .map-tally { min-height: 44px; padding: 0 16px 0 12px; cursor: pointer; }
 
 /* The door */
@@ -246,7 +282,7 @@
 .site-frame .era-half.is-1826 {
   color: #38281a; background-color: #ead9b0;
   background-image: radial-gradient(90% 70% at 50% 50%, transparent 40%, rgb(72 44 16 / 0.42) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.29 0 0 0 0 0.2 0 0 0 0 0.11 0 0 0 0.22 0'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23n)'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.29 0 0 0 0 0.2 0 0 0 0 0.11 0 0 0 0.22 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 .site-frame .era-half.is-2026 { color: #2b2f31; background: #fff radial-gradient(rgb(43 47 49 / 0.2) 1.2px, transparent 1.6px) 0 0 / 14px 14px; }
 .site-frame .era-half.is-2026::before { content: ""; position: absolute; inset: 0; background: radial-gradient(60% 50% at 50% 50%, #fff 30%, rgb(255 255 255 / 0.4) 100%); }
@@ -261,25 +297,26 @@
 .site-frame .era-half.is-2026 .era-go { border-radius: 999px; background: #000; color: #fff; }
 @media (hover: hover) { .site-frame .era-half:hover { flex-grow: 1.45; } .site-frame .era-half:hover .era-year { scale: 1.06; } }
 .site-frame .era-half:focus-visible { outline: 3px solid #e5484d; outline-offset: -6px; }
+.site-frame .era-door:focus { outline: none; }
 @media (max-width: 759px) { .site-frame .era-door { flex-direction: column; } .site-frame .era-door-ask { top: 50%; translate: -50% -50%; } .site-frame .era-year { font-size: clamp(4rem, 26vw, 7rem); } }
 
 /* Time travel: the new era opens in a circle from the point that was pressed. */
 html[data-era-flip]::view-transition-old(root) { animation: none; }
-html[data-era-flip]::view-transition-new(root) { animation: era-flip 950ms cubic-bezier(0.65, 0, 0.35, 1) both; }
+html[data-era-flip]::view-transition-new(root) { animation: era-flip 560ms cubic-bezier(0.3, 0, 0.2, 1) both; }
 @keyframes era-flip { from { clip-path: circle(0 at var(--flip-x) var(--flip-y)); } to { clip-path: circle(150vmax at var(--flip-x) var(--flip-y)); } }
 
 /* Stamp book: passport in 2026, book of seals in 1826 */
 .site-frame .book-veil { position: fixed; inset: 0; z-index: 55; display: grid; place-items: center; padding: 16px; background: rgb(20 14 8 / 0.5); animation: era-door-in 250ms ease both; }
 .site-frame .book { width: min(100%, 380px); display: grid; gap: 14px; padding: 18px; background: var(--m-paper); border: 1px solid rgb(var(--ink) / 0.5); box-shadow: 0 30px 80px rgb(0 0 0 / 0.35); }
-.site-frame:not([data-theme]) .book { border-radius: 24px; border-color: var(--m-line); }
+html:not([data-era="1826"]) .site-frame .book { border-radius: 24px; border-color: var(--m-line); }
 .site-frame .book-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .site-frame .book-head strong { display: block; font-family: var(--t-serif); font-size: 1.4rem; line-height: 1.1; }
 .site-frame .book-head span { font-size: 0.85rem; color: var(--m-muted); }
 .site-frame .book-head button, .site-frame .book-nav button { min-width: 44px; min-height: 44px; display: grid; place-items: center; cursor: pointer; }
 .site-frame .book-pages { position: relative; height: min(52svh, 400px); perspective: 1400px; }
 .site-frame .book-page { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 22px; background: #fdfcf9 repeating-linear-gradient(0deg, transparent 0 27px, rgb(var(--ink) / 0.06) 27px 28px); border: 1px solid rgb(var(--ink) / 0.25); transform-origin: top center; transition: transform 650ms cubic-bezier(0.3, 0.1, 0.2, 1), opacity 450ms ease 150ms; }
-.site-frame:not([data-theme]) .book-page { border-radius: 14px; }
-.site-frame[data-theme="parchment"] .book-page { background: #f3e6c4; }
+html:not([data-era="1826"]) .site-frame .book-page { border-radius: 14px; }
+html[data-era="1826"] .site-frame .book-page { background: #f3e6c4; }
 .site-frame .book-page.is-turned { transform: rotateX(96deg); opacity: 0; }
 .site-frame .book-page:not(.is-open) { pointer-events: none; }
 .site-frame .book-line { display: flex; justify-content: space-between; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--m-quiet); }
@@ -289,52 +326,51 @@ html[data-era-flip]::view-transition-new(root) { animation: era-flip 950ms cubic
 .site-frame .book-page.is-stamped .book-stamp { border: 3px double var(--red); color: var(--red); }
 .site-frame .book-page.is-stamped.is-open .book-stamp { animation: seal-press 420ms cubic-bezier(0.3, 1.5, 0.5, 1) 300ms both; }
 /* 1826: a stamped page carries a wax seal instead of an ink stamp. */
-.site-frame[data-theme="parchment"] .book-page.is-stamped .book-stamp { border: 0; color: #f6dfc9; background: radial-gradient(circle at 35% 30%, #cf463f, #96201c 62%, #6f1512); box-shadow: 0 4px 12px rgb(60 20 10 / 0.45), inset 0 0 0 6px rgb(255 255 255 / 0.07), inset 0 0 0 9px rgb(0 0 0 / 0.12); }
+html[data-era="1826"] .site-frame .book-page.is-stamped .book-stamp { border: 0; color: #f6dfc9; background: radial-gradient(circle at 35% 30%, #cf463f, #96201c 62%, #6f1512); box-shadow: 0 4px 12px rgb(60 20 10 / 0.45), inset 0 0 0 6px rgb(255 255 255 / 0.07), inset 0 0 0 9px rgb(0 0 0 / 0.12); }
 .site-frame .book-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .site-frame .book-nav button:disabled { opacity: 0.3; cursor: default; }
 .site-frame .book-go { flex: 1; padding: 0 16px; background: var(--m-ink); color: var(--m-paper); font-family: var(--t-caps); letter-spacing: 0.06em; }
-.site-frame:not([data-theme]) .book-go { border-radius: 999px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; }
+html:not([data-era="1826"]) .site-frame .book-go { border-radius: 999px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; }
 .site-frame .photo video { width: 100%; height: 100%; object-fit: cover; }
 @media (prefers-reduced-motion: reduce) { .site-frame .era-door, .site-frame .book-veil, .site-frame .book-page.is-stamped.is-open .book-stamp { animation: none; } .site-frame .era-half, .site-frame .era-year, .site-frame .book-page { transition: none; } }
 
 /* ---------- The passport, page by page (scroll-driven) ---------- */
-/* The 1826 theme hides overflow; `clip` does the same without stopping the stage from pinning. */
-.site-frame.site-frame[data-theme="parchment"] { overflow: clip; }
 .site-frame .tour { position: relative; margin-top: clamp(56px, 8vw, 112px); }
 .site-frame .tour-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; --edge: max(var(--m-pad), calc((100vw - 1360px) / 2 + var(--m-pad))); }
-.site-frame:not([data-theme]) .tour-stage { background: var(--m-surface); }
+html:not([data-era="1826"]) .site-frame .tour-stage { background: var(--m-surface); }
 .site-frame .tour-title { position: absolute; left: var(--edge); right: var(--edge); top: clamp(80px, 12vh, 120px); font-size: clamp(1.5rem, 3.2vw, 2.4rem); line-height: 1.1; }
-.site-frame:not([data-theme]) .tour-title { letter-spacing: -0.05em; }
+html:not([data-era="1826"]) .site-frame .tour-title { letter-spacing: -0.05em; }
 .site-frame .tour-hint { position: absolute; right: var(--edge); bottom: 28px; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--m-quiet); }
 
 .site-frame .passport { position: absolute; inset: 0; margin: auto; width: min(74vw, 340px); height: min(50svh, 440px); perspective: 1400px; translate: 0 -4%; box-shadow: 0 26px 64px rgb(0 0 0 / 0.16); }
-.site-frame:not([data-theme]) .passport { border-radius: 16px; }
+html:not([data-era="1826"]) .site-frame .passport { border-radius: 16px; }
 .site-frame .passport-page {
   position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 22px 24px;
   background: #fdfcf9 repeating-linear-gradient(0deg, transparent 0 27px, rgb(var(--ink) / 0.055) 27px 28px); border: 1px solid rgb(var(--ink) / 0.2);
   transform-origin: top center; transition: transform 700ms cubic-bezier(0.3, 0.1, 0.2, 1), opacity 500ms ease 150ms;
 }
-.site-frame:not([data-theme]) .passport-page { border-radius: 16px; }
-.site-frame[data-theme="parchment"] .passport-page { background: #f3e6c4; border-color: rgb(var(--ink) / 0.5); }
+html:not([data-era="1826"]) .site-frame .passport-page { border-radius: 16px; }
+html[data-era="1826"] .site-frame .passport-page { background: #f3e6c4; border-color: rgb(var(--ink) / 0.5); }
 /* A turned page lifts up and away over the top edge, like a notepad. */
 .site-frame .passport-page.is-turned { transform: rotateX(96deg); opacity: 0; }
 .site-frame .passport-line { display: flex; justify-content: space-between; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--m-quiet); }
 .site-frame .stamp { align-self: center; display: grid; place-content: center; gap: 4px; width: min(54vw, 220px); aspect-ratio: 1; padding: 18px; text-align: center; border-radius: 50%; border: 3px double var(--red); color: var(--red); opacity: 0; scale: 1.5; }
 .site-frame .stamp strong { font-family: var(--t-serif); font-size: 1.4rem; line-height: 1.1; }
-.site-frame:not([data-theme]) .stamp strong { font-weight: 600; letter-spacing: -0.03em; }
+html:not([data-era="1826"]) .site-frame .stamp strong { font-weight: 600; letter-spacing: -0.03em; }
 .site-frame .stamp span { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; }
 /* The stamp lands with a thump just after its page comes to the top. */
 .site-frame .passport-page.is-open .stamp, .site-frame .passport-page.is-turned .stamp { opacity: 0.92; scale: 1; transition: scale 260ms cubic-bezier(0.3, 1.6, 0.5, 1) 380ms, opacity 160ms ease 380ms; }
-.site-frame[data-theme="parchment"] .stamp { border: 0; color: #f6dfc9; background: radial-gradient(circle at 35% 30%, #cf463f, #96201c 62%, #6f1512); box-shadow: 0 4px 12px rgb(60 20 10 / 0.45), inset 0 0 0 6px rgb(255 255 255 / 0.07), inset 0 0 0 9px rgb(0 0 0 / 0.12); }
+html[data-era="1826"] .site-frame .stamp { border: 0; color: #f6dfc9; background: radial-gradient(circle at 35% 30%, #cf463f, #96201c 62%, #6f1512); box-shadow: 0 4px 12px rgb(60 20 10 / 0.45), inset 0 0 0 6px rgb(255 255 255 / 0.07), inset 0 0 0 9px rgb(0 0 0 / 0.12); }
 
 .site-frame .tour-card { position: absolute; left: var(--edge); right: var(--edge); bottom: clamp(56px, 9vh, 88px); max-width: 26rem; padding: 18px 22px; background: color-mix(in srgb, var(--m-paper) 94%, transparent); border: 1px solid rgb(var(--ink) / 0.5); animation: tour-card-in 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-.site-frame:not([data-theme]) .tour-card { border-color: var(--m-line); border-radius: 20px; box-shadow: 0 18px 50px rgb(0 0 0 / 0.08); }
+html:not([data-era="1826"]) .site-frame .tour-card { border-color: var(--m-line); border-radius: 20px; box-shadow: 0 18px 50px rgb(0 0 0 / 0.08); }
 @keyframes tour-card-in { from { opacity: 0; transform: translateY(14px); } }
 .site-frame .tour-count { font-family: var(--t-caps); font-size: 0.95rem; letter-spacing: 0.06em; color: var(--red); }
-.site-frame:not([data-theme]) .tour-count { font-weight: 600; }
+html:not([data-era="1826"]) .site-frame .tour-count { font-weight: 600; }
 .site-frame .tour-count span { color: var(--m-quiet); }
+.site-frame .tour-count .only-2026 { color: inherit; }
 .site-frame .tour-card h3 { margin-top: 4px; font-size: clamp(1.6rem, 4vw, 2.4rem); line-height: 1.1; }
-.site-frame:not([data-theme]) .tour-card h3 { letter-spacing: -0.05em; }
+html:not([data-era="1826"]) .site-frame .tour-card h3 { letter-spacing: -0.05em; }
 .site-frame .tour-spot { font-weight: 500; }
 .site-frame .tour-note { margin-top: 6px; color: var(--m-muted); }
 .site-frame .tour-link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin-top: 4px; font-weight: 500; color: var(--red); }
@@ -347,7 +383,99 @@ html[data-era-flip]::view-transition-new(root) { animation: era-flip 950ms cubic
 @media (prefers-reduced-motion: reduce) { .site-frame .tour-card { animation: none; } .site-frame .passport-page, .site-frame .passport-page .stamp { transition: none; } }
 
 /* On a phone the scroll-to-top button sits bottom right, so the era switch takes the left. */
-@media (max-width: 760px) { .site-frame .era-switch.is-floating { right: auto; left: 16px; bottom: 18px; } }
 
 /* The scroll-to-top button takes this corner on a phone. */
 @media (max-width: 760px) { .site-frame .tour-hint { display: none; } }
+
+/* ---------- 2026: the boarding pass ---------- */
+/* Used beside the passport in the scroll section and at the top of the dive panel: FROM, a dashed flight
+   line with the aircraft, TO. The card itself gets a ticket's tear-off edge. */
+.site-frame .ticket-route { display: flex; align-items: center; gap: 12px; margin-top: 8px; font-family: var(--m-display); font-weight: 600; font-size: clamp(1.5rem, 4vw, 2rem); line-height: 1; letter-spacing: -0.02em; }
+.site-frame .ticket-route i { position: relative; flex: 1; height: 0; border-top: 2px dashed var(--m-faint); }
+.site-frame .ticket-route i::after { content: "✈"; position: absolute; left: 50%; top: 50%; translate: -50% -54%; padding: 0 8px; background: #fff; color: var(--red); font-size: 1rem; font-style: normal; }
+html:not([data-era="1826"]) .site-frame .tour-card { padding-bottom: 20px; border-radius: 20px; overflow: visible; }
+html:not([data-era="1826"]) .site-frame .tour-card h3 { margin-top: 14px; padding-top: 14px; border-top: 2px dashed var(--m-line); font-size: clamp(1.3rem, 3vw, 1.75rem); }
+/* The notches where a ticket is torn. */
+html:not([data-era="1826"]) .site-frame .tour-card::before, html:not([data-era="1826"]) .site-frame .tour-card::after { content: ""; position: absolute; top: 92px; width: 18px; height: 18px; border-radius: 50%; background: var(--m-surface); border: 1px solid var(--m-line); }
+html:not([data-era="1826"]) .site-frame .tour-card::before { left: -10px; clip-path: inset(0 0 0 50%); }
+html:not([data-era="1826"]) .site-frame .tour-card::after { right: -10px; clip-path: inset(0 50% 0 0); }
+.site-frame .dive-panel .ticket-route { margin: 6px 0 4px; font-size: 1.4rem; color: var(--m-ink); }
+.site-frame .dive-panel .ticket-route i::after { background: #fff; }
+
+/* ---------- Touch and phone layout ---------- */
+.site-frame .back-pill, .site-frame .map-tools .map-swap, .site-frame .tally-short { display: none; }
+
+/* The door answers a press: the half under the finger swells to three quarters, and on release takes the
+   whole screen before the door fades onto the map. */
+.site-frame .era-half { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  transition: flex-grow 600ms cubic-bezier(0.2, 0.7, 0.2, 1), padding 600ms cubic-bezier(0.2, 0.7, 0.2, 1), opacity 400ms ease; }
+.site-frame .era-line, .site-frame .era-go { transition: opacity 300ms ease; }
+.site-frame .era-half.is-held { flex-grow: 3.7; }
+.site-frame .era-half.is-held .era-year { scale: 1.08; }
+.site-frame .era-half.is-chosen { flex-grow: 1; }
+.site-frame .era-half.is-chosen .era-year { scale: 1.2; }
+.site-frame .era-half.is-chosen .era-line, .site-frame .era-half.is-chosen .era-go { opacity: 0; }
+.site-frame .era-half.is-out { flex-grow: 0.0001; padding: 0; opacity: 0; }
+.site-frame .era-door.is-picked .era-door-ask { opacity: 0; transition: opacity 200ms ease; }
+.site-frame .era-door.is-leaving { opacity: 0; pointer-events: none; transition: opacity 460ms ease; }
+
+@media (max-width: 759px) {
+  /* Back is always top left on a phone, in place of the site name, on every screen that has somewhere to
+     go back to: a country on the map, a country's journal, a city's journal. */
+  .site-frame .back-pill { position: fixed; top: 14px; left: 16px; z-index: 42; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px 0 12px; font-weight: 500; cursor: pointer;
+    background: color-mix(in srgb, var(--m-paper) 94%, transparent); border: 1px solid rgb(var(--ink) / 0.5); box-shadow: 0 6px 20px rgb(0 0 0 / 0.1); }
+  html:not([data-era="1826"]) .site-frame .back-pill { border-radius: 999px; border-color: var(--m-line); background: rgb(255 255 255 / 0.96); }
+  html[data-era="1826"] .site-frame .back-pill { font-family: var(--t-caps); letter-spacing: 0.06em; }
+  .site-frame:has(.back-pill) .brand { visibility: hidden; }
+  .site-frame .dive-back, .site-frame .story-back { display: none; }
+
+  /* One row of controls along the bottom: the stamp book on the left; era, map-or-globe and reset on the
+     right. Zooming is done with two fingers, so the + and − buttons are not needed here. */
+  .site-frame .map-switch, .site-frame .tally-long, .site-frame .map-zoom button:not(.map-reset) { display: none; }
+  .site-frame .map-tools .map-swap { display: grid; }
+  .site-frame .tally-short { display: inline; font-weight: 600; letter-spacing: 0.04em; }
+  /* Where there is room, the button says what it opens. */
+  @media (min-width: 380px) { .site-frame .tally-short::before { content: "Stamps "; } html[data-era="1826"] .site-frame .tally-short::before { content: "Seals "; } }
+  /* On mid-sized phones the 2026 word and its icon do not both fit beside the other controls: the word stays. */
+  @media (min-width: 380px) and (max-width: 411px) { html:not([data-era="1826"]) .site-frame .map-tally svg { display: none; } html:not([data-era="1826"]) .site-frame .map-tally { padding: 0 14px; } }
+  .site-frame .map-tally { left: 16px; bottom: 22px; padding: 0 14px 0 12px; }
+  .site-frame .map-tools { left: auto; right: 16px; bottom: 22px; gap: 8px; }
+  .site-frame .map-tools button, .site-frame .map-tools .era-switch button { min-width: 44px; padding: 0 11px; font-size: 0.76rem; }
+  /* The narrowest phones: the same row with a little less air. */
+  @media (max-width: 370px) { .site-frame .map-tools { gap: 6px; } .site-frame .map-tools button, .site-frame .map-tools .era-switch button { min-width: 40px; padding: 0 6px; } .site-frame .map-tally { padding: 0 10px 0 9px; gap: 6px; } }
+  .site-frame .map-swap, .site-frame .map-zoom { background: color-mix(in srgb, var(--m-paper) 92%, transparent); border: 1px solid rgb(var(--ink) / 0.6); }
+  html:not([data-era="1826"]) .site-frame .map-swap { background: rgb(255 255 255 / 0.95); border: 1px solid var(--m-line); border-radius: 999px; box-shadow: 0 6px 20px rgb(0 0 0 / 0.06); }
+  .site-frame .map-tools .map-swap { border-left-width: 1px; }
+
+  /* The country panel is a sheet above that row. It stays short, so the country itself is still in view
+     above it (the map is nudged up to make room), and its cities scroll sideways as cards. */
+  .site-frame .dive-panel { top: auto; left: 12px; right: 12px; bottom: 80px; width: auto; max-height: 42svh; padding: 14px 16px 16px; }
+  html:not([data-era="1826"]) .site-frame .dive-panel { border-radius: 22px; }
+  .site-frame .dive-panel h2 { font-size: 1.75rem; padding-right: 64px; }
+  .site-frame .dive-panel .ticket-route, .site-frame .dive-code { margin-top: 0; padding-right: 64px; font-size: 1.1rem; }
+  .site-frame .dive-note { margin-top: 4px; font-size: 0.95rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .site-frame .seal { width: 54px; height: 54px; right: 12px; top: 12px; }
+  .site-frame .seal span { font-size: 0.5rem; }
+  .site-frame .dive-stops { display: flex; gap: 10px; margin: 12px -16px 12px; padding: 0 16px 2px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .site-frame .dive-stops::-webkit-scrollbar, .site-frame .dive-places::-webkit-scrollbar { display: none; }
+  .site-frame .dive-stops li { flex: 0 0 68%; scroll-snap-align: start; }
+  .site-frame .dive-stops a { grid-template-columns: 56px minmax(0, 1fr); gap: 10px; padding: 8px; border: 1px solid rgb(var(--ink) / 0.3); min-height: 64px; }
+  html:not([data-era="1826"]) .site-frame .dive-stops a { border-color: var(--m-line); }
+  .site-frame .dive-stops .photo { width: 56px; height: 48px; }
+  .site-frame .dive-stops strong { font-size: 1.05rem; }
+  .site-frame .dive-stops small { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+  .site-frame .dive-panel .button { width: 100%; justify-content: center; min-height: 46px; }
+  .site-frame .dive-places { display: flex; gap: 8px; columns: auto; margin: 12px -16px 0; padding: 0 16px 2px; overflow-x: auto; scrollbar-width: none; }
+  .site-frame .dive-places li { flex: none; padding: 7px 14px; border: 1px solid rgb(var(--ink) / 0.35); border-radius: 999px; white-space: nowrap; }
+  .site-frame .dive-places span { display: none; }
+  /* The preview that follows a tap sits clear of the finger and inside the screen. */
+  .site-frame .map-card { width: 190px; }
+  /* Journal pages: room for the back button over the cover. */
+  .site-frame .story-hero-copy { padding-top: 96px; }
+}
+@media (prefers-reduced-motion: reduce) { .site-frame .era-door.is-leaving, .site-frame .era-half { transition: none; } }
+
+/* The door, before the script has drawn it: the two halves in their own colours, so a first-time visitor
+   sees the choice from the first frame and never the map behind it. Removed once the real door is up. */
+html[data-door] body::before { content: ""; position: fixed; inset: 0; z-index: 59; background: linear-gradient(to right, #ead9b0 50%, #ffffff 50%); }
+@media (max-width: 759px) { html[data-door] body::before { background: linear-gradient(to bottom, #ead9b0 50%, #ffffff 50%); } }
