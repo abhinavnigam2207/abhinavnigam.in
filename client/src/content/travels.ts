@@ -11,6 +11,9 @@ export type Place = { name: string; spot: string; code: string; lon: number; lat
 // Arcs and routes start here.
 export const home = { name: "India", code: "IND", lon: 77.21, lat: 28.61 };
 
+// Hidden on the map for visitors to find. The line is shown when they do.
+export const chest = { lon: -138, lat: -24, title: "You found the chest.", line: "Placeholder. A favourite photo or a line from Abhinav goes here as the reward." };
+
 // Countries, in the order the page tours them.
 export const countries: Place[] = [
   { name: "Nepal", spot: "Kathmandu", code: "NPL", lon: 85.32, lat: 27.72, note: "A line about this trip goes here." },
@@ -46,14 +49,15 @@ export const indiaPlaces: Place[] = [
 ];
 
 // The bucket list proper: things still to do, and a few already done.
-export const bucketList: { title: string; where: string; done: boolean }[] = [
-  { title: "Watch the northern lights", where: "Iceland", done: false },
-  { title: "Trek in Patagonia", where: "Chile and Argentina", done: false },
+// `lon`/`lat` put a to-do item on the map as uncharted territory.
+export const bucketList: { title: string; where: string; done: boolean; lon?: number; lat?: number }[] = [
+  { title: "Watch the northern lights", where: "Iceland", done: false, lon: -19.0, lat: 64.9 },
+  { title: "Trek in Patagonia", where: "Chile and Argentina", done: false, lon: -72.5, lat: -49.5 },
   { title: "Set foot on Antarctica", where: "Antarctica", done: false },
-  { title: "Walk the Inca Trail", where: "Peru", done: false },
+  { title: "Walk the Inca Trail", where: "Peru", done: false, lon: -72.5, lat: -13.2 },
   { title: "See the cherry blossom", where: "Japan", done: true },
   { title: "Dive a coral reef", where: "Andaman", done: true },
-  { title: "Ride the Trans-Siberian", where: "Russia", done: false },
+  { title: "Ride the Trans-Siberian", where: "Russia", done: false, lon: 104.3, lat: 56.0 },
   { title: "Drive the Manali to Leh road", where: "India", done: true },
 ];
 

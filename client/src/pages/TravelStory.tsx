@@ -1,7 +1,9 @@
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
+import { useEffect } from "react";
 import { Photo } from "@/components/site/Photo";
 import { PageMeta, SiteShell } from "@/components/site/SiteShell";
 import { stories, storyMeta, travelsAreSample, type City, type Story } from "@/content/travels";
+import { addStamp } from "@/lib/stamps";
 import NotFound from "./NotFound";
 
 // Moving between the travel pages morphs the photo that was clicked into the next page's cover. The
@@ -15,6 +17,17 @@ export function TravelTransitions() {
   `}</style>;
 }
 
+// The old-print lettering used on the map and for headings on the journal pages. Loaded only here, so the
+// rest of the site does not pay for it.
+export function TravelFonts() {
+  return <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap" precedence="default" />;
+}
+
+// Reading a country's journal counts as discovering it, the same as opening it on the map.
+function useStamp(code?: string) {
+  useEffect(() => { if (code) addStamp(code); }, [code]);
+}
+
 const sampleNote = travelsAreSample && <p className="sample-note wrap" role="note"><strong>Preview with placeholder photos and text.</strong> This page shows the layout; the story and pictures are still to come.</p>;
 
 function Facts({ facts }: { facts: { label: string; value: string }[] }) {
@@ -23,16 +36,18 @@ function Facts({ facts }: { facts: { label: string; value: string }[] }) {
 
 export function TravelCountry({ slug }: { slug: string }) {
   const story = stories.find(item => item.slug === slug);
+  useStamp(story?.code);
   if (!story) return <NotFound />;
   return (
-    <SiteShell>
+    <SiteShell theme="parchment">
       <PageMeta {...storyMeta(story)} />
       <TravelTransitions />
+      <TravelFonts />
       <main className="story-main">
         <header className="story-hero">
           <Photo photo={story.cover} className="story-cover" shared={`story-${story.slug}`} />
           <div className="story-hero-copy wrap">
-            <a className="story-back" href="/bucket-list"><ArrowLeft size={16} aria-hidden="true" /> Travel log</a>
+            <a className="story-back" href="/bucket-list"><ArrowLeft size={16} aria-hidden="true" /> The map</a>
             <p className="story-code">{story.code}</p>
             <h1>{story.name}</h1>
             <p className="story-tagline">{story.tagline}</p>
@@ -70,13 +85,15 @@ export function TravelCountry({ slug }: { slug: string }) {
 export function TravelCity({ country, slug }: { country: string; slug: string }) {
   const story: Story | undefined = stories.find(item => item.slug === country);
   const index = story ? story.cities.findIndex(item => item.slug === slug) : -1;
+  useStamp(index >= 0 ? story?.code : undefined);
   if (!story || index < 0) return <NotFound />;
   const city: City = story.cities[index];
   const next = story.cities[(index + 1) % story.cities.length];
   return (
-    <SiteShell>
+    <SiteShell theme="parchment">
       <PageMeta {...storyMeta(story, city)} />
       <TravelTransitions />
+      <TravelFonts />
       <main className="story-main">
         <header className="story-hero">
           <Photo photo={city.cover} className="story-cover" shared={`city-${city.slug}`} />
