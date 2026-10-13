@@ -22,6 +22,10 @@ No database. Two data stores:
 
 Resume file: PDF, DOC, or DOCX up to 4 MB, stored in the private Drive folder "Google referral resumes". Script and setup: `docs/referral-sheet/`.
 
+### Travel content (`client/src/content/travels.ts`)
+
+No backend. `countries` and `indiaPlaces` are `Place { name, spot, code, lon, lat, note, story? }`; `story` is the slug of a country page. `stories` holds `Story { slug, code, name, lon, lat, tagline, intro, cover, facts[], cities[] }` and `City { slug, name, lon, lat, tagline, intro, cover, photos[], highlights[], facts[] }`. `Photo { caption, tone, src?, tall? }`: without `src` it renders as a placeholder. `travelsAreSample` keeps every travel page `noindex` and out of the sitemap. Photo files, when supplied, go under `client/public/travel/<country>/`.
+
 ### Ask knowledge (`shared/knowledge.md`)
 
 One Markdown file is the source of truth. Under `# Knowledge`, each `##` heading is a source with `- id`, `- url`, `- category` (`CV`, `Article` or `Site`), optional `- date`, then its text. Under `# Off-topic replies`, a bullet list of the 30 prepared refusal lines. `scripts/build-knowledge.ts` validates it and writes `shared/knowledge.generated.ts`; a test fails if the two are out of step or if a principle on the Ideologies page is missing from the file. Holds CV summaries, detailed Observe.ai and Rapido entries, articles, site pages and the ideologies. Every source goes into each prompt; retrieval sets the order.

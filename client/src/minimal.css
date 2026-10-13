@@ -520,3 +520,192 @@ body { background: var(--m-paper); }
 /* View-transition timing for the Ask page: the photo, title and input glide; everything else cross-fades. */
 ::view-transition-group(ask-avatar), ::view-transition-group(ask-title), ::view-transition-group(ask-form) { animation-duration: 1400ms; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 700ms; }
+
+/* ---------- Travel page (/bucket-list) ---------- */
+.site-frame .travel-hero { display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; gap: 24px; padding-top: clamp(40px, 7vw, 96px); }
+.site-frame .travel-hero h1 { margin-top: 20px; font-size: clamp(2.4rem, 6vw, 4.75rem); line-height: 1.06; letter-spacing: -0.055em; max-width: 12ch; }
+.site-frame .travel-lede { margin-top: 20px; max-width: 34ch; font-size: 1.125rem; color: var(--m-muted); }
+.site-frame .travel-stats { display: flex; flex-wrap: wrap; gap: 20px clamp(28px, 5vw, 64px); margin-top: clamp(28px, 4vw, 48px); }
+.site-frame .travel-stats dt { font-size: 0.875rem; letter-spacing: 0; color: var(--m-muted); }
+.site-frame .travel-stats dd { font-family: var(--m-display); font-weight: 600; font-size: clamp(2.4rem, 5vw, 3.75rem); line-height: 1.05; letter-spacing: -0.05em; }
+.site-frame .travel-hero-globe { width: 100%; aspect-ratio: 1; max-width: 620px; justify-self: center; }
+@media (min-width: 900px) { .site-frame .travel-hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.site-frame .sample-note { margin-top: 32px; font-size: 0.9rem; color: var(--m-muted); }
+.site-frame .sample-note strong { color: var(--m-ink); font-weight: 500; }
+
+/* A tall section whose stage stays pinned while the page scrolls through it. */
+.site-frame .tour { position: relative; margin-top: clamp(48px, 8vw, 112px); }
+.site-frame .tour-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; background: var(--m-surface); --edge: max(var(--m-pad), calc((100vw - 1360px) / 2 + var(--m-pad))); }
+.site-frame .tour-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* On a phone the card sits at the bottom, so the globe or map takes the space above it. */
+@media (max-width: 899px) { .site-frame .tour:not(.is-india) .tour-canvas { top: 6%; height: 62%; } }
+.site-frame .tour-card {
+  position: absolute; left: var(--m-pad); right: var(--m-pad); bottom: clamp(72px, 10vh, 96px); max-width: 26rem;
+  padding: 24px 26px; border-radius: 20px; background: rgb(255 255 255 / 0.94); border: 1px solid var(--m-line); box-shadow: 0 18px 50px rgb(0 0 0 / 0.08);
+  animation: tour-card-in 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes tour-card-in { from { opacity: 0; transform: translateY(14px); } }
+.site-frame .tour-count { font-family: var(--m-display); font-weight: 600; font-size: 0.95rem; letter-spacing: 0; color: #e5484d; }
+.site-frame .tour-count span { color: var(--m-quiet); }
+.site-frame .tour-card h3 { margin-top: 6px; font-size: clamp(1.75rem, 4vw, 2.5rem); line-height: 1.1; letter-spacing: -0.05em; }
+.site-frame .tour-spot { margin-top: 2px; font-weight: 500; }
+.site-frame .tour-note { margin-top: 10px; color: var(--m-muted); }
+.site-frame .tour-hint { position: absolute; right: var(--m-pad); top: 28px; font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--m-quiet); }
+@media (min-width: 900px) {
+  /* Card on the left third, globe or map in the space to its right. */
+  .site-frame .tour-canvas { left: calc(var(--edge) + 25rem); width: calc(100% - var(--edge) - 25rem); }
+  .site-frame .tour-card { left: var(--edge); right: auto; bottom: auto; top: 50%; translate: 0 -50%; width: 24rem; }
+}
+
+/* Flight log: the card is a boarding pass. */
+.site-frame .tour.is-flight .tour-card { border-style: dashed; border-color: var(--m-faint); border-radius: 14px; }
+.site-frame .ticket-route { display: flex; align-items: center; gap: 12px; margin-top: 10px; font-family: var(--m-display); font-weight: 600; font-size: 1.5rem; letter-spacing: -0.02em; }
+.site-frame .ticket-route i { flex: 1; height: 0; border-top: 1px dashed var(--m-faint); }
+.site-frame .tour.is-flight .tour-card h3 { font-size: 1.25rem; margin-top: 12px; }
+
+/* Passport: pages turn up and away, each one stamped. */
+.site-frame .passport { position: absolute; inset: 0; margin: auto; width: min(74vw, 340px); height: min(56svh, 460px); perspective: 1400px; translate: 0 -10%; border-radius: 14px; box-shadow: 0 24px 60px rgb(0 0 0 / 0.14); }
+.site-frame .passport-page {
+  position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 22px 24px;
+  border-radius: 14px; background: #fdfcf9 repeating-linear-gradient(0deg, transparent 0 27px, rgb(43 47 49 / 0.05) 27px 28px); border: 1px solid var(--m-line);
+  transform-origin: top center; transition: transform 700ms cubic-bezier(0.3, 0.1, 0.2, 1), opacity 500ms ease 150ms;
+}
+.site-frame .passport-page.is-turned { transform: rotateX(96deg); opacity: 0; }
+.site-frame .passport-head, .site-frame .passport-foot { display: flex; justify-content: space-between; font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--m-quiet); }
+.site-frame .stamp {
+  align-self: center; display: grid; place-content: center; gap: 4px; width: min(56vw, 230px); aspect-ratio: 1; padding: 18px; text-align: center;
+  border: 3px double #e5484d; border-radius: 50%; color: #e5484d; opacity: 0; scale: 1.5;
+}
+.site-frame .stamp strong { font-family: var(--m-display); font-weight: 600; font-size: 1.4rem; line-height: 1.1; letter-spacing: -0.03em; }
+.site-frame .stamp span { font-size: 0.8rem; letter-spacing: 0.16em; text-transform: uppercase; }
+.site-frame .passport-page.is-open .stamp, .site-frame .passport-page.is-turned .stamp { opacity: 0.9; scale: 1; transition: scale 260ms cubic-bezier(0.3, 1.6, 0.5, 1) 380ms, opacity 160ms ease 380ms; }
+.site-frame .tour.is-passport .tour-card { padding: 14px 20px; }
+.site-frame .tour.is-passport .tour-card h3, .site-frame .tour.is-passport .tour-spot { display: none; }
+.site-frame .tour.is-passport .tour-note { margin-top: 4px; }
+@media (min-width: 900px) { .site-frame .passport { translate: calc((var(--edge) + 25rem) / 2) 0; } }
+
+/* India chapter */
+.site-frame .india-copy { position: absolute; left: var(--m-pad); right: var(--m-pad); top: clamp(72px, 12vh, 120px); }
+.site-frame .india-copy h2 { margin-top: 12px; font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.1; letter-spacing: -0.05em; }
+.site-frame .india-list { display: flex; flex-wrap: wrap; gap: 6px 8px; margin-top: 20px; }
+.site-frame .india-list li { padding: 5px 12px; border-radius: 999px; border: 1px solid var(--m-line); background: rgb(255 255 255 / 0.9); font-size: 0.875rem; letter-spacing: 0; color: var(--m-quiet); transition: color 300ms, border-color 300ms; }
+.site-frame .india-list li span { display: none; }
+.site-frame .india-list li.is-lit { color: var(--m-ink); border-color: var(--m-ink); }
+.site-frame .tour.is-india .tour-canvas { top: 34%; height: 66%; }
+@media (min-width: 900px) {
+  .site-frame .india-copy { left: var(--edge); right: auto; width: 24rem; top: 50%; translate: 0 -50%; }
+  .site-frame .india-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+  .site-frame .india-list li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border: 0; border-bottom: 1px solid var(--m-line); border-radius: 0; background: none; font-size: 0.95rem; }
+  .site-frame .india-list li span { display: inline; font-size: 0.8rem; color: var(--m-quiet); }
+  .site-frame .india-list li.is-lit { border-color: var(--m-line); }
+  .site-frame .tour.is-india .tour-canvas { top: 0; height: 100%; }
+}
+
+/* Lists below the tours */
+.site-frame .stop-list { display: flex; flex-wrap: wrap; gap: 4px clamp(16px, 3vw, 36px); margin-top: clamp(28px, 4vw, 48px); max-width: 60rem; }
+.site-frame .stop-list li { font-family: var(--m-display); font-weight: 500; font-size: clamp(1.25rem, 3vw, 2rem); letter-spacing: -0.04em; color: var(--m-quiet); }
+.site-frame .bucket { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 0 clamp(24px, 4vw, 56px); margin-top: clamp(28px, 4vw, 48px); max-width: 1100px; }
+.site-frame .bucket li { display: flex; gap: 14px; padding: 20px 0; border-top: 1px solid var(--m-line); }
+.site-frame .bucket strong { display: block; font-family: var(--m-display); font-weight: 600; letter-spacing: -0.03em; }
+.site-frame .bucket small { color: var(--m-muted); font-size: 0.875rem; letter-spacing: 0; }
+.site-frame .bucket-mark { flex: none; width: 14px; height: 14px; margin-top: 5px; border-radius: 50%; border: 1.5px solid var(--m-ink); }
+.site-frame .bucket .is-done .bucket-mark { background: #e5484d; border-color: #e5484d; }
+.site-frame .bucket .is-done strong { text-decoration: line-through; text-decoration-color: var(--m-faint); color: var(--m-muted); }
+.site-frame .travel-close { padding-bottom: clamp(96px, 12vw, 160px); }
+.site-frame .travel-close .button { margin-top: 28px; }
+
+/* Style switcher (review aid, removed once a style is chosen) */
+.site-frame .view-switch {
+  position: fixed; left: 50%; bottom: 14px; translate: -50% 0; z-index: 30; display: flex; align-items: center; gap: 2px; max-width: calc(100vw - 16px);
+  padding: 5px; border-radius: 999px; background: var(--m-ink); color: #fff; box-shadow: 0 10px 30px rgb(0 0 0 / 0.25); font-size: 0.8rem; letter-spacing: 0;
+}
+.site-frame .view-switch > span { padding: 0 8px 0 12px; color: var(--m-faint); }
+.site-frame .view-switch button { min-height: 36px; padding: 0 12px; border-radius: 999px; color: #fff; white-space: nowrap; cursor: pointer; }
+.site-frame .view-switch button[aria-pressed="true"] { background: #fff; color: var(--m-ink); }
+@media (max-width: 420px) { .site-frame .view-switch > span { display: none; } .site-frame .view-switch button { padding: 0 10px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .site-frame .tour-card { animation: none; }
+  .site-frame .passport-page, .site-frame .passport-page .stamp { transition: none; }
+}
+
+/* ---------- Travel: photos, pin preview, country and city pages ---------- */
+.site-frame .photo { position: relative; display: block; overflow: hidden; border-radius: 20px; background: var(--m-surface); }
+.site-frame .photo img { width: 100%; height: 100%; object-fit: cover; }
+/* A placeholder says what it is, over a dot pattern that echoes the globe. */
+.site-frame .photo.is-placeholder::before { content: ""; position: absolute; inset: 0; background-image: radial-gradient(rgb(255 255 255 / 0.45) 1.2px, transparent 1.6px); background-size: 14px 14px; }
+.site-frame .photo-mark { position: absolute; left: 14px; top: 14px; padding: 4px 10px; border-radius: 999px; background: rgb(255 255 255 / 0.82); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.04em; color: var(--m-ink); }
+.site-frame .photo-caption { position: absolute; left: 16px; right: 16px; bottom: 14px; font-size: 0.875rem; color: var(--m-ink); }
+
+/* Hero globe with its pin preview */
+.site-frame .explore { position: relative; width: 100%; max-width: 620px; justify-self: center; }
+.site-frame .explore .travel-hero-globe { display: block; max-width: none; }
+.site-frame .explore-hint { margin-top: 4px; text-align: center; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--m-quiet); }
+.site-frame .pin-card {
+  position: absolute; z-index: 4; width: 220px; translate: -50% calc(-100% - 18px); pointer-events: none;
+  display: grid; gap: 0; border-radius: 16px; background: var(--m-paper); border: 1px solid var(--m-line); box-shadow: 0 18px 44px rgb(0 0 0 / 0.16); overflow: hidden;
+  animation: pin-card-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes pin-card-in { from { opacity: 0; translate: -50% calc(-100% - 6px); scale: 0.94; } }
+.site-frame .pin-card.is-pinned { pointer-events: auto; }
+.site-frame .pin-card .photo { height: 118px; border-radius: 0; }
+.site-frame .pin-card .photo-mark { font-size: 0.65rem; left: 10px; top: 10px; }
+.site-frame .pin-card-copy { display: grid; gap: 2px; padding: 12px 14px 14px; }
+.site-frame .pin-card strong { font-family: var(--m-display); font-weight: 600; font-size: 1.05rem; letter-spacing: -0.03em; }
+.site-frame .pin-card-copy > span { font-size: 0.85rem; line-height: 1.4; color: var(--m-muted); }
+.site-frame .pin-card em { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; font-style: normal; font-size: 0.85rem; font-weight: 500; color: #e5484d; }
+.site-frame .tour-link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin-top: 6px; font-weight: 500; color: #e5484d; }
+.site-frame .stop-list a { color: var(--m-ink); text-decoration: underline; text-decoration-color: #e5484d; text-decoration-thickness: 2px; text-underline-offset: 6px; }
+
+/* Country and city pages */
+.site-frame .story-hero { position: relative; min-height: min(82svh, 760px); display: flex; align-items: flex-end; padding: 0 clamp(8px, 1.2vw, 16px); }
+.site-frame .story-cover { position: absolute; inset: 0 clamp(8px, 1.2vw, 16px); border-radius: clamp(20px, 3vw, 36px); }
+.site-frame .story-cover::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(255 255 255 / 0.86) 0%, rgb(255 255 255 / 0.3) 46%, transparent 70%); }
+.site-frame .story-cover .photo-mark { top: 96px; left: clamp(16px, 4vw, 54px); z-index: 1; }
+.site-frame .story-hero-copy { position: relative; padding-top: 140px; padding-bottom: clamp(28px, 5vw, 64px); }
+.site-frame .story-back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; }
+.site-frame .story-code { margin-top: 18px; font-family: var(--m-display); font-weight: 600; letter-spacing: 0.14em; color: #e5484d; }
+.site-frame .story-hero h1 { font-size: clamp(3.5rem, 14vw, 11rem); line-height: 0.95; letter-spacing: -0.065em; }
+.site-frame .story-tagline { margin-top: 14px; max-width: 30ch; font-size: clamp(1.125rem, 2.2vw, 1.5rem); line-height: 1.35; color: var(--m-ink); }
+.site-frame .story-intro { display: grid; gap: clamp(28px, 5vw, 72px); padding-top: clamp(48px, 7vw, 96px); }
+.site-frame .story-intro > p { max-width: 38rem; font-size: clamp(1.125rem, 2vw, 1.375rem); line-height: 1.55; }
+.site-frame .story-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 32px; align-content: start; }
+.site-frame .story-facts dt { font-size: 0.875rem; letter-spacing: 0; color: var(--m-muted); }
+.site-frame .story-facts dd { font-family: var(--m-display); font-weight: 600; font-size: 1.25rem; letter-spacing: -0.03em; }
+@media (min-width: 900px) { .site-frame .story-intro { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); } }
+
+.site-frame .city-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: clamp(16px, 2.4vw, 28px); margin-top: clamp(28px, 4vw, 48px); }
+.site-frame .city-card { position: relative; display: block; }
+.site-frame .city-card .photo { aspect-ratio: 4 / 5; transition: scale 500ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+.site-frame .city-card-copy { position: absolute; left: 22px; right: 60px; bottom: 20px; display: grid; gap: 2px; }
+.site-frame .city-card small { font-family: var(--m-display); font-weight: 600; letter-spacing: 0.08em; color: var(--m-ink); opacity: 0.7; }
+.site-frame .city-card strong { font-family: var(--m-display); font-weight: 600; font-size: clamp(1.75rem, 3vw, 2.5rem); line-height: 1.05; letter-spacing: -0.05em; }
+.site-frame .city-card-copy > span { color: var(--m-ink); }
+.site-frame .city-card-arrow { position: absolute; right: 18px; top: 18px; width: 44px; height: 44px; padding: 12px; border-radius: 50%; background: var(--m-paper); transition: rotate 300ms, background 200ms, color 200ms; }
+@media (hover: hover) {
+  .site-frame .city-card:hover .photo { scale: 0.975; }
+  .site-frame .city-card:hover .city-card-arrow { rotate: 45deg; background: var(--m-ink); color: #fff; }
+}
+
+.site-frame .story-photos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: clamp(16px, 2.4vw, 28px); }
+.site-frame .story-photos .photo { aspect-ratio: 4 / 3; }
+.site-frame .story-photos .is-tall .photo { aspect-ratio: 4 / 5; }
+.site-frame .story-photos figcaption { margin-top: 10px; font-size: 0.9rem; color: var(--m-muted); }
+@media (min-width: 900px) {
+  /* A loose two-column story: wide frames span both columns, tall ones sit beside the next. */
+  .site-frame .story-photos { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .site-frame .story-photos figure:not(.is-tall):nth-of-type(3n + 1) { grid-column: 1 / -1; }
+  .site-frame .story-photos figure:not(.is-tall):nth-of-type(3n + 1) .photo { aspect-ratio: 21 / 9; }
+  .site-frame .story-photos figure:nth-of-type(even) { margin-top: clamp(24px, 5vw, 72px); }
+}
+.site-frame .story-highlights { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 0 clamp(24px, 4vw, 56px); margin-top: clamp(28px, 4vw, 48px); }
+.site-frame .story-highlights > div { padding: 22px 0; border-top: 1px solid var(--m-line); }
+.site-frame .story-highlights dt { font-family: var(--m-display); font-weight: 600; font-size: 1.125rem; letter-spacing: -0.03em; margin-bottom: 6px; }
+.site-frame .story-highlights dd { color: var(--m-muted); }
+.site-frame .story-end { padding-bottom: clamp(80px, 11vw, 144px); }
+.site-frame .story-next { display: grid; gap: 6px; padding: clamp(28px, 5vw, 56px) 0; border-top: 1px solid var(--m-line); border-bottom: 1px solid var(--m-line); }
+.site-frame .story-next span { color: var(--m-muted); }
+.site-frame .story-next strong { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-family: var(--m-display); font-weight: 600; font-size: clamp(2.2rem, 8vw, 6rem); line-height: 1; letter-spacing: -0.06em; }
+.site-frame .story-next svg { flex: none; transition: translate 300ms; }
+@media (hover: hover) { .site-frame .story-next:hover svg { translate: 12px 0; } }
+@media (prefers-reduced-motion: reduce) { .site-frame .pin-card { animation: none; } .site-frame .city-card .photo, .site-frame .city-card-arrow, .site-frame .story-next svg { transition: none; } }

@@ -7,7 +7,9 @@
 | `/` | Home | Full nav |
 | `/blog` | Writing list | Full nav |
 | `/ideologies` | Principles list | Full nav |
-| `/bucket-list`, `/experiences` | Things done | Full nav |
+| `/bucket-list`, `/experiences` | Travel globe and bucket list | Full nav |
+| `/bucket-list/<country>/` | Country story: cover, intro, facts, city cards | Full nav; back to the globe |
+| `/bucket-list/<country>/<city>/` | City story: cover, intro, facts, photos, highlights, next city | Full nav; back to the country |
 | `/google-refer` | Referral form | Full nav |
 | `/ask` and `ask.abhinavnigam.in/` | Ask Abhinav | Compact |
 | `/knowme` and `knowme.abhinavnigam.in/` | Link page | Compact |
@@ -35,7 +37,7 @@ Header on every full page: brand and a Menu button. Menu opens a full-screen lis
 |------|-------|---------|---------|-------|
 | Blog | n/a (static) | n/a | List of posts | n/a |
 | Ideologies | n/a (static) | n/a | Two numbered lists of ten principles | n/a |
-| Bucket list | "List is taking shape" message | n/a | List | n/a |
+| Bucket list | n/a | n/a | Hero with turning globe and counts; world tour pinned while scrolling (one stop per step, `?view=globe|map|passport|flight`); "Every stop" list; India chapter that zooms the map and lights places one by one; bucket list with done and to-do items; link to Know Me. Reduced motion: no easing or spin, frames change on scroll | Without canvas the text lists still carry every place |
 | Home experience rows | Summary, outcome, stack | n/a | Observe.ai and Rapido have a closed "The full story" fold-out | n/a |
 | Referral | Form beside a fold-out FAQ (stacked under 1100px) | Status check on load; button reads "Sending…" while submitting | Thank-you message, form cleared | Field errors inline; server message shown on failure. The form renders open; only if the status check answers "not connected" does it show the email fallback and disable Submit |
 | Ask | Heading, search box, four suggestions | "Looking through the notes" | Answer with sources | Inline message that the service is unavailable |

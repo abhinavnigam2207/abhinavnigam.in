@@ -34,7 +34,7 @@ The previous build was a VS Code look-alike. It was visually busy, used very sma
 | 1 | As a visitor I see who Abhinav is, where he has worked, and what he achieved | `/` |
 | 2 | As a reader I see all past blog posts | `/blog` |
 | 3 | As a reader I see a list of his principles | `/ideologies` |
-| 4 | As a reader I see things he has done (low priority) | `/bucket-list`, `/experiences` |
+| 4 | As a reader I explore where he has travelled on a globe, open a country, then a city, and see photos and highlights from each | `/bucket-list`, `/bucket-list/<country>/`, `/bucket-list/<country>/<city>/` |
 | 5 | As a candidate I submit basic details, current company, previous companies, resume, and job link, and it lands in a spreadsheet | `/google-refer` |
 | 6 | As a follower I get one page with all his links | `knowme.abhinavnigam.in` |
 | 7 | As a visitor I ask questions and get answers grounded in his material, in a Google-like search UI with suggestions | `ask.abhinavnigam.in` |

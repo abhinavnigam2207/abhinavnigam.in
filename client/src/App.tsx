@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import Ideologies from "./pages/Ideologies";
 import KnowMe from "./pages/KnowMe";
 import NotFound from "./pages/NotFound";
+import { TravelCity, TravelCountry } from "./pages/TravelStory";
 
 const IDEApp = lazy(() => import("./pages/IDEApp"));
 
@@ -34,6 +35,8 @@ function Routes() {
       <Route path="/ideologies" component={Ideologies} />
       <Route path="/experiences" component={Experiences} />
       <Route path="/bucket-list" component={Experiences} />
+      <Route path="/bucket-list/:country">{params => <TravelCountry slug={params.country} />}</Route>
+      <Route path="/bucket-list/:country/:city">{params => <TravelCity country={params.country} slug={params.city} />}</Route>
       <Route path="/google-refer" component={GoogleRefer} />
       <Route path="/ask" component={Ask} />
       <Route path="/knowme" component={KnowMe} />

@@ -32,7 +32,11 @@ Docs are the source of truth. Scope changes edit these first, then code.
 | 2026-10-11 | Everything Ask knows lives in one editable file, `shared/knowledge.md`; `pnpm knowledge` (also the first build step) generates `shared/knowledge.generated.ts` from it | Locked |
 | 2026-10-11 | Ask refuses with one of 30 prepared lines (in `shared/knowledge.md`), chosen by the server, not with text the model writes | Locked |
 | 2026-10-11 | Ideologies page holds the client's 20 principles (manager, senior engineer); Observe.ai and Rapido rows on Home get a fold-out with full detail; both feed the Ask knowledge set | Locked |
-| — | Bucket-list content | **Open, client to supply** |
+| 2026-10-13 | Bucket list is a scroll-driven travel page: dotted globe and maps drawn on canvas from generated land grids, no map library or tiles at run time, no borders drawn. Four tour styles (globe, map, passport, flight log) sit behind a temporary switcher for the client to choose from | Locked (style choice open) |
+| 2026-10-13 | Travel has three levels: globe (`/bucket-list`), country (`/bucket-list/<country>/`) and city (`/bucket-list/<country>/<city>/`). Country and city pages are two templates filled from `content/travels.ts` and prerendered from it; no page is hand-built. Japan with Tokyo, Kyoto and Osaka is the sample story | Locked |
+| 2026-10-13 | Globe pins are interactive: drag to spin, hover for a preview card, click to open the story; on touch the first tap shows the card and the card is the link. The clicked photo morphs into the next page's cover with cross-document view transitions, enabled only on travel pages | Locked |
+| 2026-10-13 | No stock or borrowed photos: a photo without a file renders as a labelled placeholder block | Locked |
+| — | Bucket-list content: page runs on sample places (`travelsAreSample`), noindex until the client's real list replaces them | **Open, client to supply** |
 | — | OG/social image hosted on own domain | **Open, asset needed** |
 | — | Client sign-off on every metric and claim shown | **Open** |
 | — | Client check of employer policy for Google metrics and the referral page | **Open** |

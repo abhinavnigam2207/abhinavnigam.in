@@ -10,6 +10,7 @@ import { pageMeta } from "../client/src/content/pageMeta";
 import { ideologies } from "../client/src/content/ideologies";
 import { referralFaq } from "../client/src/content/referralFaq";
 import { blogPosts, experiences, featuredWork, profile, skillGroups } from "../client/src/content/site";
+import { stories, storyMeta, travelsAreSample } from "../client/src/content/travels";
 
 const SITE = "https://abhinavnigam.in";
 // The ask. and knowme. subdomains serve the same pages; the main-domain paths are the canonical, indexable URLs.
@@ -64,7 +65,17 @@ const routePages: RoutePage[] = [
     ],
   },
   { path: "/ideologies", file: "ideologies", meta: pageMeta.ideologies, canonical: `${SITE}/ideologies/`, jsonLd: [breadcrumb("Ideologies", `${SITE}/ideologies/`)] },
-  { path: "/bucket-list", file: "bucket-list", meta: pageMeta.bucketList, canonical: `${SITE}/bucket-list/`, jsonLd: [breadcrumb("Bucket list", `${SITE}/bucket-list/`)] },
+  // Kept out of search while the page shows sample places instead of Abhinav's own.
+  { path: "/bucket-list", file: "bucket-list", meta: pageMeta.bucketList, canonical: `${SITE}/bucket-list/`, noindex: travelsAreSample, jsonLd: [breadcrumb("Bucket list", `${SITE}/bucket-list/`)] },
+  // One page per travel story and per city in it, generated from the travel data.
+  ...stories.flatMap((story): RoutePage[] => {
+    const base = `/bucket-list/${story.slug}`;
+    const crumbs = (name: string, url: string) => breadcrumb(name, url);
+    return [
+      { path: base, file: `travel-${story.slug}`, meta: storyMeta(story), canonical: `${SITE}${base}/`, noindex: travelsAreSample, jsonLd: [crumbs(story.name, `${SITE}${base}/`)] },
+      ...story.cities.map((city): RoutePage => ({ path: `${base}/${city.slug}`, file: `travel-${story.slug}-${city.slug}`, meta: storyMeta(story, city), canonical: `${SITE}${base}/${city.slug}/`, noindex: travelsAreSample, jsonLd: [crumbs(`${city.name}, ${story.name}`, `${SITE}${base}/${city.slug}/`)] })),
+    ];
+  }),
   { path: "/experiences", file: "experiences", meta: pageMeta.bucketList, canonical: `${SITE}/bucket-list/`, noindex: true },
   {
     path: "/google-refer", file: "google-refer", meta: pageMeta.googleRefer, canonical: `${SITE}/google-refer/`,

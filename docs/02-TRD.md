@@ -28,6 +28,7 @@ All generated at build time by `scripts/prerender.ts`, so they stay in step with
 
 - **Titles and descriptions**: one source, `client/src/content/pageMeta.ts`, used by pages and the prerender.
 - **Canonical and `og:url`** on every page. `/ask` and `/knowme` canonicalise to their subdomains. `/experiences` canonicalises and 301-redirects to `/bucket-list`.
+- **Travel page data**: `client/src/content/travels.ts`. While `travelsAreSample` is true the page shows a notice and is `noindex` and out of the sitemap.
 - **Robots meta**: indexable pages allow large image previews and full snippets. `/ide`, `/experiences` and 404 are `noindex`.
 - **Structured data (JSON-LD)**: `WebSite` and `ProfilePage` with a full `Person` on Home; `Blog` with `BlogPosting` entries; `FAQPage` on the referral page (questions are visible on the page); `BreadcrumbList` on inner pages.
 - **`sitemap.xml`** with `lastmod`, indexable main-domain pages only.

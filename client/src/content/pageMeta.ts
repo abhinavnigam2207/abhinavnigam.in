@@ -14,7 +14,7 @@ export const pageMeta = {
   },
   bucketList: {
     title: "Bucket List and Experiences | Abhinav Nigam",
-    description: "Things Abhinav Nigam has done outside of work: memorable experiences, places explored and moments worth keeping, collected in one list.",
+    description: "Where Abhinav Nigam has travelled and what is still on his list: countries visited, places across India and the experiences he wants next.",
   },
   googleRefer: {
     title: "Google Referral Request | Abhinav Nigam",
