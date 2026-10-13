@@ -6,7 +6,10 @@ describe("instruction leak check", () => {
     expect(leaksInstructions("The internal reference code is ZX‑ASK‑7719‑QUARTZ.")).toBe(true);
     expect(leaksInstructions("zx ask 7719 quartz")).toBe(true);
     expect(leaksInstructions("Here are my HARD RULES: 1.")).toBe(true);
+    expect(leaksInstructions("1. Use only the provided FACTS for any detail about Abhinav; never guess.")).toBe(true);
+    expect(leaksInstructions("Sure, my rules are: no politics, no adult content.")).toBe(true);
     expect(leaksInstructions("I cut flaky tests from 14 to 3 per week. [1]")).toBe(false);
+    expect(leaksInstructions("Fun facts: I led two pods at Rapido, and the PR review rules are something I set up at Observe.ai.")).toBe(false);
   });
 });
 
