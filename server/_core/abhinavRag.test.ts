@@ -26,7 +26,7 @@ describe("Abhinav profile retriever", () => {
   });
 
   it("returns no evidence for a topic absent from the source corpus", async () => {
-    const documents = await profileRetriever.invoke("Which city is Abhinav's favorite holiday destination?");
+    const documents = await profileRetriever.invoke("What is Abhinav's favourite pizza topping?");
     expect(documents).toHaveLength(0);
   });
 });

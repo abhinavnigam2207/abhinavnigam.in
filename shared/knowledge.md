@@ -76,13 +76,21 @@ In this JavaScript article, Abhinav surveys browser console methods beyond conso
 
 In this architecture article, Abhinav describes dividing a large web application into smaller route-based mini-apps or MVPs. He discusses when faster, independent delivery may justify micro-frontends, their business-centric ownership, framework flexibility and resilience, and the choice between monorepo and multirepo approaches. He also provides a Next.js-oriented route and build example.
 
+## Skills and technologies
+
+- id: site-skills
+- url: /#skills
+- category: Site
+
+The skills listed on Abhinav's website. Languages: JavaScript, TypeScript, Go, HTML and CSS. Frontend and product: React, Angular, Next.js, AngularJS, Ember.js, RxJS and Webpack. Platforms and delivery: Node.js, Kubernetes, Kafka, Jenkins, Azure DevOps, SonarQube and Grafana. Testing: Jest, React Testing Library, Cypress, Mocha, Karma and Protractor.
+
 ## Google referral page
 
 - id: site-referral
 - url: /google-refer
 - category: Site
 
-Abhinav's website has a Google referral page at /google-refer. A candidate shares their name, email, optional phone, current company, previous companies, the link to the job they plan to apply for, and a resume (PDF or Word, up to 4 MB). Abhinav reviews requests personally and gets back if there is a fit. A referral is not guaranteed. If the form is unavailable, candidates can email the role link and resume to abhinavnigam2207@gmail.com.
+Abhinav's website has a Google referral page at /google-refer. A candidate shares their name, email, optional phone, current company, previous companies, the link to the job they plan to apply for, and a resume (PDF or Word, up to 4 MB). Abhinav reviews requests personally and gets back if there is a fit. A referral is not guaranteed. If the form is unavailable, candidates can email the role link and resume to abhinavnigam2207@gmail.com. Only Abhinav sees the details shared, and only for that referral request.
 
 ## Where to find Abhinav
 
@@ -91,6 +99,22 @@ Abhinav's website has a Google referral page at /google-refer. A candidate share
 - category: Site
 
 Abhinav's links: GitHub github.com/abhinavnigam2207, LinkedIn linkedin.com/in/abhinavnigam2207, articles on DEV.to at dev.to/abhinavnigam2207 and on Medium at medium.com/@abhinavnigam2207, email abhinavnigam2207@gmail.com. The website has a writing page at /blog, an ideologies page at /ideologies, and a page with all links at /knowme.
+
+## Personal
+
+- id: site-personal
+- url: /knowme
+- category: Site
+
+Abhinav is married. That is all he shares about his personal life and family: no names, details or anything further.
+
+## Travels
+
+- id: site-travel
+- url: /bucket-list
+- category: Site
+
+Abhinav has travelled to 18 countries: Malaysia (Kuala Lumpur), Singapore, Thailand (Bangkok, Krabi, Phuket and Pattaya), Vietnam (Ho Chi Minh City, Da Nang and Hanoi), the United Kingdom (Manchester and London), Scotland (Edinburgh), the Netherlands (Amsterdam), France (Paris), Germany (Berlin), the Czech Republic (Prague), Austria (Vienna), Hungary (Budapest), Indonesia (Bali), Switzerland (Zurich, Lucerne, Interlaken and Bellinzona), Italy (Milan), Croatia (Split, Zadar and Zagreb), Turkey (Istanbul, Cappadocia and Antalya) and Japan (Osaka, Kyoto and Tokyo). His website has a travel section at /bucket-list: an interactive map that can be read in two styles, an 1826 sea chart or a 2026 globe, with a page for every country and city. The stories and photos for those pages are still being written.
 
 ## Observe.ai in detail — component library, design system, BFF
 
