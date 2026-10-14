@@ -224,6 +224,10 @@ body { background: var(--m-paper); }
 .site-frame .employers li img { height: calc(clamp(34px, 5.2vw, 62px) * var(--logo-size, 1)); width: auto; max-width: 100%; object-fit: contain; }
 .site-frame .employers li span { display: inline-block; max-width: 78%; transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1), opacity 400ms ease; }
 .site-frame .employers li span.is-flipping { transform: rotateX(90deg); opacity: 0; }
+/* A card painted edge to edge in its brand colour (see `fill` in Home.tsx). */
+.site-frame .employers li { position: relative; }
+.site-frame .employers li span.is-filled { position: absolute; inset: 0; display: grid; place-items: center; max-width: none; }
+.site-frame .employers li span.is-filled img { max-width: 78%; }
 
 /* Rows: experience */
 .site-frame .row { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 24px; padding: 32px 0; border-top: 1px solid var(--m-line); }

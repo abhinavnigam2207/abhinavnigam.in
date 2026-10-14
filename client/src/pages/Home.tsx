@@ -79,11 +79,13 @@ function WorkSlider() {
 }
 
 // Company logos, in career order. `size` evens out how large each mark looks: wide wordmarks are set a little
-// smaller and the round Jio badge a little larger, so no logo dominates the grid.
-const employerLogos = [
+// smaller and the round Jio badge a little larger, so no logo dominates the grid. `fill` paints the whole
+// card in the brand's colour (Rapido's yellow, behind its black wordmark); the colour travels with the logo
+// when cards trade places.
+const employerLogos: { name: string; src: string; width: number; size: number; fill?: string }[] = [
   { name: "Google", src: "/logos/google.png", width: 502, size: 1 },
   { name: "Observe.ai", src: "/logos/observe-ai.png", width: 943, size: 0.7 },
-  { name: "Rapido", src: "/logos/rapido.png", width: 459, size: 0.9 },
+  { name: "Rapido", src: "/logos/rapido.png", width: 464, size: 0.85, fill: "#ffca20" },
   { name: "Reliance Jio", src: "/logos/jio.png", width: 160, size: 1.5 },
   { name: "IHS Markit", src: "/logos/ihs-markit.png", width: 588, size: 1 },
   { name: "MetaDesign Solutions", src: "/logos/metadesign.png", width: 636, size: 1 },
@@ -116,7 +118,7 @@ function EmployerGrid() {
     <ul className="employers">
       {logos.map((logo, index) => (
         <li key={index}>
-          <span className={flipping.includes(index) ? "is-flipping" : undefined}>
+          <span className={`${flipping.includes(index) ? "is-flipping" : ""}${logo.fill ? " is-filled" : ""}`.trim() || undefined} style={logo.fill ? { background: logo.fill } : undefined}>
             <img src={logo.src} alt={logo.name} width={logo.width} height={160} loading="lazy" style={{ "--logo-size": logo.size } as React.CSSProperties} />
           </span>
         </li>
