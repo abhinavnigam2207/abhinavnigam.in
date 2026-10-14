@@ -160,8 +160,23 @@ async function main() {
       vite.ssrLoadModule("/src/lib/trpc.ts"),
     ]);
     const { trpc } = trpcModule as { trpc: { Provider: unknown; createClient: (options: unknown) => unknown } };
-    const builtTemplate = await readFile(path.resolve("dist/public/index.html"), "utf8");
+    let builtTemplate = await readFile(path.resolve("dist/public/index.html"), "utf8");
     if (!builtTemplate.includes('<div id="root"></div>')) throw new Error("Built HTML root marker is missing");
+    // The stylesheets are written into each page rather than linked: a linked stylesheet holds up the first
+    // paint for one more round trip to the server, which on a phone costs more than the few extra kilobytes.
+    const inline = (css: string, href: string) => {
+      if (css.includes("</style")) throw new Error(`${href} cannot be inlined`);
+      return `<style data-href="${href}">${css}</style>`;
+    };
+    const mainCss = builtTemplate.match(/<link rel="stylesheet" crossorigin href="(\/assets\/index-[^"]+\.css)">/);
+    if (!mainCss) throw new Error("Built HTML stylesheet link is missing");
+    const mainCssText = await readFile(path.resolve("dist/public", mainCss[1].slice(1)), "utf8");
+    // The site's own typefaces are asked for first thing, before the page is laid out, so the first paint
+    // already uses them rather than a fallback that is swapped a moment later.
+    const fontPreloads = [...new Set(mainCssText.match(/\/assets\/[^)"']+\.woff2/g) ?? [])]
+      .map(href => `<link rel="preload" href="${href}" as="font" type="font/woff2" crossorigin>`).join("");
+    builtTemplate = builtTemplate.replace(mainCss[0], fontPreloads + inline(mainCssText, mainCss[1]));
+    const travelCss = new Map(await Promise.all(travelStylesheets.map(async href => [href, await readFile(path.resolve("dist/public", href.slice(1)), "utf8")] as const)));
     // The map is drawn by code that is loaded on demand, from a coastline file. Left alone, both are asked
     // for only after the main script has run; named in <head>, they come down beside it.
     const mapChunk = (await readdir(path.resolve("dist/public/assets"))).find(name => /^ExpeditionMap-.+\.js$/.test(name));
@@ -193,7 +208,7 @@ async function main() {
         `    <meta name="robots" content="${page.noindex ? "noindex, follow" : "index, follow, max-image-preview:large, max-snippet:-1"}" />`,
         ...(page.jsonLd ?? []).map(jsonLdTag),
         // The era script comes first: it must run before the stylesheet it steers is applied to anything.
-        ...(isTravel(page.path) ? [`    <script src="/travel/era.js"></script>`, ...travelStylesheets.map(href => `    <link rel="stylesheet" href="${escapeHtml(href)}" />`)] : []),
+        ...(isTravel(page.path) ? [`    <script src="/travel/era.js"></script>`, ...travelStylesheets.map(href => `    ${inline(travelCss.get(href)!, href)}`)] : []),
         ...(isMap(page.path) ? mapPreloads : []),
       ];
       html = html.replace("</head>", `${headTags.join("\n")}\n  </head>`);

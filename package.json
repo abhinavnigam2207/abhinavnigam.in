@@ -17,6 +17,8 @@
     "knowledge": "tsx scripts/build-knowledge.ts"
   },
   "dependencies": {
+    "@fontsource/inter": "5.2.8",
+    "@fontsource/poppins": "5.2.7",
     "@langchain/core": "^1.2.13",
     "@tanstack/react-query": "^5.90.2",
     "@trpc/client": "^11.6.0",

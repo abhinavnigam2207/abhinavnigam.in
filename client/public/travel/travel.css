@@ -178,6 +178,7 @@ html[data-era="1826"] .site-frame .statement, html[data-era="1826"] .site-frame 
 .site-frame .map-switch button[aria-pressed="true"] { background: var(--m-ink); color: var(--m-paper); }
 .site-frame .map-tally { position: absolute; z-index: 3; left: max(28px, calc((100vw - 1360px) / 2 + var(--m-pad))); bottom: 34px; display: flex; align-items: center; gap: 10px; font-family: var(--t-caps); letter-spacing: 0.08em; }
 .site-frame .map-tally em { font-style: normal; color: var(--red); }
+.site-frame .tally-hint { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .site-frame .tally-seal { width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #cf463f, #96201c 65%); box-shadow: 0 1px 3px rgb(60 20 10 / 0.5); }
 /* Leaving for a city: the chart rushes up and the page takes over. */
 .site-frame .expedition.is-leaving .dive-panel, .site-frame .expedition.is-leaving .map-tools, .site-frame .expedition.is-leaving .map-tally { opacity: 0; transition: opacity 300ms; }
@@ -277,6 +278,10 @@ html[data-era="1826"] .site-frame .era-switch button[data-era="1826"], html:not(
 /* The door */
 .site-frame .era-door { position: fixed; inset: 0; z-index: 60; display: flex; animation: era-door-in 500ms ease both; }
 @keyframes era-door-in { from { opacity: 0; } }
+/* The door written into the pre-built page shows only while /travel/era.js has marked the visitor as not
+   having chosen yet; the app's own door then takes its place without fading in again. */
+html:not([data-door]) .site-frame .era-door.is-prebuilt { display: none; }
+.site-frame .era-door.is-prebuilt, .site-frame .era-door.is-settled { animation: none; }
 .site-frame .era-door-ask { position: absolute; z-index: 2; left: 50%; top: clamp(20px, 6vh, 56px); translate: -50% 0; width: max-content; max-width: calc(100vw - 32px); padding: 10px 18px; border-radius: 999px; background: #2b2f31; color: #fff; font-size: 0.9rem; text-align: center; }
 .site-frame .era-half { position: relative; flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 32px 24px; text-align: center; cursor: pointer; overflow: hidden; transition: flex-grow 600ms cubic-bezier(0.2, 0.7, 0.2, 1); }
 .site-frame .era-half.is-1826 {
@@ -319,7 +324,7 @@ html:not([data-era="1826"]) .site-frame .book-page { border-radius: 14px; }
 html[data-era="1826"] .site-frame .book-page { background: #f3e6c4; }
 .site-frame .book-page.is-turned { transform: rotateX(96deg); opacity: 0; }
 .site-frame .book-page:not(.is-open) { pointer-events: none; }
-.site-frame .book-line { display: flex; justify-content: space-between; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--m-quiet); }
+.site-frame .book-line { display: flex; justify-content: space-between; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--m-muted); }
 .site-frame .book-stamp { align-self: center; display: grid; place-content: center; gap: 4px; width: min(54vw, 210px); aspect-ratio: 1; padding: 16px; text-align: center; border-radius: 50%; border: 2px dashed rgb(var(--ink) / 0.3); color: var(--m-quiet); }
 .site-frame .book-stamp strong { font-family: var(--t-serif); font-size: 1.35rem; line-height: 1.1; }
 .site-frame .book-stamp span { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; }
@@ -340,7 +345,7 @@ html:not([data-era="1826"]) .site-frame .book-go { border-radius: 999px; font-si
 html:not([data-era="1826"]) .site-frame .tour-stage { background: var(--m-surface); }
 .site-frame .tour-title { position: absolute; left: var(--edge); right: var(--edge); top: clamp(80px, 12vh, 120px); font-size: clamp(1.5rem, 3.2vw, 2.4rem); line-height: 1.1; }
 html:not([data-era="1826"]) .site-frame .tour-title { letter-spacing: -0.05em; }
-.site-frame .tour-hint { position: absolute; right: var(--edge); bottom: 28px; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--m-quiet); }
+.site-frame .tour-hint { position: absolute; right: var(--edge); bottom: 28px; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--m-muted); }
 
 .site-frame .passport { position: absolute; inset: 0; margin: auto; width: min(74vw, 340px); height: min(50svh, 440px); perspective: 1400px; translate: 0 -4%; box-shadow: 0 26px 64px rgb(0 0 0 / 0.16); }
 html:not([data-era="1826"]) .site-frame .passport { border-radius: 16px; }
@@ -353,7 +358,7 @@ html:not([data-era="1826"]) .site-frame .passport-page { border-radius: 16px; }
 html[data-era="1826"] .site-frame .passport-page { background: #f3e6c4; border-color: rgb(var(--ink) / 0.5); }
 /* A turned page lifts up and away over the top edge, like a notepad. */
 .site-frame .passport-page.is-turned { transform: rotateX(96deg); opacity: 0; }
-.site-frame .passport-line { display: flex; justify-content: space-between; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--m-quiet); }
+.site-frame .passport-line { display: flex; justify-content: space-between; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--m-muted); }
 .site-frame .stamp { align-self: center; display: grid; place-content: center; gap: 4px; width: min(54vw, 220px); aspect-ratio: 1; padding: 18px; text-align: center; border-radius: 50%; border: 3px double var(--red); color: var(--red); opacity: 0; scale: 1.5; }
 .site-frame .stamp strong { font-family: var(--t-serif); font-size: 1.4rem; line-height: 1.1; }
 html:not([data-era="1826"]) .site-frame .stamp strong { font-weight: 600; letter-spacing: -0.03em; }
@@ -368,6 +373,9 @@ html:not([data-era="1826"]) .site-frame .tour-card { border-color: var(--m-line)
 .site-frame .tour-count { font-family: var(--t-caps); font-size: 0.95rem; letter-spacing: 0.06em; color: var(--red); }
 html:not([data-era="1826"]) .site-frame .tour-count { font-weight: 600; }
 .site-frame .tour-count span { color: var(--m-quiet); }
+/* Small red lettering in 2026 is a shade deeper than the red of the pins and routes, to stay readable
+   (4.5:1 against white). */
+html:not([data-era="1826"]) .site-frame .tour-count, html:not([data-era="1826"]) .site-frame .ledger h3 { color: #e12d33; }
 .site-frame .tour-count .only-2026 { color: inherit; }
 .site-frame .tour-card h3 { margin-top: 4px; font-size: clamp(1.6rem, 4vw, 2.4rem); line-height: 1.1; }
 html:not([data-era="1826"]) .site-frame .tour-card h3 { letter-spacing: -0.05em; }
@@ -474,8 +482,3 @@ html:not([data-era="1826"]) .site-frame .tour-card::after { right: -10px; clip-p
   .site-frame .story-hero-copy { padding-top: 96px; }
 }
 @media (prefers-reduced-motion: reduce) { .site-frame .era-door.is-leaving, .site-frame .era-half { transition: none; } }
-
-/* The door, before the script has drawn it: the two halves in their own colours, so a first-time visitor
-   sees the choice from the first frame and never the map behind it. Removed once the real door is up. */
-html[data-door] body::before { content: ""; position: fixed; inset: 0; z-index: 59; background: linear-gradient(to right, #ead9b0 50%, #ffffff 50%); }
-@media (max-width: 759px) { html[data-door] body::before { background: linear-gradient(to bottom, #ead9b0 50%, #ffffff 50%); } }

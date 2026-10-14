@@ -34,7 +34,12 @@ const doorHalves: { era: Era; line: string; go: string }[] = [
  * screen, and then the door fades away onto the map. `onChoose` is called when the half has filled the
  * screen, `onDone` when the door has gone.
  */
-export function EraDoor({ onChoose, onDone }: { onChoose: (era: Era) => void; onDone: () => void }) {
+/**
+ * `prebuilt`: the copy written into the pre-built page, shown (by the stylesheet) only to a visitor who has
+ * not chosen yet, so the door is there from the first frame instead of after the app has started.
+ * `settled`: that copy was on screen, so the app's own door takes its place without fading in a second time.
+ */
+export function EraDoor({ onChoose, onDone, prebuilt, settled }: { onChoose: (era: Era) => void; onDone: () => void; prebuilt?: boolean; settled?: boolean }) {
   const [held, setHeld] = useState<Era | null>(null);
   const [picked, setPicked] = useState<Era | null>(null);
   const [leaving, setLeaving] = useState(false);
@@ -49,7 +54,7 @@ export function EraDoor({ onChoose, onDone }: { onChoose: (era: Era) => void; on
     window.setTimeout(() => { onChoose(era); setLeaving(true); window.setTimeout(onDone, still ? 0 : 480); }, still ? 0 : 620);
   };
   return (
-    <div className={`era-door${picked ? " is-picked" : ""}${leaving ? " is-leaving" : ""}`} role="dialog" aria-modal="true" aria-label="Choose how to read this journal" ref={door} tabIndex={-1}>
+    <div className={`era-door${prebuilt ? " is-prebuilt" : ""}${settled ? " is-settled" : ""}${picked ? " is-picked" : ""}${leaving ? " is-leaving" : ""}`} role="dialog" aria-modal="true" aria-label="Choose how to read this journal" ref={door} tabIndex={-1}>
       <p className="era-door-ask">Same journeys, two centuries apart. Choose yours.</p>
       {doorHalves.map(half => (
         <button

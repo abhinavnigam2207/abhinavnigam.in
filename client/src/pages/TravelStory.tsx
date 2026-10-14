@@ -11,7 +11,7 @@ import NotFound from "./NotFound";
 // 1826 era and the page-to-page transitions). It is a separate file rather than part of the bundle, so
 // the rest of the site does not pay for it.
 //
-// The built pages already link it in <head> (scripts/prerender.ts), so a page is fully styled before any
+// The built pages already carry it in <head> (scripts/prerender.ts), so a page is fully styled before any
 // script runs. This component only adds it when it is missing, which is the case in development. It is
 // not rendered as a React element: the app replaces the pre-rendered markup on start-up, and a stylesheet
 // link inside that markup would be thrown away with it.
@@ -19,7 +19,8 @@ export const travelStylesheets = ["/travel/travel.css"];
 export function TravelFonts() {
   useEffect(() => {
     for (const href of travelStylesheets) {
-      if ([...document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')].some(link => link.getAttribute("href") === href)) continue;
+      // Built pages carry it written into the page (a <style> marked with its address); development links it.
+      if ([...document.querySelectorAll<HTMLElement>('link[rel="stylesheet"], style[data-href]')].some(node => (node.getAttribute("href") ?? node.dataset.href) === href)) continue;
       const link = document.createElement("link");
       link.rel = "stylesheet"; link.href = href;
       document.head.appendChild(link);
@@ -66,7 +67,7 @@ export function TravelCountry({ slug }: { slug: string }) {
           <Facts facts={story.facts} />
         </section>
         <section className="content-section wrap" aria-labelledby="cities-title">
-          <h2 className="statement" id="cities-title">Where I went.</h2>
+          <h2 className="statement" id="cities-title">Where we went.</h2>
           <div className="city-cards">
             {story.cities.map((city, index) => (
               <a className="city-card" href={`/bucket-list/${story.slug}/${city.slug}`} key={city.slug}>

@@ -16,8 +16,9 @@
   if (!era && map) root.setAttribute("data-door", "");
   // Opened straight into a country: the title block is not part of that view.
   if (map && location.hash.length > 1) root.setAttribute("data-dived", "");
-  // Going to open in 1826: fetch its typeface now, alongside the stylesheet, not after it.
-  if (era === "1826") ["im-fell-english", "im-fell-english-sc"].forEach(function (name) {
+  // Going to open in 1826, or to show the door (whose 1826 half is set in it): fetch its typeface now,
+  // alongside the stylesheet, not after it.
+  if (era === "1826" || root.hasAttribute("data-door")) ["im-fell-english", "im-fell-english-italic", "im-fell-english-sc"].forEach(function (name) {
     var link = document.createElement("link");
     link.rel = "preload"; link.as = "font"; link.type = "font/woff2"; link.crossOrigin = "anonymous";
     link.href = "/travel/fonts/" + name + ".woff2";

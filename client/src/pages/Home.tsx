@@ -83,12 +83,12 @@ function WorkSlider() {
 // card in the brand's colour (Rapido's yellow, behind its black wordmark); the colour travels with the logo
 // when cards trade places.
 const employerLogos: { name: string; src: string; width: number; size: number; fill?: string }[] = [
-  { name: "Google", src: "/logos/google.png", width: 502, size: 1 },
-  { name: "Observe.ai", src: "/logos/observe-ai.png", width: 943, size: 0.7 },
-  { name: "Rapido", src: "/logos/rapido.png", width: 464, size: 0.85, fill: "#ffca20" },
-  { name: "Reliance Jio", src: "/logos/jio.png", width: 160, size: 1.5 },
-  { name: "IHS Markit", src: "/logos/ihs-markit.png", width: 588, size: 1 },
-  { name: "MetaDesign Solutions", src: "/logos/metadesign.png", width: 636, size: 1 },
+  { name: "Google", src: "/logos/google.webp", width: 502, size: 1 },
+  { name: "Observe.ai", src: "/logos/observe-ai.webp", width: 943, size: 0.7 },
+  { name: "Rapido", src: "/logos/rapido.webp", width: 464, size: 0.85, fill: "#ffca20" },
+  { name: "Reliance Jio", src: "/logos/jio.webp", width: 160, size: 1.5 },
+  { name: "IHS Markit", src: "/logos/ihs-markit.webp", width: 588, size: 1 },
+  { name: "MetaDesign Solutions", src: "/logos/metadesign.webp", width: 636, size: 1 },
 ];
 
 // Every few seconds two company logos flip out, trade places and flip back in.
@@ -149,7 +149,7 @@ export default function Home() {
           <div className="wrap">
             <div className="hero-head">
               <div>{roleLine}<h1 className="hero-title" data-lens>I engineer products,<br />platforms and teams.</h1></div>
-              <img className="hero-photo" src="/abhinav.jpg" alt="Abhinav Nigam" width="400" height="400" />
+              <img className="hero-photo" src="/abhinav.webp" alt="Abhinav Nigam" width="400" height="400" />
             </div>
             <WorkSlider />
           </div>

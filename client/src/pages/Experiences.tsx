@@ -20,6 +20,16 @@ type View = (typeof views)[number]["id"];
 const storyPath = (slug: string, city?: string) => `/bucket-list/${slug}${city ? `/${city}` : ""}`;
 const uncharted = bucketList.filter(item => !item.done && item.lon !== undefined);
 const two = (value: number) => String(value).padStart(2, "0");
+// How far the map dives into a country: close enough that its cities spread across the view (Japan's three
+// sit at 6.2), never closer than 12, and a one-city country at 6.2 so the city is seen in its surroundings.
+const storyZoom = (story: (typeof stories)[number]) => {
+  if (story.cities.length < 2) return 6.2;
+  const span = Math.max(...["lon", "lat"].map(axis => { const values = story.cities.map(city => city[axis as "lon" | "lat"]); return Math.max(...values) - Math.min(...values); }));
+  return Math.min(12, Math.max(4.5, 26 / span));
+};
+// The count in the title block, in words.
+const numberWords = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen", "Twenty"];
+const countryCount = numberWords[countries.length] ?? String(countries.length);
 // False while the pages are being pre-built, where there is no visitor to ask.
 const inBrowser = typeof window !== "undefined";
 
@@ -106,7 +116,9 @@ export default function Experiences() {
   // The door stays mounted through its own leaving animation, after the era has been chosen.
   const [door, setDoor] = useState(!chosen);
   useEffect(() => { if (!chosen) setDoor(true); }, [chosen]);
-  // Once the real door is drawn, the stand-in that covered the page before the script ran can go.
+  // Whether the pre-built door was on screen when the app started (see EraDoor's `prebuilt`).
+  const [doorShown] = useState(() => inBrowser && document.documentElement.hasAttribute("data-door"));
+  // Once the app's own door is drawn, the mark that showed the pre-built one can go.
   useEffect(() => { if (door || chosen) document.documentElement.removeAttribute("data-door"); }, [door, chosen]);
   // Likewise the mark that kept the title block hidden on a page opened straight into a country.
   useEffect(() => { document.documentElement.removeAttribute("data-dived"); }, []);
@@ -170,7 +182,7 @@ export default function Experiences() {
   const camera: Camera = leaving
     ? { lon: leaving.lon, lat: leaving.lat, zoom: 22 * fit }
     : atHome ? { lon: 81, lat: 22, zoom: 4.2 * fit * zoomBy }
-    : story ? { lon: story.lon, lat: story.lat, zoom: 6.2 * fit * zoomBy }
+    : story ? { lon: story.lon, lat: story.lat, zoom: storyZoom(story) * fit * zoomBy }
     : country ? { lon: country.lon, lat: country.lat, zoom: 5 * fit * zoomBy }
     // A phone is too narrow for the whole world: it opens on Asia, and a drag shows the rest. The flat map
     // sits a little further east there, so India and Japan are both on screen.
@@ -249,7 +261,7 @@ export default function Experiences() {
           <div className="cartouche">
             <p className="eyebrow">Bucket list · Experiences</p>
             <h1>A life outside the pull request.</h1>
-            <p className="cartouche-lede">Fourteen countries, most of India, and a map that is far from finished. <EraText old="Follow the red line. Pick an X." now="Spin the globe. Pick a pin." /></p>
+            <p className="cartouche-lede">{countryCount} countries, most of India, and a map that is far from finished. <EraText old="Follow the red line. Pick an X." now="Spin the globe. Pick a pin." /></p>
           </div>
 
           {/* On a phone, back is always top left, where the site name was. */}
@@ -300,17 +312,20 @@ export default function Experiences() {
             </div>
           </div>
 
-          <button type="button" className="map-tally" aria-label={`Open your ${modern ? "passport" : "book of seals"}: ${found} of ${countries.length} collected`} onClick={openBook}>
+          <button type="button" className="map-tally" onClick={openBook}>
             {modern ? <BookOpen size={18} aria-hidden="true" /> : <span className="tally-seal" aria-hidden="true" />}
             <span className="tally-long" aria-live="polite">{found === countries.length ? "Expedition complete" : `${found} of ${countries.length} ${modern ? "stamps" : "discovered"}`}{stamps.includes("chest") && <em> · {modern ? "plane found" : "chest found"}</em>}</span>
-            <span className="tally-short" aria-hidden="true">{found}/{countries.length}</span>
+            <span className="tally-short">{found}/{countries.length}</span>
+            {/* The button is named by what it shows (long or short form, whichever is on screen) plus this. */}
+            <span className="tally-hint">, open your {modern ? "passport" : "book of seals"}</span>
           </button>
 
           {book && <StampBook era={era} entries={countries} stamps={stamps} onClose={closeBook} onGo={code => dive(code, true)} />}
         </section>
-        {door && <EraDoor onChoose={next => setEra(next, undefined, true)} onDone={() => setDoor(false)} />}
+        {door && <EraDoor onChoose={next => setEra(next, undefined, true)} onDone={() => setDoor(false)} settled={doorShown} />}
+        {!inBrowser && <EraDoor onChoose={() => {}} onDone={() => {}} prebuilt />}
 
-        {travelsAreSample && <p className="sample-note wrap" role="note"><strong>Preview with sample places.</strong> These are stand-ins to show the design, not Abhinav’s real trips.</p>}
+        {travelsAreSample && <p className="sample-note wrap" role="note"><strong>Journals still to come.</strong> The countries and cities are real; the places across India, the list still to find and the journals’ words and photos are placeholders for now.</p>}
 
         <PassportTour era={era} />
 
@@ -322,7 +337,7 @@ export default function Experiences() {
               <ol>{countries.map(item => <li key={item.code}><a href={`#${item.code.toLowerCase()}`} aria-label={`Show ${item.name} on the map`}>{item.name}</a><span>{item.story ? <a href={storyPath(item.story)}>Journal</a> : item.spot}</span></li>)}</ol>
             </div>
             <div>
-              <h3><a href={`#${home.code.toLowerCase()}`} aria-label="Show India on the map">Across India</a></h3>
+              <h3><a href={`#${home.code.toLowerCase()}`} aria-label="Across India: show it on the map">Across India</a></h3>
               <ol>{indiaPlaces.map(item => <li key={item.code}>{item.name}<span>{item.spot}</span></li>)}</ol>
             </div>
             <div>

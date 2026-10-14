@@ -38,6 +38,13 @@ test.describe("the door", () => {
   });
 });
 
+test("a first-time visitor sees the door before the app's script has run", async ({ page }) => {
+  await page.route("**/assets/*.js", route => route.abort());
+  await page.goto(MAP);
+  await expect(page.locator(".era-door")).toBeVisible();
+  await expect(page.locator(".era-half.is-1826 .era-year")).toHaveText("1826");
+});
+
 // The pre-built page is what a visitor sees until the app's script has run. With that script held back,
 // the page must already be in the chosen era, in every word, with the travel stylesheet applied.
 test.describe("before the app's script runs", () => {
@@ -48,7 +55,8 @@ test.describe("before the app's script runs", () => {
       await page.goto(MAP);
       expect(await eraOf(page)).toBe(era);
       await expect(page.locator("h1")).toBeVisible();
-      await expect(page.locator(".era-door")).toHaveCount(0);
+      // The pre-built door is in the page, but a returning visitor never sees it.
+      await expect(page.locator(".era-door")).toBeHidden();
       const old = era === "1826";
       await expect(page.locator(".tour-title .only-1826")).toBeVisible({ visible: old });
       await expect(page.locator(".tour-title .only-2026")).toBeVisible({ visible: !old });
@@ -97,7 +105,7 @@ test.describe("the map", () => {
   test("shows the visitor's own stamp count from the first frame", async ({ page }) => {
     await returning(page, "2026", ["JPN", "THA"]);
     await page.goto(MAP);
-    await expect(page.locator(".map-tally")).toContainText(isPhone(page) ? "2/14" : "2 of 14");
+    await expect(page.locator(".map-tally")).toContainText(isPhone(page) ? "2/18" : "2 of 18");
   });
 
   test("opens straight into a country named in the address, and steps back out", async ({ page }) => {
@@ -157,7 +165,7 @@ test.describe("the stamp book", () => {
     const book = page.getByRole("dialog", { name: "Your passport" });
     await page.locator(".map-tally").click();
     await expect(book).toBeVisible();
-    await expect(book).toContainText("1 of 14 collected");
+    await expect(book).toContainText("1 of 18 collected");
     await page.keyboard.press("Escape");
     await expect(book).toBeHidden();
     await page.locator(".map-tally").click();

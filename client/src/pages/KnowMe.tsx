@@ -4,7 +4,7 @@ import { Aurora } from "@/components/site/Aurora";
 import { PageMeta, SiteShell } from "@/components/site/SiteShell";
 import { pageMeta } from "@/content/pageMeta";
 
-const GoogleG = ({ size }: { size: number }) => <img src="/google-g.png" alt="" width={size} height={size} style={{ objectFit: "contain" }} />;
+const GoogleG = ({ size }: { size: number }) => <img src="/google-g.webp" alt="" width={size} height={size} style={{ objectFit: "contain" }} />;
 // Medium and DEV marks: the icon set has no brand icons for these two.
 const MediumMark = ({ size }: { size: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.54 12a6.8 6.8 0 0 1-6.77 6.82A6.8 6.8 0 0 1 0 12a6.8 6.8 0 0 1 6.77-6.82A6.8 6.8 0 0 1 13.54 12zm7.42 0c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z" /></svg>
@@ -33,7 +33,7 @@ export default function KnowMe() {
       <main className="wrap knowme-main">
         <Aurora />
         <section className="profile-card">
-          <img className="avatar" src="/abhinav.jpg" alt="Abhinav Nigam" width="112" height="112" />
+          <img className="avatar" src="/abhinav.webp" alt="Abhinav Nigam" width="112" height="112" />
           <h1>{profile.name}</h1>
           <p className="profile-role">{profile.role} at {profile.company}</p>
           <p className="profile-bio">I build web products, platforms, and tools for teams — and share what I learn along the way.</p>

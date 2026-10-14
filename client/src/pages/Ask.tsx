@@ -78,7 +78,7 @@ export default function AskAbhinav() {
       <main className="ask-page">
         {chatting && (
           <div className="ask-chip">
-            <img className="ask-chip-avatar" src="/abhinav.jpg" alt="" width="32" height="32" />
+            <img className="ask-chip-avatar" src="/abhinav.webp" alt="" width="32" height="32" />
             <h1>Ask <em>Abhinav</em></h1>
             <button type="button" onClick={closeChat} aria-label="Close chat"><X size={16} aria-hidden="true" /><span>Close chat</span></button>
           </div>
@@ -99,7 +99,7 @@ export default function AskAbhinav() {
             </div>
           ) : (
             <div className="ask-welcome">
-              <img className="avatar" src="/abhinav.jpg" alt="Abhinav Nigam" width="72" height="72" />
+              <img className="avatar" src="/abhinav.webp" alt="Abhinav Nigam" width="72" height="72" />
               <h1>Ask <em>Abhinav</em></h1>
               <p className="ask-subtitle">Chat about my work, engineering, or sci-fi, or play a quick game. Facts about me come from my CV and public writing.</p>
             </div>
