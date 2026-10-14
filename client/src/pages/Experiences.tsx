@@ -176,10 +176,11 @@ export default function Experiences() {
     // sits a little further east there, so India and Japan are both on screen.
     : { lon: phone ? (view === "flat" ? 108 : 84) : 48, lat: phone && view === "flat" ? 20 : 16, zoom: zoomBy };
 
-  // Back to the whole world at its opening size, wherever the visitor has zoomed or dragged to. If the dive
-  // was a step on the history, undo that step (the popstate handler above does the rest).
+  // Back to the whole world at its opening size, wherever the visitor has zoomed or dragged to, however many
+  // countries they have dived into on the way. The dives are steps on the history: all of them are undone
+  // in one go (the popstate handler above does the rest), never one country at a time.
   const wholeMap = () => {
-    if (focus && steps.current > 0) { steps.current -= 1; window.history.back(); return; }
+    if (focus && steps.current > 0) { const back = steps.current; steps.current = 0; window.history.go(-back); return; }
     if (window.location.hash) window.history.replaceState(null, "", window.location.pathname + window.location.search);
     setFocus(null); setZoomBy(1); setFresh(""); setHover(null); setRecenter(value => value + 1);
   };

@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useLayoutEffect } from "react";
 import { Route, Router as WouterRouter, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Ask from "./pages/Ask";
@@ -23,8 +23,28 @@ function SubdomainRoot() {
   return <Home />;
 }
 
+// The travel pages can be read in 1826; the rest of the site is always its own plain self. The era lives on
+// <html> (see /travel/era.js), which outlasts a move to another page inside the app (the site name, for
+// one, is an in-app link). So it is taken off on the way out, and put back from the visitor's saved choice
+// on the way in, before the browser paints the new page.
+const isTravelPath = (path: string) => /^\/(bucket-list|experiences)(\/|$)/.test(path);
+function useTravelEra(path: string) {
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    if (!isTravelPath(path)) {
+      for (const name of ["data-era", "data-door", "data-dived", "data-era-flip"]) root.removeAttribute(name);
+      return;
+    }
+    if (root.dataset.era) return;
+    let saved: string | null = null;
+    try { saved = window.localStorage.getItem("expedition-era"); } catch { /* storage refused: the default stands */ }
+    root.dataset.era = saved === "1826" ? "1826" : "2026";
+  }, [path]);
+}
+
 function Routes() {
   const [path] = useLocation();
+  useTravelEra(path);
   // The prerender passes this path for the static 404 page.
   if (path === "/__not_found__") return <NotFound />;
 

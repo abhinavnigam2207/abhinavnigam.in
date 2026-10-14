@@ -96,6 +96,9 @@ function holds(ring: Ring, lon: number, lat: number) {
   }
   return false;
 }
+// Points on the near face of the globe (across, up, towards the eye) at which a traced coastline is checked
+// for being the right way out: the centre of the view and four around it.
+const PROBES: [number, number, number][] = [[0, 0, 1], ...[[0.45, 0], [-0.45, 0], [0, 0.45], [0, -0.45]].map(([u, v]): [number, number, number] => [u, v, Math.sqrt(1 - u * u - v * v)])];
 const smooth = (from: number, to: number, value: number) => { const t = Math.min(1, Math.max(0, (value - from) / (to - from))); return t * t * (3 - 2 * t); };
 
 // Everything one frame needs, worked out once by `advance` and handed to each painter.
@@ -330,6 +333,7 @@ export function ExpeditionMap({ era, projection, spin, camera, recenter, marks, 
         const sinLon = Math.sin(view.lon * RAD), cosLon = Math.cos(view.lon * RAD);
         const near = cap >= Math.PI / 2 - 0.01 ? 0 : Math.cos(Math.min(Math.PI / 2, cap * 1.2));
         const eye: [number, number, number] = [cosLat * sinLon, sinLat, cosLat * cosLon];
+        const closest = new Float64Array(PROBES.length);
         for (const ring of land) {
           const apart = Math.acos(Math.max(-1, Math.min(1, ring.centre[0] * eye[0] + ring.centre[1] * eye[1] + ring.centre[2] * eye[2])));
           if (apart > cap + ring.reach) continue;
@@ -339,11 +343,14 @@ export function ExpeditionMap({ era, projection, spin, camera, recenter, marks, 
           // `near` is how far towards the eye a point must be to fall inside the part of the globe on
           // screen (0 when the whole face is in view).
           let any = false;
+          closest.fill(-1);
           for (let k = 0; k < xyz.length; k += 3) {
             const u = xyz[k] * cosLon - xyz[k + 2] * sinLon, depth = xyz[k] * sinLon + xyz[k + 2] * cosLon;
-            const z = xyz[k + 1] * sinLat + depth * cosLat;
-            turned[k] = u; turned[k + 1] = xyz[k + 1] * cosLat - depth * sinLat; turned[k + 2] = z;
+            const z = xyz[k + 1] * sinLat + depth * cosLat, v = xyz[k + 1] * cosLat - depth * sinLat;
+            turned[k] = u; turned[k + 1] = v; turned[k + 2] = z;
             if (z >= near) any = true;
+            // How near the coast comes to each candidate point (the cosine of the angle: larger is nearer).
+            for (let c = 0; c < PROBES.length; c++) { const d = u * PROBES[c][0] + v * PROBES[c][1] + z * PROBES[c][2]; if (d > closest[c]) closest[c] = d; }
           }
           if (!any) {
             // None of this coast is on screen. Either the land is elsewhere, or the view is zoomed into
@@ -353,32 +360,34 @@ export function ExpeditionMap({ era, projection, spin, camera, recenter, marks, 
           }
           // Fill only the part of the outline on the near side. Where the coast goes behind the globe, the
           // shape follows the rim instead: each hidden point is slid outwards to the rim and joined to the
-          // next by an arc (never a straight cut across the face).
+          // next by an arc (never a straight cut across the face). Each ring is traced on its own, then
+          // checked (below) before it joins the rest of the land.
+          const shape = new Path2D();
           const along = (from: number, to: number) => {
             const sweep = Math.atan2(Math.sin(to - from), Math.cos(to - from));
-            if (Math.abs(sweep) > 1e-4) fill.arc(cx, cy, radius, from, from + sweep, sweep < 0);
+            if (Math.abs(sweep) > 1e-4) shape.arc(cx, cy, radius, from, from + sweep, sweep < 0);
           };
           let rim = 0, pen = false;
           for (let n = 0, k = 0; n < count; n++, k += 3) {
             const u = turned[k], v = turned[k + 1], z = turned[k + 2];
             const x = cx + u * radius, y = cy - v * radius;
             if (z >= 0) {
-              if (n === 0) fill.moveTo(x, y);
+              if (n === 0) shape.moveTo(x, y);
               else if (turned[k - 1] < 0) {
                 // Coming back over the horizon: finish the arc at the exact crossing point.
                 const t = z / (z - turned[k - 1]);
                 along(rim, Math.atan2(-(v + (turned[k - 2] - v) * t), u + (turned[k - 3] - u) * t));
-                fill.lineTo(x, y);
-              } else fill.lineTo(x, y);
+                shape.lineTo(x, y);
+              } else shape.lineTo(x, y);
               pen ? coast.lineTo(x, y) : coast.moveTo(x, y); pen = true;
             } else {
               const here = Math.atan2(-v, u);
-              if (n === 0) fill.moveTo(cx + Math.cos(here) * radius, cy + Math.sin(here) * radius);
+              if (n === 0) shape.moveTo(cx + Math.cos(here) * radius, cy + Math.sin(here) * radius);
               else if (turned[k - 1] >= 0) {
                 // Going over the horizon: run out to the crossing point, then along the rim.
                 const pu = turned[k - 3], pv = turned[k - 2], pz = turned[k - 1], t = pz / (pz - z);
                 const edge = Math.atan2(-(pv + (v - pv) * t), pu + (u - pu) * t);
-                fill.lineTo(cx + Math.cos(edge) * radius, cy + Math.sin(edge) * radius); along(edge, here);
+                shape.lineTo(cx + Math.cos(edge) * radius, cy + Math.sin(edge) * radius); along(edge, here);
               } else {
                 // Both ends are hidden. Most such steps barely move round the rim and are left to add up;
                 // only a real move draws an arc. A big jump means the coast is passing near the far pole,
@@ -394,11 +403,24 @@ export function ExpeditionMap({ era, projection, spin, camera, recenter, marks, 
               rim = here; pen = false;
             }
           }
-          // If the point directly behind the globe is inside this land, its hidden coast has gone all the
-          // way round the rim and the shape above is inside-out. Adding the whole disc turns it back
-          // (the fill rule is even-odd), so land is filled and sea is left clear.
-          if (holds(ring, wrap(view.lon + 180), -view.lat)) { fill.closePath(); fill.moveTo(cx + radius, cy); fill.arc(cx, cy, radius, 0, Math.PI * 2); }
-          fill.closePath();
+          shape.closePath();
+          // Whether the shape just traced is the land or the sea around it depends on what lies behind the
+          // globe, which the trace cannot see. So it is checked at one point: the candidate furthest from
+          // this coast, where the drawing and the coastline data cannot disagree about which side it is on.
+          // (Testing the point straight behind the globe instead failed whenever that point sat on a shore,
+          // turning the land inside out for the moment the spinning globe passed that angle.) If the
+          // check fails, the shape is inside-out and the whole disc is added to turn it back (the fill rule
+          // is even-odd), so land is filled and sea is left clear.
+          let best = 0;
+          for (let c = 1; c < PROBES.length; c++) if (closest[c] < closest[best]) best = c;
+          const [pu, pv, pz] = PROBES[best];
+          const y1 = pv * cosLat + pz * sinLat, z1 = pz * cosLat - pv * sinLat;
+          const plat = Math.asin(y1) / RAD, plon = wrap(view.lon + Math.atan2(pu, z1) / RAD);
+          const ratio = canvas.width / width;
+          if (context.isPointInPath(shape, (cx + pu * radius) * ratio, (cy - pv * radius) * ratio, "evenodd") !== holds(ring, plon, plat)) {
+            shape.moveTo(cx + radius, cy); shape.arc(cx, cy, radius, 0, Math.PI * 2); shape.closePath();
+          }
+          fill.addPath(shape);
         }
       } else {
         const halfLon = width / 2 / (scale * squeeze), halfLat = height / 2 / scale;

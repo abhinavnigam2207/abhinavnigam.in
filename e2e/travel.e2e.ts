@@ -120,6 +120,18 @@ test.describe("the map", () => {
     await expect(page).toHaveURL(/\/bucket-list\/$/);
   });
 
+  test("reset goes straight to the whole map, however many countries were opened", async ({ page }) => {
+    await returning(page, "2026");
+    await page.goto(MAP);
+    for (const code of ["jpn", "vnm", "tha"]) {
+      await page.locator(`.ledger a[href="#${code}"]`).click();
+      await expect(page.locator(".dive-panel")).toBeVisible();
+    }
+    await page.locator(".map-reset").click();
+    await expect(page.locator(".dive-panel")).toHaveCount(0);
+    await expect(page).toHaveURL(/\/bucket-list\/$/);
+  });
+
   test("opening a country collects its stamp", async ({ page }) => {
     await returning(page, "2026");
     await page.goto(`${MAP}#vnm`);
@@ -212,6 +224,28 @@ test.describe("the globe keeps turning", () => {
       }
       await page.waitForTimeout(1500);
       expect(await turning(page)).toBe(true);
+    });
+  }
+});
+
+// 1826 belongs to the travel pages. The rest of the site is always its plain self, however it is reached.
+test.describe("leaving the travel pages", () => {
+  for (const from of [MAP, "/bucket-list/japan/osaka/"]) {
+    test(`the site name on ${from} leads to the plain home page`, async ({ page }) => {
+      // On a phone the journal pages show a back button where the site name would be.
+      test.skip(isPhone(page) && from !== MAP, "no site name on a phone's journal page");
+      await returning(page, "1826");
+      await page.goto(from);
+      expect(await eraOf(page)).toBe("1826");
+      await page.locator("a.brand").click();
+      await expect(page).toHaveURL(/\/$/);
+      expect(await eraOf(page)).toBeUndefined();
+      const look = await page.evaluate(() => [getComputedStyle(document.body).backgroundColor, getComputedStyle(document.querySelector("h1")!).fontFamily]);
+      expect(look[0]).not.toBe("rgb(234, 217, 176)");
+      expect(look[1]).not.toContain("IM Fell");
+      // And the chosen era is still there when the visitor comes back.
+      await page.goto(MAP);
+      expect(await eraOf(page)).toBe("1826");
     });
   }
 });
