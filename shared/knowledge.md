@@ -9,6 +9,14 @@ The assistant states nothing about Abhinav that is not written here.
 
 # Knowledge
 
+## Overview
+
+- id: overview
+- url: /
+- category: Site
+
+A summary of the facts below. Abhinav Nigam is a Senior Software Engineer at Google with 12+ years of experience. The companies he has worked at, and the only ones: Google (from May 2025), Observe.ai, Rapido, Reliance Jio, IHS Markit and MetaDesign Solutions. He studied Computer Science (B.Tech, 2009–2013) at Guru Gobind Singh Indraprastha University. He has travelled to 18 countries, all in Asia and Europe, listed under Travels. He is married.
+
 ## Abhinav Nigam CV — Google
 
 - id: cv-google
@@ -90,7 +98,7 @@ The skills listed on Abhinav's website. Languages: JavaScript, TypeScript, Go, H
 - url: /google-refer
 - category: Site
 
-Abhinav's website has a Google referral page at /google-refer. A candidate shares their name, email, optional phone, current company, previous companies, the link to the job they plan to apply for, and a resume (PDF or Word, up to 4 MB). Abhinav reviews requests personally and gets back if there is a fit. A referral is not guaranteed. If the form is unavailable, candidates can email the role link and resume to abhinavnigam2207@gmail.com. Only Abhinav sees the details shared, and only for that referral request.
+Abhinav's website has a Google referral page at /google-refer. A candidate shares their name, email, optional phone, current company, previous companies, the link to the job they plan to apply for, and a resume (PDF or Word, up to 4 MB). Abhinav reviews requests personally and gets back if there is a fit. A referral is not guaranteed. If the form is unavailable, candidates can email the role link and resume to abhinavnigam2207@gmail.com. The details a candidate shares are seen by Abhinav alone, and used only for that referral request.
 
 ## Where to find Abhinav
 
@@ -114,7 +122,7 @@ Abhinav is married. That is all he shares about his personal life and family: no
 - url: /bucket-list
 - category: Site
 
-Abhinav has travelled to 18 countries: Malaysia (Kuala Lumpur), Singapore, Thailand (Bangkok, Krabi, Phuket and Pattaya), Vietnam (Ho Chi Minh City, Da Nang and Hanoi), the United Kingdom (Manchester and London), Scotland (Edinburgh), the Netherlands (Amsterdam), France (Paris), Germany (Berlin), the Czech Republic (Prague), Austria (Vienna), Hungary (Budapest), Indonesia (Bali), Switzerland (Zurich, Lucerne, Interlaken and Bellinzona), Italy (Milan), Croatia (Split, Zadar and Zagreb), Turkey (Istanbul, Cappadocia and Antalya) and Japan (Osaka, Kyoto and Tokyo). His website has a travel section at /bucket-list: an interactive map that can be read in two styles, an 1826 sea chart or a 2026 globe, with a page for every country and city. The stories and photos for those pages are still being written.
+Abhinav has travelled to 18 countries: Malaysia (Kuala Lumpur), Singapore, Thailand (Bangkok, Krabi, Phuket and Pattaya), Vietnam (Ho Chi Minh City, Da Nang and Hanoi), the United Kingdom (Manchester and London), Scotland (Edinburgh), the Netherlands (Amsterdam), France (Paris), Germany (Berlin), the Czech Republic (Prague), Austria (Vienna), Hungary (Budapest), Indonesia (Bali), Switzerland (Zurich, Lucerne, Interlaken and Bellinzona), Italy (Milan), Croatia (Split, Zadar and Zagreb), Turkey (Istanbul, Cappadocia and Antalya) and Japan (Osaka, Kyoto and Tokyo). All of them are in Asia and Europe. His website has a travel section at /bucket-list: an interactive map that can be read in two styles, an 1826 sea chart or a 2026 globe, with a page for every country and city. The stories and photos for those pages are still being written.
 
 ## Observe.ai in detail — component library, design system, BFF
 
