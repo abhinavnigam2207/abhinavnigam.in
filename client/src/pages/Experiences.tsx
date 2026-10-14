@@ -3,9 +3,11 @@ import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState }
 import { EraDoor, EraSwitch, EraText, StampBook } from "@/components/site/EraControls";
 import type { Camera, Mark, MarkHit } from "@/components/site/ExpeditionMap";
 import { Photo } from "@/components/site/Photo";
-import { PageMeta, PillLink, SiteShell } from "@/components/site/SiteShell";
+import { PageMeta, SiteShell } from "@/components/site/SiteShell";
 import { pageMeta } from "@/content/pageMeta";
-import { bucketList, chest, countries, home, indiaPlaces, stories, travelsAreSample } from "@/content/travels";
+import { AddToOurList, HowWeChoose, LifeList, Moments, NextUp, TheNumbers } from "@/components/site/LifeList";
+import { chapters, lifeItems, lifeListIsSample, nextUp } from "@/content/lifeList";
+import { chest, countries, home, indiaPlaces, stories, travelsAreSample } from "@/content/travels";
 import { useEra, type Era } from "@/lib/era";
 import { addStamp, readStamps } from "@/lib/stamps";
 import { TravelFonts } from "./TravelStory";
@@ -18,7 +20,17 @@ const views = [{ id: "flat", label: "Map" }, { id: "globe", label: "Globe" }] as
 type View = (typeof views)[number]["id"];
 
 const storyPath = (slug: string, city?: string) => `/bucket-list/${slug}${city ? `/${city}` : ""}`;
-const uncharted = bucketList.filter(item => !item.done && item.lon !== undefined);
+// Everything on the life list that has a place can be shown on the map: the item flies into view with a card
+// beside it. Its address is #list-<id>, so the browser's back button returns to the list where it was.
+type Spot = { id: string; kicker: string; title: string; place: string; lon: number; lat: number; status: string; open: boolean; why?: string; story?: string; together?: boolean };
+const spots: Spot[] = [
+  ...lifeItems.flatMap(item => item.place ? [{
+    id: item.id, kicker: chapters.find(chapter => chapter.id === item.chapter)?.title ?? "", title: item.title, place: item.place.name, lon: item.place.lon, lat: item.place.lat,
+    status: item.done ? `Done · ${item.done}` : "Still on the list", open: !item.done, why: item.why, story: item.story, together: item.together,
+  }] : []),
+  ...nextUp.map(trip => ({ id: `next-${trip.code.toLowerCase()}`, kicker: "Next up", title: trip.what, place: trip.place, lon: trip.lon, lat: trip.lat, status: trip.when, open: true })),
+];
+const spotFromHash = (hash: string) => hash.startsWith("#list-") ? spots.find(spot => spot.id === hash.slice(6)) ?? null : null;
 const two = (value: number) => String(value).padStart(2, "0");
 // How far the map dives into a country: close enough that its cities spread across the view (Japan's three
 // sit at 6.2), never closer than 12, and a one-city country at 6.2 so the city is seen in its surroundings.
@@ -101,6 +113,7 @@ export default function Experiences() {
   // The place the map has dived into: a country code, the home code, or nothing for the whole world.
   // Read from the address on the first render, so a link to a country (or coming back to one from a city
   // page) opens already there, rather than opening on the world and flying in.
+  const [spot, setSpot] = useState<Spot | null>(() => inBrowser ? spotFromHash(window.location.hash) : null);
   const [focus, setFocus] = useState<string | null>(() => {
     if (!inBrowser) return null;
     const code = window.location.hash.slice(1).toUpperCase();
@@ -139,11 +152,12 @@ export default function Experiences() {
     const sync = () => {
       const code = window.location.hash.slice(1).toUpperCase();
       const known = code === home.code || countries.some(item => item.code === code);
-      setFocus(known ? code : null); setZoomBy(1); setHover(null);
+      const listed = spotFromHash(window.location.hash);
+      setFocus(known ? code : null); setSpot(listed); setZoomBy(1); setHover(null);
       if (known && code !== home.code) setStamps(addStamp(code).stamps);
-      // The ledger further down the page links to countries this way; show the map they asked for.
-      if (known && window.scrollY > window.innerHeight * 0.5) window.scrollTo({ top: 0 });
-      if (!known) { setFresh(""); setRecenter(value => value + 1); }
+      // The Places chapter further down the page links to countries this way; show the map they asked for.
+      if ((known || listed) && window.scrollY > window.innerHeight * 0.5) window.scrollTo({ top: 0 });
+      if (!known && !listed) { setFresh(""); setRecenter(value => value + 1); }
       setBook(Boolean((window.history.state as { book?: boolean } | null)?.book));
     };
     sync();
@@ -167,14 +181,16 @@ export default function Experiences() {
       if (item.code === focus) continue;
       list.push({ id: item.code, lon: item.lon, lat: item.lat, kind: "x", label: item.name, sealed: stamps.includes(item.code) });
     }
-    for (const [index, item] of uncharted.entries()) list.push({ id: `uncharted:${index}`, lon: item.lon!, lat: item.lat!, kind: "uncharted", label: item.where });
+    // What is still on the life list sits on the map as uncharted ground; the one being shown is marked plainly.
+    for (const item of spots) if (item.open && item.id !== spot?.id) list.push({ id: `list:${item.id}`, lon: item.lon, lat: item.lat, kind: "uncharted", label: item.place });
+    if (spot) list.push({ id: `list:${spot.id}`, lon: spot.lon, lat: spot.lat, kind: "city", label: spot.place });
     list.push({ id: "chest", lon: chest.lon, lat: chest.lat, kind: "chest" });
     // Inside a country, its stops take the place of its single X.
     if (story) for (const city of story.cities) list.push({ id: `city:${city.slug}`, lon: city.lon, lat: city.lat, kind: "city", label: city.name });
     else if (country) list.push({ id: `spot:${country.code}`, lon: country.lon, lat: country.lat, kind: "city", label: country.spot });
     if (atHome) for (const place of indiaPlaces) list.push({ id: `india:${place.code}`, lon: place.lon, lat: place.lat, kind: "city", label: place.name });
     return list;
-  }, [focus, stamps, story, country, atHome]);
+  }, [focus, stamps, story, country, atHome, spot]);
 
   // Zoom levels are set for a wide screen. A phone is narrow, and the flat map there is sized by its
   // height, so the same country needs a good deal less zoom to fit; the globe needs a little less.
@@ -184,6 +200,7 @@ export default function Experiences() {
     : atHome ? { lon: 81, lat: 22, zoom: 4.2 * fit * zoomBy }
     : story ? { lon: story.lon, lat: story.lat, zoom: storyZoom(story) * fit * zoomBy }
     : country ? { lon: country.lon, lat: country.lat, zoom: 5 * fit * zoomBy }
+    : spot ? { lon: spot.lon, lat: spot.lat, zoom: 3.4 * fit * zoomBy }
     // A phone is too narrow for the whole world: it opens on Asia, and a drag shows the rest. The flat map
     // sits a little further east there, so India and Japan are both on screen.
     : { lon: phone ? (view === "flat" ? 108 : 84) : 48, lat: phone && view === "flat" ? 20 : 16, zoom: zoomBy };
@@ -192,9 +209,25 @@ export default function Experiences() {
   // countries they have dived into on the way. The dives are steps on the history: all of them are undone
   // in one go (the popstate handler above does the rest), never one country at a time.
   const wholeMap = () => {
-    if (focus && steps.current > 0) { const back = steps.current; steps.current = 0; window.history.go(-back); return; }
+    if ((focus || spot) && steps.current > 0) { const back = steps.current; steps.current = 0; window.history.go(-back); return; }
     if (window.location.hash) window.history.replaceState(null, "", window.location.pathname + window.location.search);
-    setFocus(null); setZoomBy(1); setFresh(""); setHover(null); setRecenter(value => value + 1);
+    setFocus(null); setSpot(null); setZoomBy(1); setFresh(""); setHover(null); setRecenter(value => value + 1);
+  };
+  const still = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // From the life list to the map: a step on the history, so Back returns to the list, where it was.
+  const showSpot = (id: string) => {
+    const target = spots.find(item => item.id === id);
+    if (!target) return;
+    if (window.location.hash !== `#list-${id}`) { window.history.pushState(null, "", `#list-${id}`); steps.current += 1; }
+    setSpot(target); setFocus(null); setZoomBy(1); setHover(null); setBook(false);
+    window.scrollTo({ top: 0, behavior: still() ? "auto" : "smooth" });
+  };
+  // And back again: undo that step if it is one, otherwise clear the card and go to the list.
+  const backToList = () => {
+    if (steps.current > 0) { steps.current -= 1; window.history.back(); return; }
+    window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    setSpot(null); setRecenter(value => value + 1);
+    document.getElementById("life-list")?.scrollIntoView({ behavior: still() ? "auto" : "smooth" });
   };
   const openBook = () => { window.history.pushState({ book: true }, ""); steps.current += 1; setBook(true); };
   const closeBook = () => {
@@ -219,6 +252,7 @@ export default function Experiences() {
   const pick = (hit: MarkHit) => {
     if (hit.id === home.code || countries.some(item => item.code === hit.id)) return dive(hit.id);
     if (hit.id === "chest") { setStamps(addStamp("chest").stamps); setHover(hit); return; }
+    if (hit.id.startsWith("list:")) { if (hit.id !== `list:${spot?.id}`) showSpot(hit.id.slice(5)); return; }
     if (hit.id.startsWith("city:") && story) {
       const city = story.cities.find(item => `city:${item.slug}` === hit.id);
       if (!city) return;
@@ -235,7 +269,7 @@ export default function Experiences() {
     if (!hover) return null;
     const [kind, key] = hover.id.split(":");
     if (hover.id === "chest") return stamps.includes("chest") ? { title: chest.title, text: chest.line } : { title: "What's this?", text: modern ? "Something is circling here. Click it." : "Something is buried here. Click it." };
-    if (kind === "uncharted") { const item = uncharted[Number(key)]; return { title: item.title, text: `${item.where} · still to find` }; }
+    if (kind === "list") { const item = spots.find(entry => entry.id === key); return item ? { title: item.title, text: `${item.place} · ${item.status}`, action: "Show it" } : null; }
     if (kind === "city" && story) { const city = story.cities.find(item => item.slug === key); return city ? { title: city.name, text: city.tagline, photo: city.cover, action: "Open the journal" } : null; }
     if (kind === "india") { const place = indiaPlaces.find(item => item.code === key); return place ? { title: place.name, text: place.spot } : null; }
     if (kind === "spot") return country ? { title: country.spot, text: "Journal not written yet" } : null;
@@ -252,10 +286,10 @@ export default function Experiences() {
       <PageMeta {...pageMeta.bucketList} />
       <TravelFonts />
       <main className="travel-main">
-        <section className={`expedition era-${era}${inBrowser ? " is-live" : ""}${focus ? " is-dived" : ""}${leaving ? " is-leaving" : ""}`} aria-label="Map of places visited">
+        <section className={`expedition era-${era}${inBrowser ? " is-live" : ""}${focus || spot ? " is-dived" : ""}${leaving ? " is-leaving" : ""}`} aria-label="Map of places visited">
           <Suspense fallback={null}>
-            <ExpeditionMap className="expedition-canvas" era={era} projection={view} spin={!focus} camera={camera} recenter={recenter} marks={marks} home={[home.lon, home.lat]} onHover={setHover} onPick={pick}
-              shift={!focus ? undefined : phone ? [0, -0.2] : [0.13, 0]} onZoomOut={wholeMap} />
+            <ExpeditionMap className="expedition-canvas" era={era} projection={view} spin={!focus && !spot} camera={camera} recenter={recenter} marks={marks} home={[home.lon, home.lat]} onHover={setHover} onPick={pick}
+              shift={!focus && !spot ? undefined : phone ? [0, -0.2] : [0.13, 0]} onZoomOut={wholeMap} />
           </Suspense>
 
           <div className="cartouche">
@@ -266,6 +300,19 @@ export default function Experiences() {
 
           {/* On a phone, back is always top left, where the site name was. */}
           {focus && <button type="button" className="back-pill" onClick={wholeMap}><ArrowLeft size={18} aria-hidden="true" /> World</button>}
+          {spot && <button type="button" className="back-pill" onClick={backToList}><ArrowLeft size={18} aria-hidden="true" /> List</button>}
+
+          {spot && (
+            <aside className="dive-panel spot-panel" key={spot.id}>
+              <button type="button" className="dive-back" onClick={backToList}><ArrowLeft size={16} aria-hidden="true" /> Back to the list</button>
+              <p className="dive-code">{spot.kicker}{lifeListIsSample && <span className="life-sample">Sample</span>}</p>
+              <h2>{spot.title}</h2>
+              <p className="spot-place">{spot.place}</p>
+              <p className="spot-status"><span className={spot.open ? "is-open" : "is-done"}>{spot.status}</span>{spot.together && <span className="life-together">Together</span>}</p>
+              {spot.why && <p className="dive-note">{spot.why}</p>}
+              {spot.story && <a className="button" href={spot.story}>Read the story <ArrowUpRight size={16} aria-hidden="true" /></a>}
+            </aside>
+          )}
 
           {focus && (
             <aside className="dive-panel" key={focus}>
@@ -325,32 +372,16 @@ export default function Experiences() {
         {door && <EraDoor onChoose={next => setEra(next, undefined, true)} onDone={() => setDoor(false)} settled={doorShown} />}
         {!inBrowser && <EraDoor onChoose={() => {}} onDone={() => {}} prebuilt />}
 
-        {travelsAreSample && <p className="sample-note wrap" role="note"><strong>Journals still to come.</strong> The countries and cities are real; the places across India, the list still to find and the journals’ words and photos are placeholders for now.</p>}
+        {travelsAreSample && <p className="sample-note wrap" role="note"><strong>Journals still to come.</strong> The countries and cities are real; the places across India, the life list beyond travel and the journals’ words and photos are placeholders for now.</p>}
 
         <PassportTour era={era} />
 
-        <section className="content-section wrap" aria-labelledby="ledger-title">
-          <h2 className="statement" id="ledger-title">The ledger.</h2>
-          <div className="ledger">
-            <div>
-              <h3>Countries</h3>
-              <ol>{countries.map(item => <li key={item.code}><a href={`#${item.code.toLowerCase()}`} aria-label={`Show ${item.name} on the map`}>{item.name}</a><span>{item.story ? <a href={storyPath(item.story)}>Journal</a> : item.spot}</span></li>)}</ol>
-            </div>
-            <div>
-              <h3><a href={`#${home.code.toLowerCase()}`} aria-label="Across India: show it on the map">Across India</a></h3>
-              <ol>{indiaPlaces.map(item => <li key={item.code}>{item.name}<span>{item.spot}</span></li>)}</ol>
-            </div>
-            <div>
-              <h3>Still to find</h3>
-              <ol>{bucketList.map(item => <li key={item.title} className={item.done ? "is-done" : undefined}>{item.title}<span>{item.where}{item.done ? " · done" : ""}</span></li>)}</ol>
-            </div>
-          </div>
-        </section>
-
-        <section className="content-section wrap travel-close">
-          <h2 className="statement">Been somewhere I should go?</h2>
-          <PillLink href="/knowme">Tell me</PillLink>
-        </section>
+        <TheNumbers />
+        <LifeList onShowOnMap={showSpot} />
+        <NextUp onShowOnMap={showSpot} />
+        <Moments />
+        <HowWeChoose />
+        <AddToOurList />
       </main>
     </SiteShell>
   );

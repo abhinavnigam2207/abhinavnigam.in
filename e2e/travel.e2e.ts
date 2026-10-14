@@ -11,6 +11,13 @@ async function returning(page: Page, era: string, stamps: string[] = []) {
     if (!localStorage.getItem("expedition-stamps")) localStorage.setItem("expedition-stamps", JSON.stringify(collected));
   }, [era, stamps] as const);
 }
+// A country's card in the Places chapter of the life list. On a phone the chapter shows six cards until
+// "Show all" is pressed.
+async function placeLink(page: Page, code: string) {
+  const link = page.locator(`.places-grid a[href="#${code}"]`);
+  if (!(await link.isVisible())) await page.locator(".life-more").click();
+  return link;
+}
 const eraOf = (page: Page) => page.evaluate(() => document.documentElement.dataset.era);
 const isPhone = (page: Page) => (page.viewportSize()?.width ?? 0) < 760;
 
@@ -121,7 +128,7 @@ test.describe("the map", () => {
     await returning(page, "2026");
     await page.goto("/");
     await page.goto(MAP);
-    await page.locator('.ledger a[href="#jpn"]').click();
+    await (await placeLink(page, "jpn")).click();
     await expect(page.locator(".dive-panel h2")).toHaveText("Japan");
     await page.goBack();
     await expect(page.locator(".dive-panel")).toHaveCount(0);
@@ -132,7 +139,7 @@ test.describe("the map", () => {
     await returning(page, "2026");
     await page.goto(MAP);
     for (const code of ["jpn", "vnm", "tha"]) {
-      await page.locator(`.ledger a[href="#${code}"]`).click();
+      await (await placeLink(page, code)).click();
       await expect(page.locator(".dive-panel")).toBeVisible();
     }
     await page.locator(".map-reset").click();
@@ -256,4 +263,77 @@ test.describe("leaving the travel pages", () => {
       expect(await eraOf(page)).toBe("1826");
     });
   }
+});
+
+test.describe("the life list", () => {
+  test("chapters switch with a click or the arrow keys, and the address keeps the chapter", async ({ page }) => {
+    await returning(page, "2026");
+    await page.goto(MAP);
+    const tabs = page.getByRole("tablist", { name: "Chapters of the life list" });
+    await expect(tabs.getByRole("tab", { name: /Places/ })).toHaveAttribute("aria-selected", "true");
+    await tabs.getByRole("tab", { name: /Food/ }).click();
+    await expect(page.locator(".life-item").first()).toBeVisible();
+    await expect(page).toHaveURL(/chapter=food/);
+    await page.keyboard.press("ArrowRight");
+    await expect(tabs.getByRole("tab", { name: /Learn/ })).toBeFocused();
+    await expect(tabs.getByRole("tab", { name: /Learn/ })).toHaveAttribute("aria-selected", "true");
+    await page.reload();
+    await expect(tabs.getByRole("tab", { name: /Learn/ })).toHaveAttribute("aria-selected", "true");
+  });
+
+  test("an item goes to the map and Back returns to the list where it was", async ({ page }) => {
+    await returning(page, "2026");
+    await page.goto(`${MAP}?chapter=adventures`);
+    const item = page.locator(".life-item", { hasText: "northern lights" });
+    await item.scrollIntoViewIfNeeded();
+    const before = await page.evaluate(() => window.scrollY);
+    await item.getByRole("button", { name: /On the map/ }).click();
+    await expect(page.locator(".spot-panel h2")).toHaveText("See the northern lights");
+    await expect(page).toHaveURL(/#list-northern-lights$/);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(50);
+    await page.goBack();
+    await expect(page.locator(".spot-panel")).toHaveCount(0);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(before - 120);
+  });
+
+  test("the card on the map has its own way back to the list", async ({ page }) => {
+    await returning(page, "2026");
+    await page.goto(`${MAP}#list-next-isl`);
+    await expect(page.locator(".spot-panel h2")).toHaveText("Chase the northern lights");
+    await page.locator(isPhone(page) ? ".back-pill" : ".spot-panel .dive-back").click();
+    await expect(page.locator(".spot-panel")).toHaveCount(0);
+    await expect(page.locator("#life-list")).toBeInViewport();
+  });
+
+  test("Surprise me shows something from the list on the map", async ({ page }) => {
+    await returning(page, "1826");
+    await page.goto(MAP);
+    await page.locator(".life-surprise").click();
+    await expect(page.locator(".spot-panel")).toBeVisible();
+    await expect(page).toHaveURL(/#list-/);
+  });
+
+  test("a suggestion can be sent, and a failure says what to do", async ({ page }) => {
+    await returning(page, "2026");
+    let posted = "";
+    await page.route("**/bucket-list/", async route => {
+      if (route.request().method() !== "POST") return route.continue();
+      posted = route.request().postData() ?? "";
+      await route.fulfill({ status: 200, body: "ok" });
+    });
+    await page.goto(MAP);
+    const form = page.locator(".suggest-form");
+    await form.getByLabel("Your suggestion").fill("Swim in a bioluminescent bay");
+    await form.getByRole("button", { name: /Send it/ }).click();
+    await expect(page.locator(".suggest-done")).toBeVisible();
+    expect(posted).toContain("form-name=life-list-suggestion");
+    expect(posted).toContain("suggestion=Swim+in+a+bioluminescent+bay");
+
+    await page.unroute("**/bucket-list/");
+    await page.route("**/bucket-list/", route => route.request().method() === "POST" ? route.fulfill({ status: 500 }) : route.continue());
+    await page.locator(".suggest-again").click();
+    await form.getByLabel("Your suggestion").fill("Another one");
+    await form.getByRole("button", { name: /Send it/ }).click();
+    await expect(page.locator(".suggest-error")).toContainText("abhinavnigam2207@gmail.com");
+  });
 });

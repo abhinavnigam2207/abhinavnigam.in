@@ -1,9 +1,9 @@
 // Travel page content.
 //
-// The countries and their cities are Abhinav's real travels (his list, October 2026). The places across India,
-// the bucket list and every journal's words and photos are still placeholders. Once those are his own, set
-// `travelsAreSample` to false: that removes the on-page notices and lets search engines index the travel
-// pages (see scripts/prerender.ts).
+// The countries and their cities are Abhinav's real travels (his list, October 2026). The places across India
+// and every journal's words and photos are still placeholders (the life list beyond travel is in lifeList.ts).
+// Once those are his own, set `travelsAreSample` to false: that removes the on-page notices and lets search
+// engines index the travel pages (see scripts/prerender.ts).
 export const travelsAreSample = true;
 
 // `story` is the slug of a country page under /bucket-list/ (see `stories` below), when one has been written.
@@ -52,19 +52,6 @@ export const indiaPlaces: Place[] = [
   { name: "Goa", spot: "Goa", code: "GOI", lon: 74.12, lat: 15.3, note: "" },
   { name: "Andaman", spot: "Port Blair", code: "IXZ", lon: 92.73, lat: 11.62, note: "" },
   { name: "Kerala", spot: "Alleppey", code: "COK", lon: 76.34, lat: 9.5, note: "" },
-];
-
-// The bucket list proper: things still to do, and a few already done.
-// `lon`/`lat` put a to-do item on the map as uncharted territory.
-export const bucketList: { title: string; where: string; done: boolean; lon?: number; lat?: number }[] = [
-  { title: "Watch the northern lights", where: "Iceland", done: false, lon: -19.0, lat: 64.9 },
-  { title: "Trek in Patagonia", where: "Chile and Argentina", done: false, lon: -72.5, lat: -49.5 },
-  { title: "Set foot on Antarctica", where: "Antarctica", done: false },
-  { title: "Walk the Inca Trail", where: "Peru", done: false, lon: -72.5, lat: -13.2 },
-  { title: "See the cherry blossom", where: "Japan", done: true },
-  { title: "Dive a coral reef", where: "Andaman", done: true },
-  { title: "Ride the Trans-Siberian", where: "Russia", done: false, lon: 104.3, lat: 56.0 },
-  { title: "Drive the Manali to Leh road", where: "India", done: true },
 ];
 
 // ---------- Country and city pages ----------

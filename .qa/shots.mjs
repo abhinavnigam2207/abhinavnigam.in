@@ -29,7 +29,7 @@ for (const [sizeName, viewport] of Object.entries(sizes)) {
     await open("/bucket-list/");
     await page.evaluate(() => { const t = document.querySelector(".tour"); window.scrollTo(0, t.getBoundingClientRect().top + window.scrollY + (t.offsetHeight - window.innerHeight) * 0.55); });
     await shot("8-passport-scroll");
-    await page.evaluate(() => document.querySelector(".ledger").scrollIntoView()); await shot("9-ledger");
+    await page.evaluate(() => document.querySelector(".life").scrollIntoView()); await shot("9-life-list");
     await open("/bucket-list/japan/"); await shot("10-journal-japan");
     await page.evaluate(() => document.querySelector(".city-cards").scrollIntoView()); await shot("11-journal-japan-cities");
     await open("/bucket-list/japan/osaka/"); await shot("12-journal-osaka");

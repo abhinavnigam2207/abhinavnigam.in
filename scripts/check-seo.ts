@@ -6,7 +6,9 @@ import path from "node:path";
 const ROOT = path.resolve("dist/public");
 const SITE = "https://abhinavnigam.in";
 const AI_CRAWLERS = ["GPTBot", "OAI-SearchBot", "ClaudeBot", "PerplexityBot", "Google-Extended"];
-const BUDGET_KB = { js: 400, css: 90 };
+// js was 400 kB; raised to 420 for the life-list sections. The bundle holds every page, so the lasting fix is
+// splitting it per page (each page pre-built with its own chunk), which would bring this back under 400.
+const BUDGET_KB = { js: 420, css: 90 };
 const TITLE = { min: 30, max: 60 };
 const DESCRIPTION = { min: 120, max: 160 };
 

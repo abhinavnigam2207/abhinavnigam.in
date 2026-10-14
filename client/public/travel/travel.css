@@ -200,15 +200,6 @@ html[data-era="1826"] .site-frame .statement, html[data-era="1826"] .site-frame 
 }
 
 /* Ledger: everything on the map again as plain lists. */
-.site-frame .ledger { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 32px clamp(28px, 5vw, 72px); margin-top: clamp(28px, 4vw, 48px); }
-.site-frame .ledger h3 { font-family: var(--t-caps); font-size: 1.05rem; letter-spacing: 0.14em; color: var(--red); padding-bottom: 10px; border-bottom: 3px double rgb(var(--ink) / 0.45); }
-.site-frame .ledger li { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px dotted rgb(var(--ink) / 0.4); }
-.site-frame .ledger li span { text-align: right; font-size: 0.85rem; color: var(--m-muted); }
-.site-frame .ledger h3 a { text-decoration: none; }
-.site-frame .ledger li > a { text-decoration: none; }
-.site-frame .ledger li > a:hover, .site-frame .ledger li > a:focus-visible, .site-frame .ledger h3 a:hover { text-decoration: underline; text-decoration-color: var(--red); text-decoration-thickness: 2px; text-underline-offset: 5px; }
-.site-frame .ledger a { text-decoration: underline; text-decoration-color: var(--red); text-decoration-thickness: 2px; text-underline-offset: 5px; }
-.site-frame .ledger .is-done { text-decoration: line-through; text-decoration-color: rgb(var(--ink) / 0.5); color: var(--m-muted); }
 
 /* Journal pages: photographs are prints laid on the paper, sepia until looked at. */
 html[data-era="1826"] .site-frame .photo { border-radius: 3px; filter: sepia(0.55) saturate(0.75) contrast(0.96); transition: filter 500ms, rotate 500ms, scale 500ms; }
@@ -240,8 +231,6 @@ html[data-era="1826"] .site-frame .city-card-arrow { top: 24px; right: 24px; }
 html[data-era="1826"] .site-frame { --t-serif: "IM Fell English", "Iowan Old Style", Georgia, serif; --t-caps: "IM Fell English SC", "IM Fell English", Georgia, serif; }
 .site-frame .sample-note { margin-top: 28px; font-size: 0.9rem; color: var(--m-muted); }
 .site-frame .sample-note strong { color: var(--m-ink); font-weight: 500; }
-.site-frame .travel-close { padding-bottom: clamp(96px, 12vw, 160px); }
-.site-frame .travel-close .button { margin-top: 28px; }
 .site-frame .travel-main > header, .site-frame:has(.travel-main) > .site-header, .site-frame:has(.story-main) > .site-header { position: relative; z-index: 6; }
 
 /* 2026 map: clean paper, soft cards, pills. No chart border, no lamp-light. */
@@ -265,8 +254,6 @@ html:not([data-era="1826"]) .site-frame .map-card strong { font-weight: 600; fon
 html:not([data-era="1826"]) .site-frame .map-switch, html:not([data-era="1826"]) .site-frame .map-zoom, html:not([data-era="1826"]) .site-frame .era-switch { background: rgb(255 255 255 / 0.95); border: 1px solid var(--m-line); border-radius: 999px; overflow: hidden; box-shadow: 0 6px 20px rgb(0 0 0 / 0.06); }
 html:not([data-era="1826"]) .site-frame .map-tools button + button { border-left: 1px solid var(--m-line); }
 html:not([data-era="1826"]) .site-frame .map-tally { background: rgb(255 255 255 / 0.95); border: 1px solid var(--m-line); border-radius: 999px; box-shadow: 0 6px 20px rgb(0 0 0 / 0.06); }
-html:not([data-era="1826"]) .site-frame .ledger h3 { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid var(--m-ink); }
-html:not([data-era="1826"]) .site-frame .ledger li { border-bottom: 1px solid var(--m-line); }
 
 /* Era switch and the stamp-book button */
 .site-frame .era-switch { display: flex; background: color-mix(in srgb, var(--m-paper) 92%, transparent); border: 1px solid rgb(var(--ink) / 0.6); }
@@ -375,8 +362,9 @@ html:not([data-era="1826"]) .site-frame .tour-count { font-weight: 600; }
 .site-frame .tour-count span { color: var(--m-quiet); }
 /* Small red lettering in 2026 is a shade deeper than the red of the pins and routes, to stay readable
    (4.5:1 against white). */
-html:not([data-era="1826"]) .site-frame .tour-count, html:not([data-era="1826"]) .site-frame .ledger h3 { color: #e12d33; }
+html:not([data-era="1826"]) .site-frame .tour-count, html:not([data-era="1826"]) .site-frame .numbers-title { color: #e12d33; }
 .site-frame .tour-count .only-2026 { color: inherit; }
+html:not([data-era="1826"]) .site-frame .tour-link { color: #e12d33; }
 .site-frame .tour-card h3 { margin-top: 4px; font-size: clamp(1.6rem, 4vw, 2.4rem); line-height: 1.1; }
 html:not([data-era="1826"]) .site-frame .tour-card h3 { letter-spacing: -0.05em; }
 .site-frame .tour-spot { font-weight: 500; }
@@ -482,3 +470,200 @@ html:not([data-era="1826"]) .site-frame .tour-card::after { right: -10px; clip-p
   .site-frame .story-hero-copy { padding-top: 96px; }
 }
 @media (prefers-reduced-motion: reduce) { .site-frame .era-door.is-leaving, .site-frame .era-half { transition: none; } }
+
+/* ---------- The life list and the sections around it (components/site/LifeList.tsx) ----------
+   Shared shapes first, then the 2026 look, then 1826, then the phone. */
+.site-frame .life-sample { display: inline-block; margin-left: 10px; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--m-line); font-family: var(--m-sans); font-size: 0.68rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--m-muted); vertical-align: middle; }
+.site-frame .life-sample.is-block { margin: 18px 0 0; }
+.site-frame .life-together { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 999px; background: color-mix(in srgb, var(--red) 12%, transparent); color: var(--red); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* So far, in numbers */
+.site-frame .numbers { padding-top: clamp(72px, 9vw, 120px); }
+.site-frame .numbers-title { font-family: var(--t-caps); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--m-muted); }
+.site-frame .numbers-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: 18px; border-top: 1px solid var(--m-line); border-bottom: 1px solid var(--m-line); }
+.site-frame .numbers-grid > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 6px; padding: clamp(22px, 3vw, 36px) clamp(12px, 2vw, 28px); }
+.site-frame .numbers-grid > div + div { border-left: 1px solid var(--m-line); }
+.site-frame .numbers-grid dd { font-family: var(--m-display); font-weight: 600; font-size: clamp(2.2rem, 4.6vw, 4rem); line-height: 1; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
+.site-frame .numbers-grid dt { font-size: 0.9rem; color: var(--m-muted); }
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .site-frame .numbers-grid > div, .site-frame .place-card, .site-frame .life-item, .site-frame .next-pass, .site-frame .moments-grid li, .site-frame .choose-list li {
+      animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 60%;
+    }
+  }
+}
+@keyframes rise { from { opacity: 0; translate: 0 22px; } }
+
+/* The life list */
+.site-frame .life { padding-top: clamp(80px, 11vw, 144px); scroll-margin-top: 24px; }
+.site-frame .life-head { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 18px 40px; }
+.site-frame .life-head .statement { grid-column: 1; }
+.site-frame .life-lede { grid-column: 1; max-width: 46ch; font-size: 1.1rem; color: var(--m-muted); }
+.site-frame .life-surprise { grid-column: 2; grid-row: 1 / span 2; align-self: end; display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 20px; border: 1px solid var(--m-ink); border-radius: 999px; font-weight: 500; cursor: pointer; transition: background 200ms, color 200ms; }
+.site-frame .life-surprise:hover, .site-frame .life-surprise:focus-visible { background: var(--m-ink); color: var(--m-paper, #fff); }
+.site-frame .life-tabs { display: flex; gap: 10px; margin-top: clamp(32px, 4vw, 48px); padding-bottom: 6px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; }
+.site-frame .life-tabs::-webkit-scrollbar { display: none; }
+.site-frame .life-tabs [role="tab"] { flex: none; display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 8px 18px 8px 10px; border: 1px solid var(--m-line); border-radius: 999px; text-align: left; cursor: pointer; scroll-snap-align: start; transition: border-color 200ms, background 200ms, color 200ms; }
+.site-frame .life-tabs [role="tab"]:hover { border-color: var(--m-ink); }
+.site-frame .life-tabs [role="tab"] > span { display: grid; line-height: 1.15; font-weight: 500; }
+.site-frame .life-tabs small { font-size: 0.72rem; font-weight: 400; color: var(--m-muted); }
+/* The open chapter is read from <html data-chapter> (set before the first paint by /travel/era.js, kept in step
+   by LifeList.tsx), so the pre-built page and the running one always agree on it. */
+.site-frame .life-tabs [role="tab"]:is(html:not([data-chapter]) [data-for="places"], html[data-chapter="adventures"] [data-for="adventures"], html[data-chapter="food"] [data-for="food"], html[data-chapter="learn"] [data-for="learn"], html[data-chapter="giving"] [data-for="giving"], html[data-chapter="together"] [data-for="together"], html[data-chapter="everyday"] [data-for="everyday"]) { background: var(--m-ink); border-color: var(--m-ink); color: var(--m-paper, #fff); }
+.site-frame .life-tabs [role="tab"]:is(html:not([data-chapter]) [data-for="places"], html[data-chapter="adventures"] [data-for="adventures"], html[data-chapter="food"] [data-for="food"], html[data-chapter="learn"] [data-for="learn"], html[data-chapter="giving"] [data-for="giving"], html[data-chapter="together"] [data-for="together"], html[data-chapter="everyday"] [data-for="everyday"]) small { color: inherit; opacity: 0.7; }
+html:not([data-chapter]) .site-frame .life-panel:not([data-for="places"]),
+html[data-chapter="adventures"] .site-frame .life-panel:not([data-for="adventures"]),
+html[data-chapter="food"] .site-frame .life-panel:not([data-for="food"]),
+html[data-chapter="learn"] .site-frame .life-panel:not([data-for="learn"]),
+html[data-chapter="giving"] .site-frame .life-panel:not([data-for="giving"]),
+html[data-chapter="together"] .site-frame .life-panel:not([data-for="together"]),
+html[data-chapter="everyday"] .site-frame .life-panel:not([data-for="everyday"]) { display: none; }
+.site-frame .progress-ring { width: 36px; height: 36px; flex: none; }
+.site-frame .progress-ring circle { fill: none; stroke: currentColor; stroke-opacity: 0.18; stroke-width: 3; }
+.site-frame .progress-ring .progress-done { stroke: var(--red); stroke-opacity: 1; stroke-linecap: round; transition: stroke-dasharray 600ms ease; }
+.site-frame .life-tabs [role="tab"]:is(html:not([data-chapter]) [data-for="places"], html[data-chapter="adventures"] [data-for="adventures"], html[data-chapter="food"] [data-for="food"], html[data-chapter="learn"] [data-for="learn"], html[data-chapter="giving"] [data-for="giving"], html[data-chapter="together"] [data-for="together"], html[data-chapter="everyday"] [data-for="everyday"]) .progress-ring circle:first-child { stroke-opacity: 0.3; }
+.site-frame .life-panel { margin-top: 26px; }
+.site-frame .life-panel.is-switched { animation: panel-in 320ms ease both; }
+@keyframes panel-in { from { opacity: 0; translate: 0 8px; } }
+.site-frame .life-line { margin-bottom: 22px; color: var(--m-muted); }
+.site-frame .life-more { display: none; margin-top: 18px; min-height: 46px; padding: 0 22px; border: 1px solid var(--m-line); border-radius: 999px; font-weight: 500; cursor: pointer; }
+
+/* Places: one card per country, home first */
+.site-frame .places-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 14px; }
+.site-frame .place-card { position: relative; display: flex; flex-direction: column; gap: 8px; min-height: 172px; padding: 22px 22px 18px; border: 1px solid var(--m-line); border-radius: 20px; background: rgb(255 255 255 / 0.7); transition: translate 260ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 260ms; }
+.site-frame .place-card:hover { translate: 0 -4px; box-shadow: 0 18px 40px rgb(0 0 0 / 0.08); }
+.site-frame .place-card h3 { padding-right: 64px; font-family: var(--m-display); font-size: 1.3rem; font-weight: 600; letter-spacing: -0.04em; line-height: 1.15; }
+.site-frame .place-card p { flex: 1; font-size: 0.88rem; line-height: 1.45; color: var(--m-muted); }
+.site-frame .place-stamp { position: absolute; top: 16px; right: 16px; display: grid; place-items: center; width: 52px; height: 52px; border: 3px double var(--red); border-radius: 50%; color: var(--red); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; }
+.site-frame .place-actions, .site-frame .life-actions { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.site-frame .place-actions a, .site-frame .life-actions a, .site-frame .life-actions button, .site-frame .next-foot button {
+  display: inline-flex; align-items: center; gap: 5px; min-height: 36px; font-size: 0.88rem; font-weight: 500; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 4px; cursor: pointer; transition: text-decoration-color 200ms, color 200ms;
+}
+.site-frame .place-actions a:hover, .site-frame .life-actions a:hover, .site-frame .life-actions button:hover, .site-frame .next-foot button:hover,
+.site-frame .place-actions a:focus-visible, .site-frame .life-actions a:focus-visible, .site-frame .life-actions button:focus-visible, .site-frame .next-foot button:focus-visible { color: var(--red); text-decoration-color: currentColor; }
+
+/* Everything else on the list */
+.site-frame .life-items { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.site-frame .life-item { display: grid; grid-template-columns: 40px 1fr; gap: 16px; padding: 22px; border: 1px solid var(--m-line); border-radius: 20px; background: rgb(255 255 255 / 0.7); }
+.site-frame .life-mark { display: grid; place-items: center; width: 34px; height: 34px; border: 1.5px dashed var(--m-faint); border-radius: 50%; color: #fff; }
+.site-frame .life-item.is-done .life-mark { border: 0; background: var(--red); }
+.site-frame .life-copy h3 { font-family: var(--m-display); font-size: 1.2rem; font-weight: 600; letter-spacing: -0.03em; line-height: 1.25; }
+.site-frame .life-item.is-done h3 { color: var(--m-ink); }
+.site-frame .life-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 8px; font-size: 0.85rem; color: var(--m-muted); }
+.site-frame .life-why { margin-top: 10px; font-size: 0.92rem; line-height: 1.5; color: var(--m-ink-2, var(--m-ink)); }
+.site-frame .life-actions { margin-top: 10px; }
+
+/* Next up: boarding passes */
+.site-frame .next-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: clamp(28px, 4vw, 48px); }
+.site-frame .next-pass { position: relative; display: flex; flex-direction: column; padding: 24px 24px 18px; border: 1px solid var(--m-line); border-radius: 22px; background: #fff; box-shadow: 0 18px 44px rgb(0 0 0 / 0.06); }
+.site-frame .next-pass .ticket-route { margin: 0; font-size: 1.5rem; }
+.site-frame .next-pass h3 { margin-top: 18px; padding-top: 16px; border-top: 2px dashed var(--m-line); font-family: var(--m-display); font-size: 1.5rem; font-weight: 600; letter-spacing: -0.04em; }
+.site-frame .next-what { margin-top: 4px; color: var(--m-muted); }
+.site-frame .next-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 18px; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--red); }
+.site-frame .next-foot button { font-size: 0.85rem; letter-spacing: 0; text-transform: none; color: var(--m-ink); }
+.site-frame .next-pass::before, .site-frame .next-pass::after { content: ""; position: absolute; top: 76px; width: 18px; height: 18px; border-radius: 50%; background: var(--m-surface); border: 1px solid var(--m-line); }
+.site-frame .next-pass::before { left: -10px; clip-path: inset(0 0 0 50%); }
+.site-frame .next-pass::after { right: -10px; clip-path: inset(0 50% 0 0); }
+
+/* Moments */
+.site-frame .moments-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(14px, 2vw, 24px); margin-top: clamp(28px, 4vw, 48px); }
+.site-frame .moments-grid a { display: block; text-decoration: none; }
+.site-frame .moments-grid .photo { aspect-ratio: 4 / 5; transition: scale 500ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+.site-frame .moments-grid a:hover .photo { scale: 0.975; }
+.site-frame .moments-grid a > span { display: inline-flex; align-items: center; gap: 4px; margin-top: 10px; font-size: 0.9rem; font-weight: 500; }
+
+/* How we choose */
+.site-frame .choose-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(32px, 5vw, 72px); margin-top: clamp(28px, 4vw, 48px); counter-reset: none; }
+.site-frame .choose-list li { display: grid; grid-template-columns: 64px 1fr; gap: 16px; padding: 26px 0; border-top: 1px solid var(--m-line); }
+.site-frame .choose-number { font-family: var(--m-display); font-size: 1.1rem; font-weight: 600; color: var(--red); }
+.site-frame .choose-list h3 { font-family: var(--m-display); font-size: 1.35rem; font-weight: 600; letter-spacing: -0.03em; }
+.site-frame .choose-list p { margin-top: 6px; color: var(--m-muted); line-height: 1.55; }
+
+/* Add to our list */
+.site-frame .suggest { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 6vw, 96px); padding-bottom: clamp(96px, 12vw, 160px); }
+.site-frame .suggest-copy p { margin-top: 18px; max-width: 38ch; font-size: 1.1rem; line-height: 1.55; color: var(--m-muted); }
+.site-frame .suggest-form { display: grid; gap: 18px; align-content: start; }
+.site-frame .suggest-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.site-frame .suggest-field { position: relative; display: grid; gap: 8px; }
+.site-frame .suggest-field > span { font-size: 0.85rem; font-weight: 500; }
+.site-frame .suggest-field em { font-style: normal; font-weight: 400; color: var(--m-muted); }
+.site-frame .suggest-field input, .site-frame .suggest-field textarea { width: 100%; min-height: 52px; padding: 14px 16px; border: 1px solid var(--m-line); border-radius: 14px; background: #fff; font: inherit; color: var(--m-ink); transition: border-color 200ms, box-shadow 200ms; }
+.site-frame .suggest-field textarea { resize: vertical; min-height: 104px; }
+.site-frame .suggest-field input:focus, .site-frame .suggest-field textarea:focus { outline: none; border-color: var(--m-ink); box-shadow: 0 0 0 4px color-mix(in srgb, var(--m-ink) 10%, transparent); }
+.site-frame .suggest-field small { position: absolute; right: 14px; top: 0; font-size: 0.75rem; color: var(--m-muted); }
+.site-frame .suggest-trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.site-frame .suggest-send { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; }
+.site-frame .suggest-error { font-size: 0.9rem; color: var(--red); }
+.site-frame .suggest-error a { color: inherit; }
+.site-frame .suggest-done { display: grid; justify-items: start; align-content: center; gap: 14px; padding: clamp(28px, 4vw, 44px); border: 1px solid var(--m-line); border-radius: 22px; background: #fff; outline: none; }
+.site-frame .suggest-seal { display: grid; place-items: center; width: 110px; height: 110px; border: 3px double var(--red); border-radius: 50%; color: var(--red); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; rotate: -8deg; animation: seal-in 520ms cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+@keyframes seal-in { from { opacity: 0; scale: 1.6; } }
+.site-frame .suggest-again { min-height: 44px; padding: 0 20px; border: 1px solid var(--m-line); border-radius: 999px; font-weight: 500; cursor: pointer; }
+
+/* The card the map shows for a life-list item */
+.site-frame .spot-panel .dive-code .life-sample { margin-left: 8px; }
+.site-frame .spot-place { margin-top: 4px; color: var(--m-muted); }
+.site-frame .spot-status { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0 6px; }
+.site-frame .spot-status > span:first-child { padding: 3px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.site-frame .spot-status .is-done { background: var(--red); color: #fff; }
+.site-frame .spot-status .is-open { border: 1.5px dashed var(--m-faint); color: var(--m-muted); }
+.site-frame .spot-panel .button { margin-top: 16px; }
+
+/* ---- 1826: the same sections set in a ledger, wax and ink ---- */
+html[data-era="1826"] .site-frame .numbers-grid { border-top: 3px double rgb(var(--ink) / 0.6); border-bottom: 3px double rgb(var(--ink) / 0.6); }
+html[data-era="1826"] .site-frame .numbers-grid > div + div { border-left: 1px dotted rgb(var(--ink) / 0.5); }
+html[data-era="1826"] .site-frame .numbers-grid dd { font-family: var(--t-serif); font-weight: 400; letter-spacing: -0.02em; }
+html[data-era="1826"] .site-frame .numbers-grid dt, html[data-era="1826"] .site-frame .numbers-title { font-family: var(--t-caps); letter-spacing: 0.1em; font-weight: 400; }
+html[data-era="1826"] .site-frame .life-surprise, html[data-era="1826"] .site-frame .life-tabs [role="tab"], html[data-era="1826"] .site-frame .life-more, html[data-era="1826"] .site-frame .suggest-again { border-radius: 0; border-color: rgb(var(--ink) / 0.55); font-family: var(--t-caps); letter-spacing: 0.06em; }
+html[data-era="1826"] .site-frame .life-tabs [role="tab"]:is(html:not([data-chapter]) [data-for="places"], html[data-chapter="adventures"] [data-for="adventures"], html[data-chapter="food"] [data-for="food"], html[data-chapter="learn"] [data-for="learn"], html[data-chapter="giving"] [data-for="giving"], html[data-chapter="together"] [data-for="together"], html[data-chapter="everyday"] [data-for="everyday"]) { background: var(--m-ink); color: var(--m-paper); }
+html[data-era="1826"] .site-frame .place-card, html[data-era="1826"] .site-frame .life-item, html[data-era="1826"] .site-frame .next-pass, html[data-era="1826"] .site-frame .suggest-done {
+  border-radius: 0; border-color: rgb(var(--ink) / 0.55); background: color-mix(in srgb, var(--m-paper) 85%, transparent); outline: 3px double rgb(var(--ink) / 0.25); outline-offset: 3px; box-shadow: 0 10px 24px rgb(60 36 12 / 0.12);
+}
+html[data-era="1826"] .site-frame .place-card h3, html[data-era="1826"] .site-frame .life-copy h3, html[data-era="1826"] .site-frame .next-pass h3, html[data-era="1826"] .site-frame .choose-list h3 { font-family: var(--t-serif); font-weight: 400; letter-spacing: -0.01em; }
+html[data-era="1826"] .site-frame .place-stamp { border: 0; background: radial-gradient(circle at 35% 30%, #cf463f, #96201c 65%); box-shadow: 0 2px 5px rgb(60 20 10 / 0.4), inset 0 0 0 3px rgb(255 255 255 / 0.12); color: #f7e7c9; font-family: var(--t-caps); font-weight: 400; }
+html[data-era="1826"] .site-frame .life-item.is-done .life-mark { background: radial-gradient(circle at 35% 30%, #cf463f, #96201c 65%); box-shadow: 0 1px 3px rgb(60 20 10 / 0.45); }
+html[data-era="1826"] .site-frame .life-mark { border-color: rgb(var(--ink) / 0.5); }
+html[data-era="1826"] .site-frame .life-together, html[data-era="1826"] .site-frame .life-sample { border-radius: 0; font-family: var(--t-caps); font-weight: 400; letter-spacing: 0.08em; }
+html[data-era="1826"] .site-frame .next-pass::before, html[data-era="1826"] .site-frame .next-pass::after { display: none; }
+html[data-era="1826"] .site-frame .next-pass h3 { border-top-style: dotted; border-top-color: rgb(var(--ink) / 0.45); }
+html[data-era="1826"] .site-frame .next-pass .ticket-route { font-family: var(--t-caps); font-weight: 400; color: var(--m-ink); }
+html[data-era="1826"] .site-frame .next-pass .ticket-route i { border-top-style: dotted; border-top-color: rgb(var(--ink) / 0.5); }
+html[data-era="1826"] .site-frame .next-pass .ticket-route i::after { content: "\2726"; background: transparent; color: var(--red); }
+html[data-era="1826"] .site-frame .next-foot { font-family: var(--t-caps); font-weight: 400; }
+/* Moments in 1826 are prints pinned into an album; in 2026 they sit straight. */
+html:not([data-era="1826"]) .site-frame .moments-grid li { rotate: none !important; }
+html[data-era="1826"] .site-frame .moments-grid a { padding: 10px 10px 14px; background: #fbf4e2; box-shadow: 0 10px 22px rgb(60 36 12 / 0.22); }
+html[data-era="1826"] .site-frame .moments-grid .photo { border-radius: 0; filter: sepia(0.35) saturate(0.85); }
+html[data-era="1826"] .site-frame .moments-grid a > span { font-family: var(--t-serif); font-style: italic; font-weight: 400; }
+html[data-era="1826"] .site-frame .choose-list li { border-top: 1px dotted rgb(var(--ink) / 0.5); }
+html[data-era="1826"] .site-frame .choose-number { font-family: var(--t-serif); font-weight: 400; font-size: 1.6rem; }
+html[data-era="1826"] .site-frame .suggest-field input, html[data-era="1826"] .site-frame .suggest-field textarea { border: 0; border-bottom: 1px solid rgb(var(--ink) / 0.6); border-radius: 0; background: transparent; font-family: var(--t-serif); font-size: 1.1rem; padding-inline: 2px; }
+html[data-era="1826"] .site-frame .suggest-field input:focus, html[data-era="1826"] .site-frame .suggest-field textarea:focus { box-shadow: 0 2px 0 var(--m-ink); }
+html[data-era="1826"] .site-frame .suggest-field > span { font-family: var(--t-caps); letter-spacing: 0.06em; font-weight: 400; }
+html[data-era="1826"] .site-frame .suggest-seal { border: 0; background: radial-gradient(circle at 35% 30%, #cf463f, #96201c 65%); color: #f7e7c9; box-shadow: 0 3px 8px rgb(60 20 10 / 0.45); font-family: var(--t-caps); font-weight: 400; }
+html[data-era="1826"] .site-frame .spot-status .is-done { background: radial-gradient(circle at 35% 30%, #cf463f, #96201c 65%); border-radius: 0; font-family: var(--t-caps); font-weight: 400; }
+html[data-era="1826"] .site-frame .spot-status .is-open { border-radius: 0; font-family: var(--t-caps); font-weight: 400; }
+
+/* ---- Phones ---- */
+@media (max-width: 759px) {
+  .site-frame .numbers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .site-frame .numbers-grid > div { padding: 20px 14px; }
+  .site-frame .numbers-grid > div:nth-child(odd) { border-left: 0; }
+  .site-frame .numbers-grid > div:nth-child(n + 3) { border-top: 1px solid var(--m-line); }
+  .site-frame .numbers-grid .numbers-wide { grid-column: 1 / -1; border-left: 0; }
+  .site-frame .life-head { grid-template-columns: 1fr; }
+  .site-frame .life-surprise { grid-column: 1; grid-row: auto; justify-self: start; }
+  .site-frame .life-tabs { margin-inline: calc(var(--m-pad) * -1); padding-inline: var(--m-pad); scroll-padding-inline: var(--m-pad); }
+  .site-frame .life-items, .site-frame .next-grid, .site-frame .choose-list, .site-frame .suggest, .site-frame .suggest-row { grid-template-columns: 1fr; }
+  .site-frame .moments-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .site-frame .places-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .site-frame .place-card { min-height: 0; padding: 16px 14px 12px; }
+  .site-frame .place-card h3 { padding-right: 0; padding-top: 50px; font-size: 1.1rem; }
+  .site-frame .place-stamp { top: 12px; left: 14px; right: auto; width: 44px; height: 44px; font-size: 0.64rem; }
+  .site-frame .places-grid:not(.is-expanded) > li:nth-child(n + 7) { display: none; }
+  .site-frame .life-more { display: inline-flex; align-items: center; }
+  .site-frame .life-item { grid-template-columns: 34px 1fr; gap: 12px; padding: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-frame .place-card, .site-frame .moments-grid .photo, .site-frame .life-panel, .site-frame .suggest-seal { transition: none; animation: none; }
+}

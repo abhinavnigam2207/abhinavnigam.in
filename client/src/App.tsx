@@ -32,7 +32,7 @@ function useTravelEra(path: string) {
   useLayoutEffect(() => {
     const root = document.documentElement;
     if (!isTravelPath(path)) {
-      for (const name of ["data-era", "data-door", "data-dived", "data-era-flip"]) root.removeAttribute(name);
+      for (const name of ["data-era", "data-door", "data-dived", "data-era-flip", "data-chapter"]) root.removeAttribute(name);
       return;
     }
     if (root.dataset.era) return;

@@ -16,6 +16,9 @@
   if (!era && map) root.setAttribute("data-door", "");
   // Opened straight into a country: the title block is not part of that view.
   if (map && location.hash.length > 1) root.setAttribute("data-dived", "");
+  // The life list's open chapter (?chapter=food), so the page is painted on it from the first frame.
+  var chapter = map ? new URLSearchParams(location.search).get("chapter") : null;
+  if (chapter && /^(adventures|food|learn|giving|together|everyday)$/.test(chapter)) root.setAttribute("data-chapter", chapter);
   // Going to open in 1826, or to show the door (whose 1826 half is set in it): fetch its typeface now,
   // alongside the stylesheet, not after it.
   if (era === "1826" || root.hasAttribute("data-door")) ["im-fell-english", "im-fell-english-italic", "im-fell-english-sc"].forEach(function (name) {
